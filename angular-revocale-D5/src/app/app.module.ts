@@ -12,7 +12,10 @@ import { NoteComponentComponent } from './note-component/note-component.componen
 import { AssenzeComponentComponent } from './assenze-component/assenze-component.component';
 import { FirmaComponentComponent } from './firma-component/firma-component.component';
 import { InserimentoVocaleConRiepilogoComponentComponent } from './inserimento-vocale-con-riepilogo-component/inserimento-vocale-con-riepilogo-component.component';
-
+import {   //Importare le funzionalità nella nostra applicazione
+ FormsModule,
+ ReactiveFormsModule
+} from '@angular/forms';
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,7 +31,9 @@ import { InserimentoVocaleConRiepilogoComponentComponent } from './inserimento-v
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
