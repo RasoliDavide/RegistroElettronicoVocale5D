@@ -4,7 +4,11 @@
 </head>
 
 <body>
-
+<div class="topnav" *ngIf="scompare">
+  <a class="active"  routerLink="/voti" routerLinkActive="active">Voti</a>
+  <a routerLink="/note" routerLinkActive="active">Note</a>
+  <a routerLink="/assenze" routerLinkActive="active">Assenze</a>
+</div>
 
 	<h1>LOGIN</h1>
 	<form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="jumbotron ng-valid">
