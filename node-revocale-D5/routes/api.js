@@ -35,21 +35,37 @@ let checkLogin = async function(username, password)
             if (err) 
                 reject(err);
         
-            var request = new dbConnection.Request(); 
-            request.query("select * from [dbo].[cr-unit-attributes]", function(err, result) { 
-                if (err) {
-                    reject(err);
-                }
-                resolve(result.recordset)
-            });
+            var preparedStatement = new dbConnection.PreparedStatement();
+            preparedStatement.input('unit', dbConnection.VarChar);
+            ps.preparedStatement('select * from [dbo].[cr-unit-attributes] where Unit = @unit',
+                err => 
+                    {
+                        if(err)
+                            reject(err);
+                        
+                        preparedStatement.execute({unit : 'Bowler'},
+                            (err, result) =>
+                                {
+                                    preparedStatement.unprepare(
+                                        err => reject(err)
+                                    )
+                                    resolve(result.recordset);
+                                }
+                        )
+                    }
+            )
         });
     });
-    return await dbQuery;
+    let queryResult = await dbQuery;
+    console.log(queryResult);
+    return queryResult;
 }
 
 angularRouter.post('/login', checkPayloadMiddleware, function(req, res)
 {
-    res.send(checkLogin(req.body.username, req.body.password));
+    let result = checkLogin(req.body.username, req.body.password);
+
+    res.send();
 })
 
 module.exports = angularRouter;
