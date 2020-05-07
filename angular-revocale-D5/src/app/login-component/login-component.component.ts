@@ -32,12 +32,14 @@ export class LoginComponentComponent implements OnInit {
     let l: Login = new Login();
     l.username = this.myForm.controls['username'].value;
     l.password = sha512(this.myForm.controls['password'].value);
-    this.http.post('https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/login',JSON.stringify(l)).subscribe(l => {
-      alert('ok');
-      console.log(l);
-      this.scompare = true;
-      console.log(this.scompare);
-    }
+    console.log(l);
+    this.http.post('https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/login', l).subscribe(
+      l => {
+        alert('ok');
+        console.log(l);
+        this.scompare = true;
+        console.log(this.scompare);
+      }
     )
 
  }
