@@ -27,136 +27,91 @@ const checkPayloadMiddleware = (req, res, next) =>
     else
         res.status(403).send({message : 'Missing Payload'});
 }
-let checkProfPasswd = async function()
+
+let checkProfPasswd = async function(inputUsername, inputPassword)
 {
     let passwordQueryCheck = new Promise(
-        (resolve, reject) =>
-        {
-                 dbConnection.connect(config, function(err) {
-                    if (err) 
-                        reject(err);
-                
-                    var preparedStatement = new dbConnection.PreparedStatement();
-                    preparedStatement.input('username', dbConnection.VarChar);
-                    preparedStatement.input('password', dbConnection.Char);
-                    let query = 'SELECT * FROM CheckPasswordProfessore WHERE Username = @username AND Password = @password';
-                    let queryResult;
-                    preparedStatement.prepare(query,
-                        err => 
-                        {
-                            if(err)
-                                reject(err);
-                                
-                            preparedStatement.execute({username : inputUsername, password, inputPassword},
-                                (err, result) =>
-                                {
-                                    preparedStatement.unprepare(
-                                        err => reject(err)
-                                    )
-                                    queryResult = result.recordset;
-                                }
-                            )
-                        }
-                    )
-                }
-            )
-            let passwordCheckResult = await passwordCheckResult;
-            console.log(queryResult);
-            if(queryResult.length == 1)
+    (resolve, reject) =>
+    {
+        dbConnection.connect(config, function(err) {
+            if (err) 
+                reject(err);
+            
+            var preparedStatement = new dbConnection.PreparedStatement();
+            preparedStatement.input('username', dbConnection.Char(5));
+            preparedStatement.input('password', dbConnection.Char(128));
+            let query = 'SELECT CFProfessore FROM CheckPasswordProfessori WHERE Username = @username AND PassWd = @password';
+            preparedStatement.prepare(query,
+            err => 
             {
-                let query = 'SELECT * FROM DatiProfessore WHERE CFPersona = @cfPersona';
-                preparedStatement.prepare(query,
-                    err => 
-                    {
-                        if(err)
-                            reject(err);
-                            
-                        preparedStatement.execute({cfPersona : queryResult[0].CFPersona},
-                            (err, result) =>
-                            {
-                                preparedStatement.unprepare(
-                                    err => reject(err)
-                                )
-                                resolve(result.recordset);
-                            }
-                        )
-                    }
+                if(err)
+                    reject(err);
+                
+                    
+                                
+                preparedStatement.execute({'username' : inputUsername, 'password': inputPassword},
+                (err, result) =>
+                {
+                    preparedStatement.unprepare(
+                        err => reject(err)
+                    )
+
+                    resolve(result.recordset[0]);
+                }
                 )
             }
-        });
+        )
+        })
     });
+    returnedCF = passwordQueryCheck;
+    return returnedCF;
 }
 let checkLogin = async function(inputUsername, inputPassword)
 {
-    let dbQuery = new Promise((resolve, reject) => 
+    let queryResult = await checkProfPasswd(inputUsername, inputPassword);
+    delete inputUsername;
+    delete inputPassword;
+    let reutrnedObject = undefined;
+    if(queryResult != undefined)
     {
-        dbConnection.connect(config, function(err) {
-            let passwordQueryCheck = new Promise(
-                (resolve, reject) =>
-                {
-                    if (err) 
-                        reject(err);
-                
-                    var preparedStatement = new dbConnection.PreparedStatement();
-                    preparedStatement.input('username', dbConnection.VarChar);
-                    preparedStatement.input('password', dbConnection.Char);
-                    let query = 'SELECT * FROM CheckPasswordProfessore WHERE Username = @username AND Password = @password';
-                    let queryResult;
-                    preparedStatement.prepare(query,
-                        err => 
-                        {
-                            if(err)
-                                reject(err);
-                                
-                            preparedStatement.execute({username : inputUsername, password, inputPassword},
-                                (err, result) =>
-                                {
-                                    preparedStatement.unprepare(
-                                        err => reject(err)
-                                    )
-                                    queryResult = result.recordset;
-                                }
-                            )
-                        }
-                    )
-                }
-            )
-            let passwordCheckResult = await passwordCheckResult;
-            console.log(queryResult);
-            if(queryResult.length == 1)
-            {
+        let dbQuery = new Promise((resolve, reject) => 
+        {
+            dbConnection.connect(config, function(err) {
                 let query = 'SELECT * FROM DatiProfessore WHERE CFPersona = @cfPersona';
+                let preparedStatement = new dbConnection.PreparedStatement();
+                preparedStatement.input('cfPersona', dbConnection.Char(16));
                 preparedStatement.prepare(query,
                     err => 
                     {
                         if(err)
                             reject(err);
-                            
-                        preparedStatement.execute({cfPersona : queryResult[0].CFPersona},
+                        preparedStatement.execute({'cfPersona' : queryResult.CFProfessore},
                             (err, result) =>
                             {
                                 preparedStatement.unprepare(
                                     err => reject(err)
                                 )
-                                resolve(result.recordset);
+                                resolve(result.recordset[0]);
                             }
                         )
                     }
                 )
-            }
+            });
         });
-    });
-    let reutrnedObject = await dbQuery;
-    console.log(queryResult);
-    return queryResult;
+        reutrnedObject = await dbQuery;
+    }
+    if(reutrnedObject == undefined)
+        reutrnedObject = {success : false};
+    else
+        reutrnedObject['success'] = true;
+
+    return reutrnedObject;
 }
 
-angularRouter.post('/login', checkPayloadMiddleware, function(req, res)
+angularRouter.post('/login', checkPayloadMiddleware, async function(req, res)
 {
-    console.log(req.body);
-    let result = checkLogin(req.body.username, req.body.password);
-
-    res.send();
+    let result = await checkLogin(req.body.username, req.body.password);
+    res.send(result);
 })
 
 module.exports = angularRouter;
