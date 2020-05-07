@@ -118,7 +118,7 @@ let getTeachingClasses = async function(cfProfessore)
             err => 
             {
                 if(err)
-                    console.log(err);
+                    reject(err);
 
                 preparedStatement.execute({'cfProfessore' : cfProfessore},
                 (err, result) =>
@@ -147,5 +147,44 @@ angularRouter.get('/getTeachingClasses', async function(req, res)
     res.send(result);
 })
 
+let getVotiByStudente = async function(cfStudente)
+{
+    let voti;
+    let dbQuery = new Promise(
+    (resolve, reject) => 
+    {
+        dbConnection.connect(config, function(err) {
+            let query = 'SELECT * FROM Voto WHERE CFStudente = @cfStudente';
+            let preparedStatement = new dbConnection.PreparedStatement();
+            preparedStatement.input('cfStudente', dbConnection.Char(16));
+            preparedStatement.prepare(query,
+            err => 
+            {
+                if(err)
+                    console.log(err);
+
+                preparedStatement.execute({'cfStudente' : cfStudente},
+                (err, result) =>
+                {
+                    preparedStatement.unprepare(
+                        err => reject(err)
+                    )
+                    resolve(result.recordset);
+                }
+                )
+            })
+        });
+    })
+
+    let reutrnedObject = await dbQuery;
+    console.log(reutrnedObject)
+    return reutrnedObject;
+}
+
+angularRouter.get('/getVotiByStudente', async function(req, res)
+{
+    let result = await getVotiByStudente(req.query.cfStudente);
+    res.send(result);
+})
 
 module.exports = angularRouter;
