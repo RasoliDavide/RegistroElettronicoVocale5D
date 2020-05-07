@@ -1,6 +1,5 @@
 const express = require('express');
 const angularRouter = express.Router();
-const session = require('express-session');
 const dbConnection = require('mssql');
 
 const config = {
@@ -10,17 +9,8 @@ const config = {
     database: 'REVocale-5D', //(Nome del DB)
 }
 
-angularRouter.use(
-    session(
-        {
-            secret: '51ff88fb41d23218b94f575323dcbe46a6c674a7f89ca5e55abcaac9f4fc8bb044feac1ea989917b76fe7168c2fc11602b447ab9e1ff4aad62cf38a256b2bb80',
-            resave: false,
-            saveUninitialized: false
-        }
-    )
-)
 
-const checkPayloadMiddleware = (req, res, next) =>
+const checkPostPayloadMiddleware = (req, res, next) =>
 {
     if(req.body)
         next();
@@ -108,10 +98,54 @@ let checkLogin = async function(inputUsername, inputPassword)
     return reutrnedObject;
 }
 
-angularRouter.post('/login', checkPayloadMiddleware, async function(req, res)
+angularRouter.post('/login', checkPostPayloadMiddleware, async function(req, res)
 {
     let result = await checkLogin(req.body.username, req.body.password);
     res.send(result);
 })
+
+let getTeachingClasses = async function(cfProfessore)
+{
+    let classes;
+    let dbQuery = new Promise(
+    (resolve, reject) => 
+    {
+        dbConnection.connect(config, function(err) {
+            let query = 'SELECT * FROM getMaterie WHERE CFProfessore = @cfProfessore';
+            let preparedStatement = new dbConnection.PreparedStatement();
+            preparedStatement.input('cfProfessore', dbConnection.Char(16));
+            preparedStatement.prepare(query,
+            err => 
+            {
+                if(err)
+                    console.log(err);
+
+                preparedStatement.execute({'cfProfessore' : cfProfessore},
+                (err, result) =>
+                {
+                    preparedStatement.unprepare(
+                        err => reject(err)
+                    )
+                    resolve(result.recordset);
+                }
+                )
+            })
+        });
+    })
+
+    let reutrnedObject = await dbQuery;
+
+    for(let i = 0; i < reutrnedObject.length; i++)
+        delete reutrnedObject[0].CFProfessore;
+
+    return reutrnedObject;
+}
+
+angularRouter.get('/getTeachingClasses', async function(req, res)
+{
+    let result = await getTeachingClasses(req.query.cfProfessore);
+    res.send(result);
+})
+
 
 module.exports = angularRouter;
