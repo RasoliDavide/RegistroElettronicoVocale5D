@@ -2,11 +2,11 @@
 <head></head>
 <!--Cosa visualizzare: i dati del database del prof, classi che ha il prof-->
 
-<body>
-  <h1>{{prof.Cognome}}</h1>
-  <h1>{{prof.Nome}}</h1>
-  <p>{{prof.Dirigente}}</p>
-  <p>{{prof.CoordinaClasse}}</p>
-  <p>{{prof.Laboratorio}}</p>
-</body>
+  <body>
+    <h1>{{prof['Cognome']}}</h1>
+    <h1>{{prof['Nome']}}</h1>
+    <p>{{prof['Dirigente']}}</p>
+    <p>{{prof['CoordinaClasse']}}</p>
+    <p>{{prof['Laboratorio']}}</p>
+  </body>
 </html>
