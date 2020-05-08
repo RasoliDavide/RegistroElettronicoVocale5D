@@ -1,7 +1,8 @@
 const express = require('express');
 const angularRouter = express.Router();
 const dbConnection = require('mssql');
-
+const sha512 = require('js-sha512');
+const randomint = require('random-int');
 const config = {
     user: '4dd_20', //Vostro user name
     password: 'xxx123##', //Vostra password
@@ -9,6 +10,7 @@ const config = {
     database: 'REVocale-5D', //(Nome del DB)
 }
 
+let authorizedKey = [];
 
 const checkPostPayloadMiddleware = (req, res, next) =>
 {
@@ -59,8 +61,6 @@ let checkProfPasswd = async function(inputUsername, inputPassword)
 let checkLogin = async function(inputUsername, inputPassword)
 {
     let queryResult = await checkProfPasswd(inputUsername, inputPassword);
-    delete inputUsername;
-    delete inputPassword;
     let reutrnedObject = undefined;
     if(queryResult != undefined)
     {
@@ -91,10 +91,23 @@ let checkLogin = async function(inputUsername, inputPassword)
         reutrnedObject = await dbQuery;
     }
     if(reutrnedObject == undefined)
+    {
         reutrnedObject = {success : false};
+    }
     else
+    {
         reutrnedObject['success'] = true;
-
+        let securedKey = sha512(inputUsername.concat(randomint(5000)));
+        reutrnedObject['securedKey'] = securedKey;
+        let corrispondenza = 
+        {
+            'cfProf' : reutrnedObject.CFPersona,
+            'securedKey' : securedKey
+        }
+        authorizedKey.push(corrispondenza);
+    }
+    console.log(reutrnedObject);
+    console.log(authorizedKey);
     return reutrnedObject;
 }
 
@@ -185,6 +198,17 @@ angularRouter.get('/getVotiByStudente', async function(req, res)
 {
     let result = await getVotiByStudente(req.query.cfStudente);
     res.send(result);
+})
+
+let checkAuthorization = function(req, res, next)
+{
+    
+}
+
+angularRouter.get('/inserisciAssenza', checkPostPayloadMiddleware, async function(req, res)
+{
+    console.log(req.get('Authorization'));
+    res.send("OK")
 })
 
 module.exports = angularRouter;

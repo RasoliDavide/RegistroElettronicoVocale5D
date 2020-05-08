@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-prof-component',
@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./prof-component.component.css']
 })
 export class ProfComponentComponent implements OnInit {
-
+@Input() prof: Object;
   constructor() { }
 
   ngOnInit(): void {

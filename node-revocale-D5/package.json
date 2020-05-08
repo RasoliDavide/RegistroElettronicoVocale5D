@@ -14,8 +14,10 @@
     "express-generator": "^4.16.1",
     "express-session": "^1.17.1",
     "http-errors": "~1.6.3",
+    "js-sha512": "^0.8.0",
     "morgan": "~1.9.1",
     "mssql": "^6.2.0",
-    "nodemon": "^2.0.3"
+    "nodemon": "^2.0.3",
+    "random-int": "^2.0.1"
   }
 }

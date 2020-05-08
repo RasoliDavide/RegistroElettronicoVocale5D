@@ -1,1 +1,37 @@
-<p>assenze-component works!</p>
+<html>
+<!-- Studenti con a fianco scelta di inserimento dell'assenza con scelta tra A, E, U -->
+<!-- A fianco bottone giustifica se assenza -->
+<!-- Se entrata o uscita appare la casella con l'immissione dell'orario-->
+  <head>
+<div class="topnav">
+  <a routerLink="/voti" routerLinkActive="active">Voti</a>
+  <a routerLink="/note" routerLinkActive="active">Note</a>
+  <a class="active" routerLink="/assenze" routerLinkActive="active">Assenze</a>
+  <a routerLink="/prof" routerLinkActive="active">Profilo</a>
+</div>
+    <h1>Appello</h1>
+    <table style="width:100%">
+      <tr>
+        <th>Studenti</th>
+        <th>Tipologia</th>
+        <th>Giustifica</th>
+        <th>Orario E/U </th>
+      </tr>
+      <tr>
+        <th>nome</th>
+        <th>
+          <select name="tipoAssenza" size="3">
+            <option value="A">Assenza</option>
+            <option value="E">Entrata</option>
+            <option value="U">Uscita</option>
+          </select>
+        </th>
+      </tr>
+
+    </table>
+  </head>
+
+  <body>
+
+  </body>
+</html>
