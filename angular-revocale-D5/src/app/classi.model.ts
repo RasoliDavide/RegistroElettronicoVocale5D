@@ -1,6 +1,6 @@
 export class Classi
 {
-  codice: number;
-  sezione: string;
-  aula: string;
+  Codice: number;
+  Sezione: string;
+  Aula: string;
 }

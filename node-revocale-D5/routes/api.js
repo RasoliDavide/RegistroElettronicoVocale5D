@@ -10,7 +10,12 @@ const config = {
     database: 'REVocale-5D', //(Nome del DB)
 }
 
-let authorizedKey = [];
+let authorizedKey = [
+    {
+            'cfProf' : "dsa",
+            'securedKey' : "all"
+    }
+];
 
 const checkPostPayloadMiddleware = (req, res, next) =>
 {
@@ -256,6 +261,7 @@ let getStudemtiByClasse = async function(codiceClasse)
                     preparedStatement.unprepare(
                         err => reject(err)
                     )
+
                     resolve(result.recordset);
                 })
             })
@@ -274,9 +280,111 @@ angularRouter.get('/getStudentiByClasse', checkAuthorization, async function(req
     res.send(result);
 })
 
-angularRouter.get('/inserisciAssenza', checkAuthorization, async function(req, res)
+let inserisciAssenza = async function(assenza)
+{
+    let query;
+    console.log(assenza);
+    let dbQuery = new Promise(
+    (resolve, reject) =>
+    {
+        dbConnection.connect(config, function(err) {
+            let preparedStatement = new dbConnection.PreparedStatement();
+            preparedStatement.input('CFStudente', dbConnection.Char(16));
+            preparedStatement.input('CFProfessore', dbConnection.Char(16));
+            preparedStatement.input('Tipo', dbConnection.Char(1));
+            preparedStatement.input('DataAssenza', dbConnection.Date());
+            preparedStatement.input('Concorre', dbConnection.Bit());
+            if(assenza.Tipo == 'A')
+            {
+                query = 'INSERT INTO Assenza (CFStudente, CFProfessore, Tipo, DataAssenza, Concorre) VALUES (@CFStudente, @CFProfessore, @Tipo, @DataAssenza, @Concorre)';
+            }
+            else
+            {
+                preparedStatement.input('Ora', dbConnection.VarChar(5));
+                query = 'INSERT INTO Assenza (CFStudente, CFProfessore, Tipo, DataAssenza, Concorre, Ora) VALUES (@CFStudente, @CFProfessore, @Tipo, @DataAssenza, @Concorre, @Ora)';
+            }
+            
+            preparedStatement.prepare(query,
+            err => 
+            {
+                if(err)
+                    console.log(err);
+                preparedStatement.execute({'CFStudente' : assenza.CFStudente, 
+                                           'CFProfessore' : assenza.CFProf,
+                                           'Tipo' : assenza.Tipo,
+                                           'DataAssenza' : assenza.DataAssenza,
+                                           'Concorre' : assenza.Concorre,
+                                           'Ora' : assenza.Ora},
+                                
+                                    
+                (err, result) =>
+                {                
+                    if(err)
+                        console.log(err);
+                    preparedStatement.unprepare(
+                        err => console.log(err)
+                    )
+                    console.log(result);
+                    resolve(result.recordset);
+                })
+            })
+        });
+    });
+    let queryResult = await dbQuery;
+
+    return queryResult;
+}
+
+let getCFStudenteByUsername = async function(username)
+{
+    let dbQuery = new Promise(
+    (resolve, reject) =>
+    {
+        dbConnection.connect(config, function(err) {
+            let query = 'SELECT CFPersona FROM Persona WHERE Username = @username';
+            let preparedStatement = new dbConnection.PreparedStatement();
+            preparedStatement.input('username', dbConnection.VarChar(5));
+            preparedStatement.prepare(query,
+            err => 
+            {
+                if(err)
+                    console.log(err);
+
+                preparedStatement.execute({'username' : username},
+                (err, result) =>
+                {
+                
+                    preparedStatement.unprepare(
+                        err => reject(err)
+                    )
+
+                    resolve(result.recordset[0].CFPersona);
+                })
+            })
+        });
+    });
+    let queryResult = await dbQuery;
+    console.log(queryResult);
+    return queryResult;
+}
+
+angularRouter.post('/inserisciAssenza', checkAuthorization, async function(req, res)
 {
     console.log("Key OK");
+    //Tipo, Data, Motivazione, Concorre, Ora, CFProf, UsernameStudente
+    let assenza = req.body;
+    let result;
+    //console.log(assenza);
+    if((assenza.Tipo == 'A' || assenza.Tipo == 'E' || assenza.Tipo == 'U') && assenza.DataAssenza && assenza.Concorre && assenza.CFProf && assenza.UsernameStudente)
+    {
+        console.log("Dentro l'if");
+        let cfStudente = await getCFStudenteByUsername(assenza.UsernameStudente);
+        //console.log(cfStudente);
+        delete assenza.UsernameStudente;
+        assenza['CFStudente'] = cfStudente;
+        result = await inserisciAssenza(assenza);
+        
+    }
     res.send("OK")
 })
 

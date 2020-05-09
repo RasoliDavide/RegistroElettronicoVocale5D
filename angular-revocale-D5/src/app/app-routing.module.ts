@@ -12,7 +12,6 @@ import { FirmaComponentComponent } from './firma-component/firma-component.compo
 import { InserimentoVocaleConRiepilogoComponentComponent } from './inserimento-vocale-con-riepilogo-component/inserimento-vocale-con-riepilogo-component.component';
 
 const routes: Routes = [
-  { path: 'login', component: LoginComponentComponent },
   { path: 'prof', component: ProfComponentComponent },
   { path: 'coordinatore', component: CoordinatoreComponentComponent },
   { path: 'dirigente', component: DirigenteComponentComponent },

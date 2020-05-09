@@ -1,13 +1,35 @@
-<!--Navbar-->
-<div *ngIf = "scompare">
-<div class="topnav" *ngIf="profData">
-  <a class="active"  routerLink="/voti" routerLinkActive="active">Voti</a>
-  <a routerLink="/note" routerLinkActive="active">Note</a>
-  <a routerLink="/assenze" routerLinkActive="active">Assenze</a>
-  <a routerLink="/prof" routerLinkActive="active">Profilo</a>
-  <h3>Benvenuto {{profData.Nome}} {{profData.Cognome}}</h3>
-</div>
-</div>
+<!DOCTYPE html>
+<html>
 
-<!--Login-->
-<app-login-component *ngIf="!profData.securedKey" (loginOk)="getDatiProf($event)"></app-login-component>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+	<!--Navbar-->
+	<div class="topnav" *ngIf="profData.Corrispondenze">
+		<a class="active" routerLink="/voti" routerLinkActive="active">Voti</a>
+		<a routerLink="/note" routerLinkActive="active">Note</a>
+		<a routerLink="/assenze" routerLinkActive="active">Assenze</a>
+		<a routerLink="/prof" routerLinkActive="active">Profilo</a>
+    <a>
+    <mat-form-field>
+			<mat-label>Classi</mat-label>
+			<mat-select placeholder = "Classi" >
+
+
+				<mat-option *ngFor="let corrispondenza of profData.Corrispondenze" [(value)]="corrispondenza.value">{{corrispondenza.CodiceClasse}}</mat-option>
+
+
+			</mat-select>
+		</mat-form-field></a>
+		<h3>Benvenuto {{profData.Nome}} {{profData.Cognome}}</h3>
+
+	</div>
+	<!--Login-->
+	<app-login-component *ngIf="!profData.securedKey" (loginOk)="getDatiProf($event)"></app-login-component>
+	<router-outlet *ngIf="profData.securedKey"></router-outlet>
+</body>
+
+</html>

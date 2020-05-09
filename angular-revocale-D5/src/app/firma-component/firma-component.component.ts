@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-firma-component',
@@ -6,10 +7,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./firma-component.component.css']
 })
 export class FirmaComponentComponent implements OnInit {
-
+ FormFirma: FormGroup;
   constructor() { }
 
   ngOnInit(): void {
   }
+
+onSubmitFirma(){
+
+}
 
 }

@@ -17,7 +17,6 @@ export class LoginComponentComponent implements OnInit {
   myForm: FormGroup;
   scompare: boolean;
   loginS: boolean;
-  datiProf: Object;
   pastaAllaCarbonara :Observable<Object>;
   @Output() loginOk : EventEmitter<Object>;
 
@@ -46,11 +45,11 @@ export class LoginComponentComponent implements OnInit {
         this.scompare = true;
         this.loginS = false;
         console.log(this.scompare);
-        this.datiProf = data;
         this.loginOk.emit(data);
       }
     )
   }
+
   onSubmit() {
     this.scompare= false;
     this.loginS= true;
@@ -62,12 +61,15 @@ export class LoginComponentComponent implements OnInit {
     this.pastaAllaCarbonara.subscribe(
       (data) => {
         //alert('ok');
-        console.log(data);
-        this.scompare = true;
-        this.loginS = false;
-        console.log(this.scompare);
-        this.datiProf = data;
-        this.loginOk.emit(data);
+        if(data['securedKey'])
+        {
+          console.log(data);
+          this.scompare = true;
+          this.loginS = false;
+          console.log(this.scompare);
+          this.loginOk.emit(data);
+        }
+
       }
     )
     //this.pastaAllaCarbonara.subscribe((data) => this.datiProf = data);

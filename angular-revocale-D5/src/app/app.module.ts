@@ -13,10 +13,25 @@ import { AssenzeComponentComponent } from './assenze-component/assenze-component
 import { FirmaComponentComponent } from './firma-component/firma-component.component';
 import { InserimentoVocaleConRiepilogoComponentComponent } from './inserimento-vocale-con-riepilogo-component/inserimento-vocale-con-riepilogo-component.component';
 import {   //Importare le funzionalità nella nostra applicazione
- FormsModule,
- ReactiveFormsModule
+  FormsModule,
+  ReactiveFormsModule
 } from '@angular/forms';
+import {
+  MatFormFieldModule,
+} from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatRippleModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import {BrowserAnimationsModule} from
+    '@angular/platform-browser/animations';
 @NgModule({
+  exports: [
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatRippleModule,
+  ],
   declarations: [
     AppComponent,
     ProfComponentComponent,
@@ -34,7 +49,12 @@ import {   //Importare le funzionalità nella nostra applicazione
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    MatButtonModule,
+    MatInputModule,
+    MatRippleModule,
+    MatSelectModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,7 +1,7 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
-
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
 .topnav {
-  background-color: 	#00BFFF;
+  background-color: 	rgb(52, 92, 124);
   overflow: hidden;
 }
 
@@ -23,3 +23,62 @@
   background-color: 	#1E90FF;
   color: white;
 }
+
+.subnav {
+  float: left;
+  overflow: hidden;
+}
+
+.subnav .subnavbtn {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+
+.navbar a:hover, .subnav:hover .subnavbtn {
+  background-color: red;
+}
+
+.subnav-content {
+  display: none;
+  position: absolute;
+  left: 0;
+  background-color: red;
+  width: 100%;
+  z-index: 1;
+}
+
+.subnav-content a {
+  float: left;
+  color: white;
+  text-decoration: none;
+}
+
+.subnav-content a:hover {
+  background-color: #eee;
+  color: black;
+}
+
+.subnav:hover .subnav-content {
+  display: block;
+}
+
+div#hormenu li:hover ul
+{
+display: block;
+position: absolute;
+z-index:1;
+width:150px;
+padding: 0;
+margin: 0 0 0 -1px;
+border:1px solid black;
+background: white;
+}
+div#hormenu li li { border:none; width:150px; }
+div#hormenu li li a { padding:2px 2px 2px 10px; }
+
