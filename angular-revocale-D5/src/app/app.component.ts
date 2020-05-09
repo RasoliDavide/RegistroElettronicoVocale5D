@@ -11,11 +11,13 @@ export class AppComponent {
   title = 'angular-revocale-D5';
   profData : ProfData;
   httpClient : HttpClient;
+  scompare: boolean;
 
   constructor(http : HttpClient)
   {
     this.httpClient = http;
     this.profData = new ProfData;
+    this.scompare = false;
   }
 
   getDatiProf(profProv : Object)
@@ -34,6 +36,7 @@ export class AppComponent {
       this.profData.securedKey = profProv['securedKey'];
       this.profData.Corrispondenze = response;
       console.log(this.profData);
+      this.scompare = true;
     })
 
   }

@@ -1,4 +1,5 @@
 <!--Navbar-->
+<div *ngIf = "scompare">
 <div class="topnav" *ngIf="profData">
   <a class="active"  routerLink="/voti" routerLinkActive="active">Voti</a>
   <a routerLink="/note" routerLinkActive="active">Note</a>
@@ -6,5 +7,7 @@
   <a routerLink="/prof" routerLinkActive="active">Profilo</a>
   <h3>Benvenuto {{profData.Nome}} {{profData.Cognome}}</h3>
 </div>
+</div>
+
 <!--Login-->
 <app-login-component *ngIf="!profData.securedKey" (loginOk)="getDatiProf($event)"></app-login-component>
