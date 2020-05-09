@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-firma-component',
@@ -7,8 +7,13 @@ import { FormGroup } from '@angular/forms';
   styleUrls: ['./firma-component.component.css']
 })
 export class FirmaComponentComponent implements OnInit {
- FormFirma: FormGroup;
-  constructor() { }
+  formFirma: FormGroup;
+  constructor(fb : FormBuilder) {
+    this.formFirma = fb.group(
+    {
+
+    })
+  }
 
   ngOnInit(): void {
   }

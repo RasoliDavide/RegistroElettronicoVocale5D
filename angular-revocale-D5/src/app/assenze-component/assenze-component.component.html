@@ -6,75 +6,89 @@
     <h1>Appello</h1>
   </head>
   <body>
-    <form [formGroup]="FormAssenza" (ngSubmit)="onSubmitAssenza()" class="jumbotron ng-valid">
-    <input formControlName="firstName">
+  <form [formGroup]="formAssenza" (ngSubmit)="onSubmitAssenza(formAssenza.value)" class="jumbotron ng-valid">
     <table style="width:100%">
       <tr>
         <th>Studenti</th>
         <th>Tipologia</th>
         <th>Data</th>
-        <th>Giustifica</th>
         <th>Orario E/U </th>
         <th>Concorrenza al calcolo </th>
+        <th>Inserisci</th>
       </tr>
       <tr>
-        <th>nome cognome</th>
         <th>
-          <select name="tipoAssenza" size="3"  [(ngModel)]="selectedOption" [ngModelOptions]="{standalone: true}">
+         <div class="dropdownStudenti">
+            <button class="dropbtn">Studente</button>
+            <div class="dropdown-content">
+              <a  *ngFor="let s of studente" >{{s.Cognome}} {{s.Nome}}</a>
+            </div>
+          </div>
+        </th>
+        <th>
+          <select name="tipoAssenza" size="3" (change)="selectChangeHandler($event)">
             <option value="A">Assenza </option>
             <option value="E">Entrata</option>
             <option value="U">Uscita</option>
           </select>
+
         </th>
 
         <th>
-         <input type="date" name= "data" [(ngModel)]="selectedData" [ngModelOptions]="{standalone: true}">
+         <input type="text" name="data" >
         </th>
         <th>
-          <button class="btn btn-secondary btn-block" onClick = "giustifica()" >Giustifica</button>
-        </th>
-        <th>
-        <label>Orario:</label>
-          <input type="time" name="Orario" [(ngModel)]="selectedOrario" [ngModelOptions]="{standalone: true}">
+          <input type="time" name="orario">
         </th>
         <th>
           <div class="wrapper">
-            <input id="concorre" name="concorre" type="checkbox" value="concorre" >
+            <input id="concorre" name="concorre" type="checkbox" value="concorre">
             <label for="concorre">Concorre al calcolo</label>
           </div>
         </th>
+        <th>
+          <button class="btn btn-secondary btn-block" type="submit">Invia</button>
+        </th>
     </table>
 </form>
+<button class="btn btn-secondary btn-block" (click) = "giustifica()">Giustifica</button>
 <div *ngIf = "giustificaV">
   <h1>Giustifica</h1>
-      <form [formGroup]="FormGiustifica" (ngSubmit)="onSubmitGiustifica()" class="jumbotron ng-valid">
+<!--Mandare codice e motivazione al resto ce pensa er dave-->
+    <div class="dropdownStudenti">
+            <button class="dropbtn">Assenze</button>
+            <div class="dropdown-content">
+              <a   ></a>
+            </div>
+          </div>
+      <form [formGroup]="formGiustifica" (ngSubmit)="onSubmitGiustifica(formGiustifica.value)" class="jumbotron ng-valid">
 
         <div class="form-group">
           <label for="tipo"></label>
-          <p>Tipo: {{ selectedOption }}</p>
+          <p>Tipo:</p>
         </div>
         <br>
 <!--Orario-->
          <div class="form-group">
           <label for="orario"></label>
-          <p>Orario: {{ selectedOrario }}</p>
+          <p>Orario:</p>
         </div>
         <br>
 <!--Data-->
         <div class="form-group">
           <label for="Data">Data da giustificare</label>
-          <p>Data: {{ selectedData }}</p>
+          <p>Data:</p>
         </div>
 <!--Motivazione-->
         <div class="form-group">
           <label for="Motivazione">Inserisci Motivazione</label><br>
-          <input type="text" id="motivazione" placeholder="motivazione" name="motivazione" [formControl]="FormGiustifica.controls['motivazione']" class="form-control">
+          <input type="text" id="motivazione" name="motivazione" [formControl]="formGiustifica.controls['motivazione']" class="form-control">
 
-          <div *ngIf="!FormGiustifica.controls['motivazione'].valid" class="alert alert-danger">Motivazione non è valido</div>
-          <div *ngIf="FormGiustifica.controls['motivazione'].hasError('required')" class="alert alert-danger">Motivazione è richiesto
+          <div *ngIf="!formGiustifica.controls['motivazione'].valid" class="alert alert-danger">Motivazione non è valido</div>
+          <div *ngIf="formGiustifica.controls['motivazione'].hasError('required')" class="alert alert-danger">Motivazione è richiesto
           </div>
         </div>
-       <button class="btn btn-primary btn-block" type="submit" [disabled]="!FormGiustifica.valid">Giustifica</button>
+       <button class="btn btn-primary btn-block" type="submit" [disabled]="!formGiustifica.valid">Giustifica</button>
       </form>
     </div>
 

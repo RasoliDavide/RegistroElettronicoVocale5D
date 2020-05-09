@@ -6,50 +6,49 @@
 
   <body>
    <h1>Firma</h1>
-      <form [formGroup]="FormFirma" (ngSubmit)="onSubmitFirma()" class="jumbotron ng-valid">
+      <form [formGroup]="formFirma" (ngSubmit)="onSubmitFirma()" class="jumbotron ng-valid">
 <!--Data, Ora, Argomento, CompitiAssegnati,-->
         <div class="form-group">
           <label for="text">Inserisci Data</label>
-          <input type="text" id="data" name="data" [formControl]="FormFirma.controls['data']" class="form-control">
+          <input type="date" id="data" name="data" [formControl]="formFirma.controls['data']" class="form-control">
 
-          <div *ngIf="!FormFirma.controls['data'].valid" class="alert alert-danger">Data non è valido</div>
-          <div *ngIf="FormFirma.controls['data'].hasError('required')" class="alert alert-danger">Data è
+          <div *ngIf="!formFirma.controls['data'].valid" class="alert alert-danger">Data non è valido</div>
+          <div *ngIf="formFirma.controls['data'].hasError('required')" class="alert alert-danger">Data è
             richiesto
           </div>
         </div>
 
-        <br>
 
         <div class="form-group">
           <label for="Ora">Inserisci Ora</label>
-          <input type="time" id="ora" name="ora" [formControl]="FormFirma.controls['ora']" class="form-control">
+          <input type="time" id="ora" name="ora" [formControl]="formFirma.controls['ora']" class="form-control">
 
-          <div *ngIf="!FormFirma.controls['ora'].valid" class="alert alert-danger">Ora non è valido</div>
-          <div *ngIf="FormFirma.controls['ora'].hasError('required')" class="alert alert-danger">Ora è
+          <div *ngIf="!formFirma.controls['ora'].valid" class="alert alert-danger">Ora non è valido</div>
+          <div *ngIf="formFirma.controls['ora'].hasError('required')" class="alert alert-danger">Ora è
             richiesto
           </div>
         </div>
 
         <div class="form-group">
           <label for="Argomento">Inserisci Argomento</label>
-          <input type="text" id="argomento" name="argomento" [formControl]="FormFirma.controls['argomento']" class="form-control">
+          <input type="text" id="argomento" name="argomento" [formControl]="formFirma.controls['argomento']" class="form-control">
 
-          <div *ngIf="!FormFirma.controls['argomento'].valid" class="alert alert-danger">Argomento non è valido</div>
-          <div *ngIf="FormFirma.controls['argomento'].hasError('required')" class="alert alert-danger">Argomento è
+          <div *ngIf="!formFirma.controls['argomento'].valid" class="alert alert-danger">Argomento non è valido</div>
+          <div *ngIf="formFirma.controls['argomento'].hasError('required')" class="alert alert-danger">Argomento è
             richiesto
           </div>
         </div>
 
         <div class="form-group">
           <label for="Compiti">Compiti Assegnati</label>
-          <input type="text" id="compiti" name="compiti" [formControl]="FormFirma.controls['compiti']" class="form-control">
+          <input type="text" id="compiti" name="compiti" [formControl]="formFirma.controls['compiti']" class="form-control">
 
-          <div *ngIf="!FormFirma.controls['compiti'].valid" class="alert alert-danger">Compiti non è valido</div>
-          <div *ngIf="FormFirma.controls['compiti'].hasError('required')" class="alert alert-danger">Compiti è
+          <div *ngIf="!formFirma.controls['compiti'].valid" class="alert alert-danger">Compiti non è valido</div>
+          <div *ngIf="formFirma.controls['compiti'].hasError('required')" class="alert alert-danger">Compiti è
             richiesto
           </div>
         </div>
-        <button class="btn btn-primary btn-block" type="submit" [disabled]="!FormFirma.valid">Firma</button>
+        <button class="btn btn-primary btn-block" type="submit" [disabled]="!formFirma.valid">Firma</button>
       </form>
 
 

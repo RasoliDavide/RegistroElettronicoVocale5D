@@ -19,6 +19,7 @@ const routes: Routes = [
   { path: 'note', component: NoteComponentComponent },
   { path: 'assenze', component: AssenzeComponentComponent },
   { path: 'inserimentoVocale', component: InserimentoVocaleConRiepilogoComponentComponent },
+  { path: 'firma', component: FirmaComponentComponent }
 
 ];
 

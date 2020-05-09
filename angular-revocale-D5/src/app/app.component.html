@@ -12,18 +12,22 @@
 		<a class="active" routerLink="/voti" routerLinkActive="active">Voti</a>
 		<a routerLink="/note" routerLinkActive="active">Note</a>
 		<a routerLink="/assenze" routerLinkActive="active">Assenze</a>
+    <a routerLink="/firma" routerLinkActive="active">Firma</a>
 		<a routerLink="/prof" routerLinkActive="active">Profilo</a>
+
+
     <a>
-    <mat-form-field>
-			<mat-label>Classi</mat-label>
-			<mat-select placeholder = "Classi" >
+      <mat-form-field>
+        <mat-label>Classi</mat-label>
+        <mat-select placeholder = "Classi" >
 
 
-				<mat-option *ngFor="let corrispondenza of profData.Corrispondenze" [(value)]="corrispondenza.value">{{corrispondenza.CodiceClasse}}</mat-option>
+          <mat-option *ngFor="let corrispondenza of profData.Corrispondenze" [(value)]="corrispondenza.value">{{corrispondenza.CodiceClasse}}</mat-option>
 
 
-			</mat-select>
-		</mat-form-field></a>
+        </mat-select>
+      </mat-form-field>
+    </a>
 		<h3>Benvenuto {{profData.Nome}} {{profData.Cognome}}</h3>
 
 	</div>
