@@ -6,6 +6,7 @@ import { ProfData } from '../prof.model';
 import { SharedProfDataService } from '../shared-prof-data.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Studente } from '../studente.model';
+
 @Component({
   selector: 'app-assenze-component',
   templateUrl: './assenze-component.component.html',
@@ -24,6 +25,7 @@ export class AssenzeComponentComponent implements OnInit {
   tipoG : string;
   tipoO : string;
   tipoD : string;
+  concorreSelect : boolean;
   @Input() profData : ProfData;
   @Input() studente : Studente;
   selectedAssenza: string = '';
@@ -34,11 +36,12 @@ export class AssenzeComponentComponent implements OnInit {
     this.sharedProfData = sharedProfData;
     this.formAssenza = fb.group(
       {
-
+      'data':['',Validators.required],
+      'orario':['',Validators.required]
       }
     )
+
      this.formGiustifica = fb.group({
-      firstName: new FormControl(),
       'motivazione': ['', Validators.required]
     });
   }
@@ -58,12 +61,19 @@ export class AssenzeComponentComponent implements OnInit {
   selectChangeHandler (event: any) {
     this.selectedAssenza = event.target.value;
   }
+  toggleEditable(event) {
+    if ( event.target.checked ) {
+         this.concorreSelect = true;
+    }else{
+         this.concorreSelect = false;
+    }
+  }
 
   onSubmitAssenza(value: string): void {
     console.log('Tipo Assenza: ', this.selectedAssenza);
     console.log('Data: ', this.formAssenza.controls['data'].value);
     console.log('Orario: ', this.formAssenza.controls['orario'].value);
-    console.log('Concorre: ', this.formAssenza.controls['concorre'].value);
+    console.log('Concorre: ',this.concorreSelect);
   }
   onSubmitGiustifica(value: string): void{
     console.log('Motivazione: ', this.formAssenza.controls['motivazione'].value);

@@ -488,7 +488,6 @@ let getAssenzaByStudente = async function(cfStudente)
     });
     let queryResult = await dbQuery;
     return queryResult;
-
 }
 
 angularRouter.get('/getAssenzeByStudente', checkAuthorization, async function(req, res)
@@ -501,4 +500,71 @@ angularRouter.get('/getAssenzeByStudente', checkAuthorization, async function(re
     }
     res.send(result);
 })
+
+let inserisciVoto = async function(assenza)
+{
+    console.log(assenza);
+    let dbQuery = new Promise(
+    (resolve, reject) =>
+    {
+        dbConnection.connect(config, function(err) {
+            let preparedStatement = new dbConnection.PreparedStatement();
+            preparedStatement.input('CFStudente', dbConnection.Char(16));
+            preparedStatement.input('CFProfessore', dbConnection.Char(16));
+            preparedStatement.input('Voto', dbConnection.Decimal(5,2));
+            preparedStatement.input('Descrizione', dbConnection.VarChar(500));
+            preparedStatement.input('Tipologia', dbConnection.TinyInt());
+            preparedStatement.input('Peso', dbConnection.TinyInt());
+            preparedStatement.input('DataVoto', dbConnection.Date());
+            preparedStatement.input('CodiceMateria', dbConnection.Int());
+            if(assenza.Descrizione == undefined || assenza.Descrizione == '')
+                assenza.Descrizione = '';
+            let query = 'INSERT INTO Voto (Voto, Tipologia, Peso, Descrizione, CFStudente, CFProfessore, CodiceMateria, DataVoto) VALUES (@Voto, @Tipologia, @Peso, @Descrizione, @CFStudente, @CFProfessore, @CodiceMateria, @DataVoto)';
+            preparedStatement.prepare(query,
+            errP => 
+            {
+                if(errP)
+                    console.log(errP);
+
+                preparedStatement.execute({ 'Voto' : assenza.Voto,
+                                            'Tipologia' : assenza.Tipologia,
+                                            'Peso' : assenza.Peso,
+                                            'Descrizione' : assenza.Descrizione,
+                                            'CFStudente' : assenza.CFStudente,
+                                            'CFProfessore' : assenza.CFProfessore,
+                                            'CodiceMateria' : assenza.CodiceMateria,
+                                            'DataVoto' : assenza.DataVoto},
+                                
+                (errE, result) =>
+                {                
+                    if(errE)
+                        console.log(errE);
+
+                    preparedStatement.unprepare(
+                        errU => console.log(errU)
+                    )
+                    console.log(result)
+                    resolve(result);
+                })
+            })
+        });
+    });
+    let queryResult = await dbQuery;
+    return queryResult;
+}
+
+angularRouter.post('/inserisciVoto', checkAuthorization, async function(req, res)
+{
+    let result;
+    //UsernameStudente, Voto, Tipologia, Peso, Descrizione, CFProfessore, CodiceMateria, DataVoto
+    let voto = req.body;
+    if(voto.UsernameStudente && voto.Voto && voto.Tipologia && voto.Peso &&  voto.CFProfessore && voto.CodiceMateria && voto.DataVoto)
+    {
+        voto['CFStudente'] = await getCFStudenteByUsername(voto.UsernameStudente);
+        delete voto.UsernameStudente;
+        result = inserisciVoto(voto);
+    }
+    
+})
+
 module.exports = angularRouter;
