@@ -367,12 +367,19 @@ let getCFStudenteByUsername = async function(username)
                     preparedStatement.unprepare(
                         err => reject(err)
                     )
-
-                    resolve(result.recordset[0].CFPersona);
+                    console.log(result.recordset.length);
+                    if(result.recordset.length == 1)
+                        resolve(result.recordset[0].CFPersona);
+                    else
+                    {
+                        let err = new Error("No CF found with the Username inserted");
+                        reject(err);
+                    }
+                        
                 })
             })
         });
-    });
+    }).catch((err) => {return undefined})
     let queryResult = await dbQuery;
     console.log(queryResult);
 
@@ -544,12 +551,22 @@ let inserisciVoto = async function(assenza)
                         errU => console.log(errU)
                     )
                     console.log(result)
-                    resolve(result);
+                    if(result)
+                        resolve(result.rowsAffected[0]);
+                    else
+                    {
+                        err = new Error("No returned values")
+                        reject(err);
+                    }
                 })
             })
         });
-    });
+    }).catch((err) => {return {success : "false"}});
     let queryResult = await dbQuery;
+    if(queryResult == 1)
+        return {success : "true"}
+    else
+        return {success : "false"}
     return queryResult;
 }
 
@@ -561,10 +578,16 @@ angularRouter.post('/inserisciVoto', checkAuthorization, async function(req, res
     if(voto.UsernameStudente && voto.Voto && voto.Tipologia && voto.Peso &&  voto.CFProfessore && voto.CodiceMateria && voto.DataVoto)
     {
         voto['CFStudente'] = await getCFStudenteByUsername(voto.UsernameStudente);
-        delete voto.UsernameStudente;
-        result = inserisciVoto(voto);
+        if(voto['CFStudente'] != undefined)
+        {
+            delete voto.UsernameStudente;
+            console.log("576", voto['CFStudente'])
+            result = await inserisciVoto(voto);
+        }
+        else
+            result = {success : "false"};
     }
-    
+    res.send(result);
 })
 
 module.exports = angularRouter;

@@ -1,6 +1,5 @@
 export class Assenza
 {
-  Codice: Number;
   Tipo: string;
   Data: string;
   Motivazione: string;

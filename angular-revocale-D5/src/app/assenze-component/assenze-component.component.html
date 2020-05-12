@@ -2,55 +2,52 @@
 <!-- Studenti con a fianco scelta di inserimento dell'assenza con scelta tra A, E, U -->
 <!-- A fianco bottone giustifica se assenza -->
 <!-- Se entrata o uscita appare la casella con l'immissione dell'orario-->
-  <head>
-    <h1>Appello</h1>
-  </head>
-  <body>
-  <form [formGroup]="formAssenza" (ngSubmit)="onSubmitAssenza(formAssenza.value)" class="jumbotron ng-valid">
-    <table style="width:100%">
-      <tr>
-        <th>Studenti</th>
-        <th>Tipologia</th>
-        <th>Data</th>
-        <th>Orario E/U </th>
-        <th>Concorrenza al calcolo </th>
-        <th>Inserisci</th>
-      </tr>
-      <tr>
-        <th>
-         <div class="dropdownStudenti">
-            <button class="dropbtn">Studente</button>
-            <div class="dropdown-content">
-              <a  *ngFor="let s of studente" >{{s.Cognome}} {{s.Nome}}</a>
+<head>
+</head>
+<body>
+<!-- https://www.w3schools.com/howto/howto_custom_select.asp-->
+<h1>Appello</h1>
+  <h3>Seleziona lo studente</h3>
+
+<div> <!--Inserire condizione di visione della form una volta scelto lo studente-->
+    <form [formGroup]="formAssenza" (ngSubmit)="onSubmitAssenza(formAssenza.value)" class="jumbotron ng-valid">
+      <table style="width:100%">
+        <tr>
+          <th>Tipologia</th>
+          <th>Data</th>
+          <th>Orario E/U </th>
+          <th>Concorrenza al calcolo </th>
+          <th>Inserisci</th>
+        </tr>
+        <tr>
+
+          <th>
+            <select name="tipoAssenza" size="3" (change)="selectChangeHandler($event)">
+              <option value="A">Assenza </option>
+              <option value="E">Entrata</option>
+              <option value="U">Uscita</option>
+            </select>
+
+          </th>
+
+          <th>
+          <input type="text" name="data" id="data" [formControl]="formAssenza.controls['data']" >
+          </th>
+          <th>
+            <input type="time" name="orario" id="orario" [formControl]="formAssenza.controls['orario']" >
+          </th>
+          <th>
+            <div class="wrapper">
+              <input id="concorre" name="concorre" type="checkbox" value="concorre" (change)="toggleEditable($event)">
+              <label for="concorre">Concorre al calcolo</label>
             </div>
-          </div>
-        </th>
-        <th>
-          <select name="tipoAssenza" size="3" (change)="selectChangeHandler($event)">
-            <option value="A">Assenza </option>
-            <option value="E">Entrata</option>
-            <option value="U">Uscita</option>
-          </select>
-
-        </th>
-
-        <th>
-         <input type="text" name="data" id="data" [formControl]="formAssenza.controls['data']" >
-        </th>
-        <th>
-          <input type="time" name="orario" id="orario" [formControl]="formAssenza.controls['orario']" >
-        </th>
-        <th>
-          <div class="wrapper">
-            <input id="concorre" name="concorre" type="checkbox" value="concorre" (change)="toggleEditable($event)">
-            <label for="concorre">Concorre al calcolo</label>
-          </div>
-        </th>
-        <th>
-          <button class="btn btn-secondary btn-block" type="submit">Invia</button>
-        </th>
-    </table>
-</form>
+          </th>
+          <th>
+            <button class="btn btn-secondary btn-block" type="submit">Invia</button>
+          </th>
+      </table>
+    </form>
+</div>
 <button class="btn btn-secondary btn-block" (click) = "giustifica()">Giustifica</button>
 <div *ngIf = "giustificaV">
   <h1>Giustifica</h1>
