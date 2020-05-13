@@ -17,6 +17,7 @@ export class AppComponent {
   httpClient : HttpClient;
   scompare: boolean;
   sharedProfData : SharedProfDataService;
+  selectedClass : Corrispondenza;
   constructor(http : HttpClient, sharedProfData : SharedProfDataService)
   {
     this.httpClient = http;

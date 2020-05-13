@@ -16,7 +16,7 @@
 		<a routerLink="/prof" routerLinkActive="active">Profilo</a>
 
 
-    <select (ngModelChange)="onClassSelection($event)">
+    <select (ngModelChange)="onClassSelection($event)" [(ngModel)]="selectedClass">
       <option *ngFor="let corrispondenza of profData.Corrispondenze" [ngValue]="corrispondenza">{{corrispondenza.CodiceClasse}} - {{corrispondenza.Materia}}</option>
     </select>
 		<h3>Benvenuto {{profData.Nome}} {{profData.Cognome}}</h3>
