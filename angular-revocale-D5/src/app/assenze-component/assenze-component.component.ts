@@ -77,27 +77,27 @@ export class AssenzeComponentComponent implements OnInit {
     console.log('Data: ', this.formAssenza.controls['data'].value);
     console.log('Orario: ', this.formAssenza.controls['orario'].value);
     console.log('Concorre: ',this.concorreSelect);
-    let a: Assenza = new Assenza();
-    a.Tipo = this.selectedAssenza;
-    if(a.Tipo == "A"){
-      a.Data = this.formAssenza.controls['data'].value;
-      a.Ora = null;
-      a.Concorre =this.concorreSelect;
+    let assenzaOgg: Assenza = new Assenza();
+    assenzaOgg.Tipo = this.selectedAssenza;
+    if(assenzaOgg.Tipo == "A"){
+      assenzaOgg.Data = this.formAssenza.controls['data'].value;
+      assenzaOgg.Ora = null;
+      assenzaOgg.Concorre =this.concorreSelect;
       //a.CFStudente
-      //a.CFProfessore
+      assenzaOgg.CFProfessore=this.profData.CFPersona;
     }else{
-      a.Data = this.formAssenza.controls['data'].value;
-      a.Ora = this.formAssenza.controls['orario'].value;
-      a.Concorre =this.concorreSelect;
+      assenzaOgg.Data = this.formAssenza.controls['data'].value;
+      assenzaOgg.Ora = this.formAssenza.controls['orario'].value;
+      assenzaOgg.Concorre =this.concorreSelect;
       //a.CFStudente
-      //a.CFProfessore
+      assenzaOgg.CFProfessore=this.profData.CFPersona;
     }
 
    // this.observAssenza = this.http.post('https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/inserisciAssenza', a)
     //this.observAssenza.subscribe(
      // (data) => {
         //alert('ok');
-     //   this.assenzaOK.emit(data);
+     // this.assenzaOK.emit(data);
      // }
   //  )
 
@@ -121,9 +121,5 @@ export class AssenzeComponentComponent implements OnInit {
 
     })
   }
-
-
-
-
 
 }

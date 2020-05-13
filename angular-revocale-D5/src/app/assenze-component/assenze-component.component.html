@@ -6,8 +6,13 @@
 </head>
 <body>
 <!-- https://www.w3schools.com/howto/howto_custom_select.asp-->
-<h1>Appello</h1>
+<div class="custom-select" style="width:200px;">
   <h3>Seleziona lo studente</h3>
+    <select id="listaStudenti" name= "listaStudenti" ><!--*ngFor="let s of studente"-->
+      <option value="n">Studente</option>
+     <!--<option value="ns">{{s.Cognome}}{{s.Nome}}</option>-->
+    </select>
+</div>
 
 <div> <!--Inserire condizione di visione della form una volta scelto lo studente-->
     <form [formGroup]="formAssenza" (ngSubmit)="onSubmitAssenza(formAssenza.value)" class="jumbotron ng-valid">
@@ -54,8 +59,8 @@
 <!--Mandare codice e motivazione al resto ce pensa er dave-->
     <div class="dropdownStudenti">
             <button class="dropbtn">Assenze</button>
-            <div class="dropdown-content">
-              <a   ></a>
+            <div class="dropdown-content" *ngFor="let a of assenzaOK">
+              <a>{{a.Data}}</a>
             </div>
           </div>
       <form [formGroup]="formGiustifica" (ngSubmit)="onSubmitGiustifica(formGiustifica.value)" class="jumbotron ng-valid">

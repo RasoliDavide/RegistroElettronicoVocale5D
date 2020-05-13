@@ -16,18 +16,9 @@
 		<a routerLink="/prof" routerLinkActive="active">Profilo</a>
 
 
-    <a>
-      <mat-form-field>
-        <mat-label>Classi</mat-label>
-        <mat-select placeholder = "Classi" >
-
-
-          <mat-option *ngFor="let corrispondenza of profData.Corrispondenze" [(value)]="corrispondenza.value">{{corrispondenza.CodiceClasse}}</mat-option>
-
-
-        </mat-select>
-      </mat-form-field>
-    </a>
+    <select (ngModelChange)="onClassSelection($event)">
+      <option *ngFor="let corrispondenza of profData.Corrispondenze" [ngValue]="corrispondenza">{{corrispondenza.CodiceClasse}} - {{corrispondenza.Materia}}</option>
+    </select>
 		<h3>Benvenuto {{profData.Nome}} {{profData.Cognome}}</h3>
 
 	</div>

@@ -5,4 +5,5 @@ export class Voti{
   tipo: number;
   descrizione: string;
   data: string;
+  peso: string
 }

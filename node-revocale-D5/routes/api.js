@@ -163,43 +163,6 @@ angularRouter.get('/getTeachingClasses', async function(req, res)
     res.send(result);
 })
 
-let getVotiByStudente = async function(cfStudente)
-{
-    let voti;
-    let dbQuery = new Promise(
-    (resolve, reject) => 
-    {
-        dbConnection.connect(config, function(err) {
-            let query = 'SELECT * FROM Voto WHERE CFStudente = @cfStudente';
-            let preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('cfStudente', dbConnection.Char(16));
-            preparedStatement.prepare(query,
-            err => 
-            {
-                if(err)
-                    console.log(err);
-
-                preparedStatement.execute({'cfStudente' : cfStudente},
-                (err, result) =>
-                {
-                    preparedStatement.unprepare(
-                        err => reject(err)
-                    )
-                    resolve(result.recordset);
-                })
-            })
-        });
-    })
-
-    let reutrnedObject = await dbQuery;
-    return reutrnedObject;
-}
-
-angularRouter.get('/getVotiByStudente', async function(req, res)
-{
-    let result = await getVotiByStudente(req.query.cfStudente);
-    res.send(result);
-})
 
 let checkAuthorization = function(req, res, next)
 {
@@ -590,4 +553,67 @@ angularRouter.post('/inserisciVoto', checkAuthorization, async function(req, res
     res.send(result);
 })
 
+let getVotiByStudente = async function(cfStudente)
+{
+    let dbQuery = new Promise(
+    (resolve, reject) =>
+    {
+        dbConnection.connect(config, function(err) {
+            let preparedStatement = new dbConnection.PreparedStatement();
+            preparedStatement.input('CFStudente', dbConnection.Char(16));
+            let query = 'SELECT * FROM Voto WHERE CFStudente = @CFStudente';
+            preparedStatement.prepare(query,
+            errP => 
+            {
+                if(errP)
+                    reject(errP);
+
+                preparedStatement.execute({'CFStudente' : cfStudente},
+                (errE, result) =>
+                {                
+                    if(errE)
+                        reject(errE);
+
+                    preparedStatement.unprepare(
+                        errU => reject(errU)
+                    )
+                    resolve(result.recordset);
+                })
+            })
+        });
+    });
+    let queryResult = await dbQuery;
+    return queryResult;
+}
+
+angularRouter.get('/getVotiByStudente', checkAuthorization, async function(req, res)
+{
+    let result;
+    //usernameStudente
+    let usernameStudente = req.query.usernameStudente;
+    if(usernameStudente != undefined)
+    {
+        let cfStudente = await getCFStudenteByUsername(usernameStudente);
+        if(cfStudente != undefined)
+        {
+            result = await getVotiByStudente(cfStudente);
+            console.log(result)
+        }
+    }
+    res.send(result);
+})
+
+angularRouter.post('/logout', checkAuthorization, function(req, res)
+{
+    for(let i = 0; i < authorizedKey.length; i++)
+    {
+        if(authorizedKey[i].securedKey = req.get('authorization'))
+        {
+            authorizedKey.splice(i, 1);
+            break;
+        }
+    }
+    console.log(authorizedKey)
+    res.send('logged out');
+})
 module.exports = angularRouter;

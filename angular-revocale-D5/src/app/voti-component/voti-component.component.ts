@@ -15,9 +15,11 @@ import { Voti } from '../voti.model';
 export class VotiComponentComponent implements OnInit {
   httpClient : HttpClient;
   concorreSelect : boolean;
+  pesoSelect: boolean;
   @Input() profData : ProfData;
   @Input() studente : Studente;
   selectedVoto: string = '';
+  selectedPeso: string = '';
   sharedProfData : SharedProfDataService;
   @Output() votoOK : EventEmitter<Object>;
   formVoto:FormGroup;
@@ -27,7 +29,8 @@ export class VotiComponentComponent implements OnInit {
     this.sharedProfData = sharedProfData;
     this.formVoto = fb.group(
       {
-      'voto':['',Validators.required]
+      'voto':['',Validators.required],
+      'descrizione':['',Validators.required]
 
       }
     )
@@ -38,16 +41,20 @@ export class VotiComponentComponent implements OnInit {
   }
   selectChangeHandler (event: any) {
     this.selectedVoto = event.target.value;
+    this.selectedPeso = event.target.value;
   }
   toggleEditable(event) {
     if ( event.target.checked ) {
          this.concorreSelect = true;
+         this.pesoSelect = true;
     }else{
          this.concorreSelect = false;
+         this.pesoSelect = false;
     }
   }
   onSubmitVoto(value: string): void {
-    console.log('Voto: ', this.formVoto.controls['data'].value);
+    console.log('Voto: ', this.formVoto.controls['voto'].value);
+    console.log('Descrizione: ', this.formVoto.controls['descrizione'].value);
     /*let v: Voti = new Voti();
     v.tipo = this.selectedVoto;
     if(v.tipo == 0){

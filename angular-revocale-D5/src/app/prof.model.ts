@@ -1,4 +1,4 @@
-import { Corrispondenze } from './corrispondenze.model';
+import { Corrispondenza } from './corrispondenze.model';
 export class ProfData
 {
   CFPersona: String;
@@ -8,5 +8,5 @@ export class ProfData
   ​Dirigente: boolean;
 ​  Laboratorio: boolean;
 ​  securedKey: String;
-  Corrispondenze : Corrispondenze[];
+  Corrispondenze : Corrispondenza[];
 }

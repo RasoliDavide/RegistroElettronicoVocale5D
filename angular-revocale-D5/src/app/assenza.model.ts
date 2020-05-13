@@ -6,5 +6,5 @@ export class Assenza
   Concorre: boolean;
   Ora: string;
   CFStudente: string;
-  CFProfessore: string;
+  CFProfessore: String;
 }
