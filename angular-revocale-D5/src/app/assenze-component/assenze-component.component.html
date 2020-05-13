@@ -6,14 +6,14 @@
 </head>
 <body>
 <!-- https://www.w3schools.com/howto/howto_custom_select.asp-->
-<div class="custom-select" style="width:200px;">
-  <h3>Seleziona lo studente</h3>
-    <select id="listaStudenti" name= "listaStudenti" ><!--*ngFor="let s of studente"-->
-      <option value="n">Studente</option>
-     <!--<option value="ns">{{s.Cognome}}{{s.Nome}}</option>-->
+<h3>Seleziona lo studente</h3>
+<div style="width:200px;">
+    <select id="listaStudenti" name= "listaStudenti" >
+      <option value="0">Studente</option>
+      <option *ngFor='let s of studente'>{{s.Cognome}}{{s.Nome}}</option>
     </select>
 </div>
-
+<br>
 <div> <!--Inserire condizione di visione della form una volta scelto lo studente-->
     <form [formGroup]="formAssenza" (ngSubmit)="onSubmitAssenza(formAssenza.value)" class="jumbotron ng-valid">
       <table style="width:100%">
@@ -25,21 +25,18 @@
           <th>Inserisci</th>
         </tr>
         <tr>
-
           <th>
             <select name="tipoAssenza" size="3" (change)="selectChangeHandler($event)">
               <option value="A">Assenza </option>
               <option value="E">Entrata</option>
               <option value="U">Uscita</option>
             </select>
-
-          </th>
-
-          <th>
-          <input type="text" name="data" id="data" [formControl]="formAssenza.controls['data']" >
           </th>
           <th>
-            <input type="time" name="orario" id="orario" [formControl]="formAssenza.controls['orario']" >
+          <input type="date" name="data" id="data" [formControl]="formAssenza.controls['data']" >
+          </th>
+          <th>
+            <input type="time" name="orario" id="orario" [formControl]="formAssenza.controls['orario']">
           </th>
           <th>
             <div class="wrapper">
@@ -48,7 +45,7 @@
             </div>
           </th>
           <th>
-            <button class="btn btn-secondary btn-block" type="submit">Invia</button>
+            <button class="btn btn-primary btn-block" type="submit">Invia</button>
           </th>
       </table>
     </form>
@@ -56,31 +53,15 @@
 <button class="btn btn-secondary btn-block" (click) = "giustifica()">Giustifica</button>
 <div *ngIf = "giustificaV">
   <h1>Giustifica</h1>
-<!--Mandare codice e motivazione al resto ce pensa er dave-->
-    <div class="dropdownStudenti">
-            <button class="dropbtn">Assenze</button>
-            <div class="dropdown-content" *ngFor="let a of assenzaOK">
-              <a>{{a.Data}}</a>
-            </div>
-          </div>
+<h3>Seleziona l'assenza da giustificare</h3>
+   <div style="width:200px;">
+        <select id="listaAssenze" name= "listaAssenze" title="Assenze">
+          <option value="0">Assenza</option>
+          <option *ngFor='let a of assenzaOK'>{{a.Data}}</option>
+        </select>
+    </div>
+<br>
       <form [formGroup]="formGiustifica" (ngSubmit)="onSubmitGiustifica(formGiustifica.value)" class="jumbotron ng-valid">
-
-        <div class="form-group">
-          <label for="tipo"></label>
-          <p>Tipo:</p>
-        </div>
-        <br>
-<!--Orario-->
-         <div class="form-group">
-          <label for="orario"></label>
-          <p>Orario:</p>
-        </div>
-        <br>
-<!--Data-->
-        <div class="form-group">
-          <label for="Data">Data da giustificare</label>
-          <p>Data:</p>
-        </div>
 <!--Motivazione-->
         <div class="form-group">
           <label for="Motivazione">Inserisci Motivazione</label><br>

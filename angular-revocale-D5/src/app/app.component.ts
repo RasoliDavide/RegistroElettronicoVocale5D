@@ -43,11 +43,15 @@ export class AppComponent {
       this.profData.Corrispondenze = response;
       console.log(this.profData);
       this.sharedProfData.setProfData(this.profData);
-    })
+      this.sharedProfData.setSelectedClass(this.sharedProfData.profData.Corrispondenze[0]);
+
+    });
+
   }
 
-  onClassSelection(selectedClass : Object)
+  onClassSelection(selectedClass : Corrispondenza)
   {
     console.log(selectedClass);
+    this.sharedProfData.setSelectedClass(selectedClass);
   }
 }

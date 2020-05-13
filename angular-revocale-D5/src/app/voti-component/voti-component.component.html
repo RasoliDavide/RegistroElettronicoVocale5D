@@ -6,9 +6,9 @@
 			<th>
 				<p>Tipologia voto</p>
 				<select name="tipoVoto" size="3" (change)="selectChangeHandler($event)">
-              <option value=2>Recupero </option>
-              <option value=0>Valore</option>
-              <option value=1>Senza valore</option>
+              <option value="2">Recupero </option>
+              <option value="0">Valore</option>
+              <option value="1">Senza valore</option>
             </select>
 
 			</th>
@@ -38,6 +38,10 @@
 				<input type="text" name="voto" id="voto" [formControl]="formVoto.controls['voto']" >
         </th>
 			<th>
+				<p>Inserisci data</p>
+				<input type="date" name="data" id="data" [formControl]="formVoto.controls['data']" >
+          </th>
+			<th>
 				<div class="wrapper">
 					<input id="concorre" name="concorre" type="checkbox" value="concorre" (change)="toggleEditable($event)">
 					<label for="concorre">Concorre al calcolo</label>
@@ -47,4 +51,5 @@
 				<button class="btn btn-secondary btn-block" type="submit">Inserisci voto</button>
 			</th>
 	</table>
+
 </form>

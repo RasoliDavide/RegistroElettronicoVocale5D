@@ -13,24 +13,25 @@ import { Voti } from '../voti.model';
   styleUrls: ['./voti-component.component.css']
 })
 export class VotiComponentComponent implements OnInit {
-  httpClient : HttpClient;
-  concorreSelect : boolean;
+  httpClient: HttpClient;
+  concorreSelect: boolean;
   pesoSelect: boolean;
-  @Input() profData : ProfData;
-  @Input() studente : Studente;
+  @Input() profData: ProfData;
+  @Input() studente: Studente;
   selectedVoto: string = '';
   selectedPeso: string = '';
-  sharedProfData : SharedProfDataService;
-  @Output() votoOK : EventEmitter<Object>;
-  formVoto:FormGroup;
-  constructor(fb: FormBuilder,private http: HttpClient, sharedProfData : SharedProfDataService)
-  {
+  arrayPeso: number[] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+  sharedProfData: SharedProfDataService;
+  @Output() votoOK: EventEmitter<Object>;
+  formVoto: FormGroup;
+  constructor(fb: FormBuilder, private http: HttpClient, sharedProfData: SharedProfDataService) {
     this.httpClient = http;
     this.sharedProfData = sharedProfData;
     this.formVoto = fb.group(
       {
-      'voto':['',Validators.required],
-      'descrizione':['',Validators.required]
+        'voto': ['', Validators.required],
+        'descrizione': ['', Validators.required],
+        'data':['',Validators.required],
 
       }
     )
@@ -39,38 +40,86 @@ export class VotiComponentComponent implements OnInit {
   ngOnInit(): void {
     this.profData = this.sharedProfData.profData;
   }
-  selectChangeHandler (event: any) {
+  selectChangeHandler(event: any) {
     this.selectedVoto = event.target.value;
     this.selectedPeso = event.target.value;
   }
   toggleEditable(event) {
-    if ( event.target.checked ) {
-         this.concorreSelect = true;
-         this.pesoSelect = true;
-    }else{
-         this.concorreSelect = false;
-         this.pesoSelect = false;
+    if (event.target.checked) {
+      this.concorreSelect = true;
+      this.pesoSelect = true;
+    } else {
+      this.concorreSelect = false;
+      this.pesoSelect = false;
     }
   }
   onSubmitVoto(value: string): void {
+    let v: Voti = new Voti();
     console.log('Voto: ', this.formVoto.controls['voto'].value);
     console.log('Descrizione: ', this.formVoto.controls['descrizione'].value);
-    /*let v: Voti = new Voti();
+    console.log('Data: ', this.formVoto.controls['data'].value);
     v.tipo = this.selectedVoto;
-    if(v.tipo == 0){
-      a.Data = this.formVoto.controls['data'].value;
-      a.Ora = null;
-      a.Concorre =this.concorreSelect;
+    v.peso = parseInt(this.selectedPeso);
+
+    if (v.tipo == "0") {
+      for (let i = 0; i < this.arrayPeso.length; i++) {
+        if (v.peso == this.arrayPeso[i]) {
+          v.voto = this.formVoto.controls['voto'].value;
+          v.descrizione = this.formVoto.controls['descrizione'].value;
+          v.tipo = "0";
+          v.peso = this.arrayPeso[i];
+          v.data = this.formVoto.controls['data'].value;
+          console.log("Peso: " + v.peso);
+          console.log('Tipo: ', v.tipo);
+
+
+        }
+      }
+
+
+
+      /*v.Data = this.formVoto.controls['data'].value;
+      v.Ora = null;
+      v.Concorre =this.concorreSelect;*/
       //a.CFStudente
       //a.CFProfessore
-    }else{
-      a.Data = this.formAssenza.controls['data'].value;
-      a.Ora = this.formAssenza.controls['orario'].value;
-      a.Concorre =this.concorreSelect;
+    } else {
+      if (v.tipo == "1") {
+        for (let i = 0; i < this.arrayPeso.length; i++) {
+          if (v.peso == this.arrayPeso[i]) {
+            v.voto = this.formVoto.controls['voto'].value;
+            v.descrizione = this.formVoto.controls['descrizione'].value;
+            v.tipo = "1";
+            v.peso = this.arrayPeso[i];
+            v.data = this.formVoto.controls['data'].value;
+            console.log("Peso: " + v.peso);
+            console.log('Tipo: ', v.tipo);
+
+          }
+        }
+      }
+      else {
+        for (let i = 0; i < this.arrayPeso.length; i++) {
+          if (v.peso == this.arrayPeso[i]) {
+            v.voto = this.formVoto.controls['voto'].value;
+            v.descrizione = this.formVoto.controls['descrizione'].value;
+            v.tipo = "0";
+            v.peso = this.arrayPeso[i];
+            v.data = this.formVoto.controls['data'].value;
+            console.log("Peso: " + v.peso);
+            console.log('Tipo: ', v.tipo);
+
+          }
+        }
+      }
+
+      /*v.Data = this.formAssenza.controls['data'].value;
+      v.Ora = this.formAssenza.controls['orario'].value;
+      v.Concorre =this.concorreSelect;*/
       //a.CFStudente
       //a.CFProfessore*/
     }
   }
 
 
-
+}

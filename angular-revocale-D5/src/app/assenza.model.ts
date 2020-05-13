@@ -1,10 +1,10 @@
 export class Assenza
 {
-  Tipo: string;
-  Data: string;
-  Motivazione: string;
+  Tipo: String;
+  Data: String;
+  Motivazione: String;
   Concorre: boolean;
   Ora: string;
-  CFStudente: string;
+  CFStudente: String;
   CFProfessore: String;
 }
