@@ -1,13 +1,16 @@
 const express = require('express');
-const angularRouter = express.Router();
+const apiRouter = express.Router();
 const sha512 = require('js-sha512');
 const randomint = require('random-int');
 
 const apiProf = require('./api/prof');
-const apiAssenza = require('./api/assenza');
+const apiAssenze = require('./api/assenze');
+const apiVoti = require('./api/voti')
 
-angularRouter.use('/prof', apiProf);
-angularRouter.use('/assenza', apiAssenza);
+apiRouter.use('/prof', apiProf);
+apiRouter.use('/assenze', apiAssenze);
+apiRouter.use('/voti', apiVoti);
+
 
 authorizedKey = 
 [
@@ -16,6 +19,12 @@ authorizedKey =
             'securedKey' : "all"
     }
 ];
+
+apiRouter.post('/*', function(req, res, next)
+{
+    console.log("Forwarded");
+    next();
+})
 
 const checkPostPayloadMiddleware = (req, res, next) =>
 {
@@ -113,12 +122,11 @@ let checkLogin = async function(inputUsername, inputPassword)
     return reutrnedObject;
 }
 
-angularRouter.post('/login', checkPostPayloadMiddleware, async function(req, res)
+apiRouter.post('/login', checkPostPayloadMiddleware, async function(req, res)
 {
     let result = await checkLogin(req.body.username, req.body.password);
     res.send(result);
 })
-
 
 let checkAuthorization = function(req, res, next)
 {
@@ -157,9 +165,6 @@ let checkAuthorization = function(req, res, next)
     }
 }
 
-
-
-
 getCFStudenteByUsername = async function(username)
 {
     let dbQuery = new Promise(
@@ -196,148 +201,10 @@ getCFStudenteByUsername = async function(username)
         });
     }).catch((err) => {return undefined})
     let queryResult = await dbQuery;
-    console.log(queryResult);
-
     return queryResult;
 }
 
-
-
-
-
-let inserisciVoto = async function(assenza)
-{
-    console.log(assenza);
-    let dbQuery = new Promise(
-    (resolve, reject) =>
-    {
-        dbConnection.connect(config, function(err) {
-            let preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('CFStudente', dbConnection.Char(16));
-            preparedStatement.input('CFProfessore', dbConnection.Char(16));
-            preparedStatement.input('Voto', dbConnection.Decimal(5,2));
-            preparedStatement.input('Descrizione', dbConnection.VarChar(500));
-            preparedStatement.input('Tipologia', dbConnection.TinyInt());
-            preparedStatement.input('Peso', dbConnection.TinyInt());
-            preparedStatement.input('DataVoto', dbConnection.Date());
-            preparedStatement.input('CodiceMateria', dbConnection.Int());
-            if(assenza.Descrizione == undefined || assenza.Descrizione == '')
-                assenza.Descrizione = '';
-            let query = 'INSERT INTO Voto (Voto, Tipologia, Peso, Descrizione, CFStudente, CFProfessore, CodiceMateria, DataVoto) VALUES (@Voto, @Tipologia, @Peso, @Descrizione, @CFStudente, @CFProfessore, @CodiceMateria, @DataVoto)';
-            preparedStatement.prepare(query,
-            errP => 
-            {
-                if(errP)
-                    console.log(errP);
-
-                preparedStatement.execute({ 'Voto' : assenza.Voto,
-                                            'Tipologia' : assenza.Tipologia,
-                                            'Peso' : assenza.Peso,
-                                            'Descrizione' : assenza.Descrizione,
-                                            'CFStudente' : assenza.CFStudente,
-                                            'CFProfessore' : assenza.CFProfessore,
-                                            'CodiceMateria' : assenza.CodiceMateria,
-                                            'DataVoto' : assenza.DataVoto},
-                                
-                (errE, result) =>
-                {                
-                    if(errE)
-                        console.log(errE);
-
-                    preparedStatement.unprepare(
-                        errU => console.log(errU)
-                    )
-                    console.log(result)
-                    if(result)
-                        resolve(result.rowsAffected[0]);
-                    else
-                    {
-                        err = new Error("No returned values")
-                        reject(err);
-                    }
-                })
-            })
-        });
-    }).catch((err) => {return {success : "false"}});
-    let queryResult = await dbQuery;
-    if(queryResult == 1)
-        return {success : "true"}
-    else
-        return {success : "false"}
-    return queryResult;
-}
-
-angularRouter.post('/inserisciVoto', checkAuthorization, async function(req, res)
-{
-    let result;
-    //UsernameStudente, Voto, Tipologia, Peso, Descrizione, CFProfessore, CodiceMateria, DataVoto
-    let voto = req.body;
-    if(voto.UsernameStudente && voto.Voto && voto.Tipologia && voto.Peso &&  voto.CFProfessore && voto.CodiceMateria && voto.DataVoto)
-    {
-        voto['CFStudente'] = await getCFStudenteByUsername(voto.UsernameStudente);
-        if(voto['CFStudente'] != undefined)
-        {
-            delete voto.UsernameStudente;
-            console.log("576", voto['CFStudente'])
-            result = await inserisciVoto(voto);
-        }
-        else
-            result = {success : "false"};
-    }
-    res.send(result);
-})
-
-let getVotiByStudente = async function(cfStudente)
-{
-    let dbQuery = new Promise(
-    (resolve, reject) =>
-    {
-        dbConnection.connect(config, function(err) {
-            let preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('CFStudente', dbConnection.Char(16));
-            let query = 'SELECT * FROM Voto WHERE CFStudente = @CFStudente';
-            preparedStatement.prepare(query,
-            errP => 
-            {
-                if(errP)
-                    reject(errP);
-
-                preparedStatement.execute({'CFStudente' : cfStudente},
-                (errE, result) =>
-                {                
-                    if(errE)
-                        reject(errE);
-
-                    preparedStatement.unprepare(
-                        errU => reject(errU)
-                    )
-                    resolve(result.recordset);
-                })
-            })
-        });
-    });
-    let queryResult = await dbQuery;
-    return queryResult;
-}
-
-angularRouter.get('/getVotiByStudente', checkAuthorization, async function(req, res)
-{
-    let result;
-    //usernameStudente
-    let usernameStudente = req.query.usernameStudente;
-    if(usernameStudente != undefined)
-    {
-        let cfStudente = await getCFStudenteByUsername(usernameStudente);
-        if(cfStudente != undefined)
-        {
-            result = await getVotiByStudente(cfStudente);
-            console.log(result)
-        }
-    }
-    res.send(result);
-})
-
-angularRouter.post('/logout', checkAuthorization, function(req, res)
+apiRouter.post('/logout', checkAuthorization, function(req, res)
 {
     for(let i = 0; i < authorizedKey.length; i++)
     {
@@ -350,4 +217,5 @@ angularRouter.post('/logout', checkAuthorization, function(req, res)
     console.log(authorizedKey)
     res.send('logged out');
 })
-module.exports = angularRouter;
+
+module.exports = apiRouter;

@@ -6,6 +6,4 @@ export class Persona{
   Username: string;
   CF: string;
   ​securedKey: String;
-
-
 }

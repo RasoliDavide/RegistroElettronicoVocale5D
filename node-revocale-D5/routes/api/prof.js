@@ -81,9 +81,6 @@ profRouter.get('/getTeachingClasses', checkAuthorization, async function(req, re
     res.send(result);
 })
 
-
-
-
 let getStudentiByClasse = async function(codiceClasse)
 {
     let dbQuery = new Promise(
