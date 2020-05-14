@@ -1,16 +1,16 @@
 const express = require('express');
 const angularRouter = express.Router();
-const dbConnection = require('mssql');
 const sha512 = require('js-sha512');
 const randomint = require('random-int');
-const config = {
-    user: '4dd_20', //Vostro user name
-    password: 'xxx123##', //Vostra password
-    server: "213.140.22.237", //Stringa di connessione
-    database: 'REVocale-5D', //(Nome del DB)
-}
 
-let authorizedKey = [
+const apiProf = require('./api/prof');
+const apiAssenza = require('./api/assenza');
+
+angularRouter.use('/prof', apiProf);
+angularRouter.use('/assenza', apiAssenza);
+
+authorizedKey = 
+[
     {
             'cfProf' : "dsa",
             'securedKey' : "all"
@@ -54,15 +54,14 @@ let checkProfPasswd = async function(inputUsername, inputPassword)
                     )
 
                     resolve(result.recordset[0]);
-                }
-                )
+                })
             }
-        )
-        })
+        )})
     });
     returnedCF = passwordQueryCheck;
     return returnedCF;
 }
+
 let checkLogin = async function(inputUsername, inputPassword)
 {
     let queryResult = await checkProfPasswd(inputUsername, inputPassword);
@@ -120,49 +119,6 @@ angularRouter.post('/login', checkPostPayloadMiddleware, async function(req, res
     res.send(result);
 })
 
-let getTeachingClasses = async function(cfProfessore)
-{
-    let classes;
-    let dbQuery = new Promise(
-    (resolve, reject) => 
-    {
-        dbConnection.connect(config, function(err) {
-            let query = 'SELECT * FROM getMaterie WHERE CFProfessore = @cfProfessore';
-            let preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('cfProfessore', dbConnection.Char(16));
-            preparedStatement.prepare(query,
-            err => 
-            {
-                if(err)
-                    reject(err);
-
-                preparedStatement.execute({'cfProfessore' : cfProfessore},
-                (err, result) =>
-                {
-                    preparedStatement.unprepare(
-                        err => reject(err)
-                    )
-                    resolve(result.recordset);
-                }
-                )
-            })
-        });
-    })
-
-    let reutrnedObject = await dbQuery;
-
-    for(let i = 0; i < reutrnedObject.length; i++)
-        delete reutrnedObject[0].CFProfessore;
-
-    return reutrnedObject;
-}
-
-angularRouter.get('/getTeachingClasses', async function(req, res)
-{
-    let result = await getTeachingClasses(req.query.cfProfessore);
-    res.send(result);
-})
-
 
 let checkAuthorization = function(req, res, next)
 {
@@ -203,112 +159,8 @@ let checkAuthorization = function(req, res, next)
 
 
 
-let getStudemtiByClasse = async function(codiceClasse)
-{
-    let dbQuery = new Promise(
-    (resolve, reject) =>
-    {
-        dbConnection.connect(config, function(err) {
-            let query = 'SELECT * FROM getStudentiByClasse WHERE CodiceClasse = @codiceClasse';
-            let preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('codiceClasse', dbConnection.VarChar(7));
-            preparedStatement.prepare(query,
-            err => 
-            {
-                if(err)
-                    console.log(err);
 
-                preparedStatement.execute({'codiceClasse' : codiceClasse},
-                (err, result) =>
-                {
-                    preparedStatement.unprepare(
-                        err => reject(err)
-                    )
-
-                    resolve(result.recordset);
-                })
-            })
-        });
-    });
-    let queryResult = await dbQuery;
-    for(let i = 0; i < queryResult.length; i++)
-        delete queryResult[i].CodiceClasse
-
-    return queryResult;
-}
-
-angularRouter.get('/getStudentiByClasse', checkAuthorization, async function(req, res)
-{
-    let result = await getStudemtiByClasse(req.query.codiceClasse);
-    res.send(result);
-})
-
-let inserisciAssenza = async function(assenza)
-{
-    let query;
-    console.log(assenza);
-    let dbQuery = new Promise(
-    (resolve, reject) =>
-    {
-        dbConnection.connect(config, function(err) {
-            let preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('CFStudente', dbConnection.Char(16));
-            preparedStatement.input('CFProfessore', dbConnection.Char(16));
-            preparedStatement.input('Tipo', dbConnection.Char(1));
-            preparedStatement.input('DataAssenza', dbConnection.Date());
-            preparedStatement.input('Concorre', dbConnection.Bit());
-            if(assenza.Tipo == 'A')
-            {
-                query = 'INSERT INTO Assenza (CFStudente, CFProfessore, Tipo, DataAssenza, Concorre) VALUES (@CFStudente, @CFProfessore, @Tipo, @DataAssenza, @Concorre)';
-            }
-            else
-            {
-                preparedStatement.input('Ora', dbConnection.VarChar(5));
-                query = 'INSERT INTO Assenza (CFStudente, CFProfessore, Tipo, DataAssenza, Concorre, Ora) VALUES (@CFStudente, @CFProfessore, @Tipo, @DataAssenza, @Concorre, @Ora)';
-            }
-            
-            preparedStatement.prepare(query,
-            errP => 
-            {
-                if(errP)
-                    reject(errP);
-
-                preparedStatement.execute({'CFStudente' : assenza.CFStudente, 
-                                           'CFProfessore' : assenza.CFProfessore,
-                                           'Tipo' : assenza.Tipo,
-                                           'DataAssenza' : assenza.DataAssenza,
-                                           'Concorre' : assenza.Concorre,
-                                           'Ora' : assenza.Ora},
-                
-                (errE, result) =>
-                {                
-                    if(errE)
-                        reject(errE);
-
-                    preparedStatement.unprepare(
-                        errU => resolve(errU)
-                    )
-                    if(result)
-                        resolve(result.rowsAffected[0]);
-                    else
-                    {
-                        err = new Error("No returned values")
-                        reject(err);
-                    }
-                        
-                })
-            })
-        });
-    }).catch((err) => {return {success : "false"}});
-    let queryResult = await dbQuery;
-    if(queryResult == 1)
-        return {success : "true"}
-    else
-        return {success : "false"}
-    return queryResult;
-}
-
-let getCFStudenteByUsername = async function(username)
+getCFStudenteByUsername = async function(username)
 {
     let dbQuery = new Promise(
     (resolve, reject) =>
@@ -349,127 +201,9 @@ let getCFStudenteByUsername = async function(username)
     return queryResult;
 }
 
-angularRouter.post('/inserisciAssenza', checkAuthorization, async function(req, res)
-{
-    //Tipo, Data, Motivazione, Concorre, Ora, CFProfessore, UsernameStudente
-    let assenza = req.body;
-    let result;
-    if((assenza.Tipo == 'A' || assenza.Tipo == 'E' || assenza.Tipo == 'U') && assenza.DataAssenza && assenza.Concorre && assenza.CFProfessore && assenza.UsernameStudente)
-    {
-        console.log("Dentro l'if");
-        let cfStudente = await getCFStudenteByUsername(assenza.UsernameStudente);
-        delete assenza.UsernameStudente;
-        assenza['CFStudente'] = cfStudente;
-        result = await inserisciAssenza(assenza);
-    }
-    res.send(result)
-})
 
-let giustificaAssenza = async function(giustifica)
-{
 
-    let dbQuery = new Promise(
-    (resolve, reject) =>
-    {
-        dbConnection.connect(config, function(err) {
-            let preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('CFStudente', dbConnection.Char(16));
-            preparedStatement.input('Tipo', dbConnection.Char(1));
-            preparedStatement.input('DataAssenza', dbConnection.Date());
-            preparedStatement.input('Motivazione', dbConnection.VarChar(200));
-            let query = 'UPDATE Assenza SET Motivazione = @Motivazione WHERE CFStudente = @CFStudente AND Tipo = @Tipo AND DataAssenza = @DataAssenza';
-            
-            preparedStatement.prepare(query,
-            errP => 
-            {
-                if(errP)
-                    console.log(errP);
 
-                preparedStatement.execute({'CFStudente' : giustifica.CFStudente, 
-                                           'Tipo' : giustifica.Tipo,
-                                           'DataAssenza' : giustifica.DataAssenza,
-                                           'Motivazione' : giustifica.Motivazione,
-                                        },
-                (errE, result) =>
-                {                
-                    if(errE)
-                        console.log(errE);
-
-                    preparedStatement.unprepare(
-                        errU => console.log(errU)
-                    )
-                    console.log(result)
-                    resolve(result);
-                })
-            })
-        });
-    });
-    let queryResult = await dbQuery;
-    return queryResult
-}
-
-angularRouter.post('/giustificaAssenza', checkAuthorization, async function(req, res)
-{
-    //UsernameStudente, Tipo, DataAssenza, Motivazione
-    let giustifica = req.body;
-    console.log(giustifica)
-    let result;
-    if((giustifica.Tipo == 'A' || giustifica.Tipo == 'E' || giustifica.Tipo == 'U') && giustifica.Motivazione && giustifica.DataAssenza && giustifica.UsernameStudente)
-    {
-        console.log("Dentro l'if");
-        let cfStudente = await getCFStudenteByUsername(giustifica.UsernameStudente);
-        delete giustifica.UsernameStudente;
-        giustifica['CFStudente'] = cfStudente;
-        console.log(giustifica);
-        result = await giustificaAssenza(giustifica);
-    }
-    res.send(result);
-})
-
-let getAssenzaByStudente = async function(cfStudente)
-{
-    let dbQuery = new Promise(
-    (resolve, reject) =>
-    {
-        dbConnection.connect(config, function(err) {
-            let preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('CFStudente', dbConnection.Char(16));
-            let query = 'SELECT * FROM Assenza WHERE CFStudente = @CFStudente';
-            preparedStatement.prepare(query,
-            errP => 
-            {
-                if(errP)
-                    console.log(errP);
-
-                preparedStatement.execute({'CFStudente' : cfStudente},
-                (errE, result) =>
-                {                
-                    if(errE)
-                        console.log(errE);
-
-                    preparedStatement.unprepare(
-                        errU => console.log(errU)
-                    )
-                    console.log(result)
-                    resolve(result.recordset);
-                })
-            })
-        });
-    });
-    let queryResult = await dbQuery;
-    return queryResult;
-}
-
-angularRouter.get('/getAssenzeByStudente', checkAuthorization, async function(req, res)
-{
-    let result;
-    let cfStudente = await getCFStudenteByUsername(req.query.UsernameStudente);
-    if(cfStudente != undefined)
-    {
-        result = await getAssenzaByStudente(cfStudente);
-    }
-    res.send(result);
-})
 
 let inserisciVoto = async function(assenza)
 {

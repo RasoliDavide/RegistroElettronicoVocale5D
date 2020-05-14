@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ProfData } from '../prof.model';
+import { SharedProfDataService } from '../shared-prof-data.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-dirigente-component',
@@ -6,10 +10,31 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./dirigente-component.component.css']
 })
 export class DirigenteComponentComponent implements OnInit {
-
-  constructor() { }
+  formDirigente: FormGroup;
+  httpClient : HttpClient;
+  @Input() profData : ProfData;
+  sharedProfData : SharedProfDataService;
+  constructor(fb : FormBuilder,private http: HttpClient, sharedProfData : SharedProfDataService) {
+    this.httpClient = http;
+    this.sharedProfData = sharedProfData;
+    this.formDirigente = fb.group(
+    {
+      'codiceCircolare':['',Validators.required],
+      'titolo':['',Validators.required],
+      'testo':['',Validators.required]
+    })
+  }
 
   ngOnInit(): void {
+    this.profData = this.sharedProfData.profData;
+    console.log(this.profData);
+  }
+
+  onSubmitComunicazione(){
+      console.log('codiceCircolare: ', this.formDirigente.controls['codiceCircolare'].value);
+      console.log('titolo: ', this.formDirigente.controls['titolo'].value);
+      console.log('testo: ', this.formDirigente.controls['testo'].value);
+      //manca api
   }
 
 }

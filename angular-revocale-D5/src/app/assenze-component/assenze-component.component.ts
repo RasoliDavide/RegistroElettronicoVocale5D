@@ -63,8 +63,8 @@ export class AssenzeComponentComponent implements OnInit {
     this.giustificaV  = true;
     console.log("GiustificaV = true");
   }
-  selectChangeHandler (event: any) {
-    this.selectedAssenza = event.target.value;
+  selectChangeHandler (value) {
+    this.selectedAssenza = value;
   }
   toggleEditable(event) {
     if ( event.target.checked ) {
@@ -95,7 +95,7 @@ export class AssenzeComponentComponent implements OnInit {
       assenzaOgg.CFProfessore=this.profData.CFPersona;
     }
 
-   // this.observAssenza = this.http.post('https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/inserisciAssenza', a)
+   // this.observAssenza = this.http.post('https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/assenza/inserisciAssenza', a)
     //this.observAssenza.subscribe(
      // (data) => {
         //alert('ok');
@@ -113,7 +113,7 @@ export class AssenzeComponentComponent implements OnInit {
   {
     console.log(studente)
     let httpHead = new HttpHeaders({Authorization : studente['securedKey']});
-    this.httpClient.get<Studente[]>(`https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/getStudentiByClasse?codiceClasse=${studente['CodiceClasse']}`, {headers : httpHead})
+    this.httpClient.get<Studente[]>(`https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/prof/getStudentiByClasse?codiceClasse=${studente['CodiceClasse']}`, {headers : httpHead})
     .subscribe((response) =>
     {
       //Cognome,Nome,Username

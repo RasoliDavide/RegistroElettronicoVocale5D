@@ -9,4 +9,5 @@ export class ProfData
 ​  Laboratorio: boolean;
 ​  securedKey: String;
   Corrispondenze : Corrispondenza[];
+
 }

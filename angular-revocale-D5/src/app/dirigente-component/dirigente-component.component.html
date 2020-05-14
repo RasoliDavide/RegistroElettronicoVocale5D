@@ -1,1 +1,45 @@
-<p>dirigente-component works!</p>
+
+<html>
+
+<head>
+</head>
+
+  <body>
+   <h1>Dirigente</h1>
+    <h3>Inserisci circolare</h3>
+      <form [formGroup]="formDirigente" (ngSubmit)="onSubmitComunicazione()" class="jumbotron ng-valid">
+<!--Comunicazioni = CodiceCircolare, Titolo, Testo-->
+        <div class="form-group">
+          <label for="text">Inserisci Codice Circolare</label>
+          <input type="text" id="codiceCircolare" name="codiceCircolare" [formControl]="formDirigente.controls['codiceCircolare']" class="form-control">
+<!--CONTROLLARE SE CODICE CIRCOLARE È TEXT O NUMBER-->
+          <div *ngIf="!formDirigente.controls['codiceCircolare'].valid" class="alert alert-danger">Codice Circolare non è valido</div>
+          <div *ngIf="formDirigente.controls['codiceCircolare'].hasError('required')" class="alert alert-danger">Codice Circolare è
+            richiesto
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="text">Inserisci Titolo</label>
+          <input type="text" id="titolo" name="titolo" [formControl]="formDirigente.controls['titolo']" class="form-control">
+          <div *ngIf="!formDirigente.controls['titolo'].valid" class="alert alert-danger">Titolo non è valido</div>
+          <div *ngIf="formDirigente.controls['titolo'].hasError('required')" class="alert alert-danger">Titolo è
+            richiesto
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="text">Inserisci Testo</label>
+          <input type="text" id="testo" name="testo" [formControl]="formDirigente.controls['testo']" class="form-control">
+          <div *ngIf="!formDirigente.controls['testo'].valid" class="alert alert-danger">Testo non è valido</div>
+          <div *ngIf="formDirigente.controls['testo'].hasError('required')" class="alert alert-danger">Testo è
+            richiesto
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit" [disabled]="!formDirigente.valid">Invia</button>
+      </form>
+
+
+  </body>
+
+</html>

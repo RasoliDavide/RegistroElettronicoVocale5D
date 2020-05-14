@@ -26,7 +26,7 @@
         </tr>
         <tr>
           <th>
-            <select name="tipoAssenza" size="3" (change)="selectChangeHandler($event)">
+            <select name="tipoAssenza" size="3" #t (change)="selectChangeHandler(t.value)">
               <option value="A">Assenza </option>
               <option value="E">Entrata</option>
               <option value="U">Uscita</option>
@@ -36,10 +36,10 @@
           <input type="date" name="data" id="data" [formControl]="formAssenza.controls['data']" >
           </th>
           <th>
-            <input type="time" name="orario" id="orario" [formControl]="formAssenza.controls['orario']">
+            <input type="time" name="orario" id="orario" [formControl]="formAssenza.controls['orario']" *ngIf="t.value != 'A'">
           </th>
           <th>
-            <div class="wrapper">
+            <div class="wrapper" >
               <input id="concorre" name="concorre" type="checkbox" value="concorre" (change)="toggleEditable($event)">
               <label for="concorre">Concorre al calcolo</label>
             </div>

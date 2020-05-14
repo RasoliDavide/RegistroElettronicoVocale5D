@@ -28,9 +28,8 @@ export class AppComponent {
 
   getDatiProf(profProv : Object)
   {
-    console.log(profProv)
     let httpHead = new HttpHeaders({Authorization : profProv['securedKey']});
-    this.httpClient.get<Corrispondenza[]>(`https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/getTeachingClasses?cfProfessore=${profProv['CFPersona']}`, {headers : httpHead})
+    this.httpClient.get<Corrispondenza[]>(`https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/prof/getTeachingClasses?cfProfessore=${profProv['CFPersona']}`, {headers : httpHead})
     .subscribe((response) =>
     {
       this.profData.CFPersona = profProv['CFPersona'];
@@ -44,7 +43,6 @@ export class AppComponent {
       console.log(this.profData);
       this.sharedProfData.setProfData(this.profData);
       this.sharedProfData.setSelectedClass(this.sharedProfData.profData.Corrispondenze[0]);
-
     });
 
   }

@@ -4,7 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { Login } from '../login-component/Login.model';
 import { SharedProfDataService } from '../shared-prof-data.service';
 import { ProfData } from '../prof.model';
-
+import { Persona } from "../persona.model";
+import { HttpHeaders } from '@angular/common/http';
 @Component({
   selector: 'app-prof-component',
   templateUrl: './prof-component.component.html',
@@ -12,14 +13,18 @@ import { ProfData } from '../prof.model';
 })
 export class ProfComponentComponent implements OnInit {
   datiProf: ProfData;
+  datiPersona: Persona;
   @Output() loginOk : EventEmitter<Object>;
   obsProf: Observable<Object>;
   sharedProfData : SharedProfDataService;
   coordinatore: boolean;
+  httpClient : HttpClient;
+
   constructor(private http: HttpClient, sharedProfData : SharedProfDataService)
   {
     this.loginOk = new EventEmitter<Object>();
     this.sharedProfData = sharedProfData;
+    this.httpClient = http;
   }
 
   ngOnInit(): void {
@@ -28,7 +33,27 @@ export class ProfComponentComponent implements OnInit {
       this.coordinatore=false;
     }
   }
+  /*getDatiAggProf(profAgg : Object)
+  {
+    let httpHead = new HttpHeaders({Authorization : profAgg['securedKey']});
+    this.httpClient.get<Persona[]>(`https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/prof/getTeachingClasses?cfProfessore=${profAgg['CFPersona']}`, {headers : httpHead})
+    .subscribe((response) =>
+    {
+      this.datiPersona.CF = profAgg['CF'];
+      this.datiPersona.Nome = profAgg['Nome'];
+      this.datiPersona.Cognome = profAgg['Cognome'];
+      this.datiPersona.Sesso = profAgg['Sesso'];
+      this.datiPersona.DataNascita = profAgg['DataNascita'];
+      this.datiPersona.Username = profAgg['Username'];
+      this.datiPersona.securedKey = profAgg['securedKey'];
+      //this.datiPersona.Persona = response;
+      console.log(this.datiPersona);
+      //this.sharedProfData.setProfData(this.profData);
+      //this.sharedProfData.setSelectedClass(this.sharedProfData.profData.Corrispondenze[0]);
+    });
 
+  }
+*/
 
 
 }
