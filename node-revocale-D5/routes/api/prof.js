@@ -44,7 +44,7 @@ let getTeachingClasses = async function(cfProfessore)
     let dbQuery = new Promise(
     (resolve, reject) => 
     {
-        dbConnection.connect(config,   function(err) {
+        dbConnection.connect(config, function(err) {
             let query = 'SELECT * FROM getMaterie WHERE CFProfessore = @cfProfessore';
             let preparedStatement = new dbConnection.PreparedStatement();
             preparedStatement.input('cfProfessore', dbConnection.Char(16));
@@ -78,7 +78,6 @@ let getTeachingClasses = async function(cfProfessore)
 profRouter.get('/getTeachingClasses', checkAuthorization, async function(req, res)
 {
     let result = await getTeachingClasses(req.query.cfProfessore);
-    console.log(result);
     res.send(result);
 })
 
