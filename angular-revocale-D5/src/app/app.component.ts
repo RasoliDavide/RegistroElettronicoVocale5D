@@ -40,8 +40,9 @@ export class AppComponent {
       this.profData.Laboratorio = profProv['Laboratorio'];
       this.profData.securedKey = profProv['securedKey'];
       this.profData.Corrispondenze = response;
-      console.log(this.profData);
       this.sharedProfData.setProfData(this.profData);
+      this.selectedClass = this.profData.Corrispondenze[0];
+      console.log(this.profData);
       this.sharedProfData.setSelectedClass(this.sharedProfData.profData.Corrispondenze[0]);
     });
 
@@ -49,7 +50,7 @@ export class AppComponent {
 
   onClassSelection(selectedClass : Corrispondenza)
   {
-    console.log(selectedClass);
+    //console.log(selectedClass);
     this.sharedProfData.setSelectedClass(selectedClass);
   }
 }

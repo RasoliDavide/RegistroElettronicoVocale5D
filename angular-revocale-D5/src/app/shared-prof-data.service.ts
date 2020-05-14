@@ -16,11 +16,11 @@ export class SharedProfDataService {
   setSelectedClass(selectedClass : Corrispondenza)
   {
     this.selectedClass = selectedClass;
+    this.sendClassChange.next(this.selectedClass);
   }
   setProfData(profData : ProfData)
   {
     this.profData = profData;
-    this.sendClassChange.next(this.selectedClass);
   }
   getObservable() : Observable<Corrispondenza>
   {

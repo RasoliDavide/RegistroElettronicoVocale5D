@@ -8,9 +8,9 @@
 <!-- https://www.w3schools.com/howto/howto_custom_select.asp-->
 <h3>Seleziona lo studente</h3>
 <div style="width:200px;">
-    <select id="listaStudenti" name= "listaStudenti" >
-      <option value="0">Studente</option>
-      <option *ngFor='let s of studente'>{{s.Cognome}}{{s.Nome}}</option>
+    <select id="listaStudenti" name= "listaStudenti">
+      <option value="0">Seleziona lo studente</option>
+      <option *ngFor='let s of studenti'>{{s.Cognome}} {{s.Nome}}</option>
     </select>
 </div>
 <br>
@@ -26,7 +26,7 @@
         </tr>
         <tr>
           <th>
-            <select name="tipoAssenza" size="3" #t (change)="selectChangeHandler(t.value)">
+            <select name="tipoAssenza" #t (change)="selectChangeHandler(t.value)">
               <option value="A">Assenza </option>
               <option value="E">Entrata</option>
               <option value="U">Uscita</option>

@@ -70,7 +70,7 @@ let getTeachingClasses = async function(cfProfessore)
     let reutrnedObject = await dbQuery;
 
     for(let i = 0; i < reutrnedObject.length; i++)
-        delete reutrnedObject[0].CFProfessore;
+        delete reutrnedObject[i].CFProfessore;
 
     return reutrnedObject;
 }
@@ -78,6 +78,7 @@ let getTeachingClasses = async function(cfProfessore)
 profRouter.get('/getTeachingClasses', checkAuthorization, async function(req, res)
 {
     let result = await getTeachingClasses(req.query.cfProfessore);
+    console.log(result);
     res.send(result);
 })
 
@@ -117,7 +118,7 @@ let getStudentiByClasse = async function(codiceClasse)
 
 profRouter.get('/getStudentiByClasse', checkAuthorization, async function(req, res)
 {
-    let result = await getStudemtiByClasse(req.query.codiceClasse);
+    let result = await getStudentiByClasse(req.query.codiceClasse);
     res.send(result);
 })
 

@@ -1,18 +1,19 @@
-<!--<form [formGroup]="formNote" (ngSubmit)="onSubmitNote(formNote.value)" class="jumbotron ng-valid">
+<!--Codice, Tipologia, Testo, TipoPenalità, CFProfessore, CodiceClasse
+
+<form [formGroup]="formNota" (ngSubmit)="onSubmitNota(formNota.value)" class="jumbotron ng-valid">
 		<table style="width:100%">
 
 	<tr>
 			<th>
-				<p>Tipologia voto</p>
-				<select name="tipoVoto" size="3" (change)="selectChangeHandler($event)">
-              <option value="2">Recupero </option>
-              <option value="0">Valore</option>
-              <option value="1">Senza valore</option>
+				<p>Tipologia nota</p>
+				<select name="tipoNota" size="2" (change)="selectChangeHandler($event)">
+              <option value="0">Singola</option>
+              <option value="1">Classe</option>
             </select>
 
 			</th>
 			<th>
-				<p>Peso voto</p>
+				<p>Tipo penalità</p>
 				<select name="pesoVoto" size="11" (change)="selectChangeHandler($event)">
               <option value="0">0 </option>
               <option value="10">10</option>
@@ -47,9 +48,10 @@
 				</div>
 			</th>
 			<th>
-				<button class="btn btn-secondary btn-block" type="submit">Inserisci voto</button>
+				<button class="btn btn-secondary btn-block" type="submit">Inserisci nota</button>
 			</th>
 	</table>
 
-</form>-->
+</form>
 
+-->

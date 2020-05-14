@@ -28,21 +28,25 @@ export class AssenzeComponentComponent implements OnInit {
   tipoO : string;
   tipoD : string;
   concorreSelect : boolean;
-  @Input() profData : ProfData;
-  @Input() studente : Studente;
+  studente : Studente;
+  profData : ProfData;
   observAssenza: Observable<Object>;
   selectedAssenza: string = '';
   sharedProfData : SharedProfDataService;
   observableChangeSelectedClass : Observable<Corrispondenza>;
+  studenti : Studente[];
   @Output() assenzaOK : EventEmitter<Object>;
+  selectedClass : Corrispondenza;
+
   constructor(fb: FormBuilder,private http: HttpClient, sharedProfData : SharedProfDataService)
   {
     this.httpClient = http;
     this.sharedProfData = sharedProfData;
     this.formAssenza = fb.group(
       {
-      'data':['',Validators.required],
-      'orario':['',Validators.required]
+        'studente':[0, Validators.required],
+        'data':['',Validators.required],
+        'orario':['',Validators.required]
       }
     )
 
@@ -55,8 +59,9 @@ export class AssenzeComponentComponent implements OnInit {
   {
     this.profData = this.sharedProfData.profData;
     this.observableChangeSelectedClass = this.sharedProfData.getObservable();
-    this.observableChangeSelectedClass.subscribe((selectedClass) => {this.metodoCallback(selectedClass)});
-
+    this.onClassChange(this.sharedProfData.selectedClass);
+    this.observableChangeSelectedClass.subscribe(selectedClass => this.onClassChange(selectedClass));
+    this.getStudenti();
   }
 
   giustifica(){
@@ -85,13 +90,11 @@ export class AssenzeComponentComponent implements OnInit {
       assenzaOgg.Data = this.formAssenza.controls['data'].value;
       assenzaOgg.Ora = null;
       assenzaOgg.Concorre =this.concorreSelect;
-      assenzaOgg.CFStudente = this.studente.CFStudente;
       assenzaOgg.CFProfessore=this.profData.CFPersona;
     }else{
       assenzaOgg.Data = this.formAssenza.controls['data'].value;
       assenzaOgg.Ora = this.formAssenza.controls['orario'].value;
       assenzaOgg.Concorre =this.concorreSelect;
-      assenzaOgg.CFStudente = this.studente.CFStudente;
       assenzaOgg.CFProfessore=this.profData.CFPersona;
     }
 
@@ -106,26 +109,23 @@ export class AssenzeComponentComponent implements OnInit {
   }
   onSubmitGiustifica(value: string): void{
     console.log('Motivazione: ', this.formAssenza.controls['motivazione'].value);
-
   }
 
-  getStudenti(studente : Object)
+  getStudenti()
   {
-    console.log(studente)
-    let httpHead = new HttpHeaders({Authorization : studente['securedKey']});
-    this.httpClient.get<Studente[]>(`https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/prof/getStudentiByClasse?codiceClasse=${studente['CodiceClasse']}`, {headers : httpHead})
+    let httpHead = new HttpHeaders({Authorization : String(this.profData.securedKey)});
+    this.httpClient.get<Studente[]>(`https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/prof/getStudentiByClasse?codiceClasse=${this.selectedClass.CodiceClasse}`, {headers : httpHead})
     .subscribe((response) =>
     {
       //Cognome,Nome,Username
-      this.studente.Cognome = studente['Cognome'];
-      this.studente.Nome = studente['Nome'];
-      this.studente.Username = studente['Username'];
-      this.studente.CFStudente = studente['CFStudente'];
+      this.studenti = response;
+      console.log(this.studenti);
 
     })
   }
-  metodoCallback(qualcosa : Object)
+  onClassChange(selectedClass : Corrispondenza)
   {
-    console.log(qualcosa);
+    console.log(selectedClass);
+    this.selectedClass = selectedClass;
   }
 }

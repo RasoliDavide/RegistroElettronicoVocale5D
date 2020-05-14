@@ -20,9 +20,7 @@ export class LoginComponentComponent implements OnInit {
   pastaAllaCarbonara :Observable<Object>;
   @Output() loginOk : EventEmitter<Object>;
 
-  constructor(fb: FormBuilder,private http: HttpClient) { //Il costruttore riceve come parametro il From Builder
-    /*Diciamo al FormBuilder di creare un FormGroup che conterrà un FormControl
-     *Chiamato sku, con valore di default ABC123 */
+  constructor(fb: FormBuilder,private http: HttpClient) {
     this.myForm = fb.group({
       'username': ['', Validators.required],
       'password': ['', Validators.required]
@@ -40,11 +38,8 @@ export class LoginComponentComponent implements OnInit {
     this.pastaAllaCarbonara = this.http.post('https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/login', l)
     this.pastaAllaCarbonara.subscribe(
       (data) => {
-        //alert('ok');
-        console.log(data);
         this.scompare = true;
         this.loginS = false;
-        console.log(this.scompare);
         this.loginOk.emit(data);
       }
     )
