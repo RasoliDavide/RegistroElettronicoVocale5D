@@ -22,24 +22,19 @@ export class AssenzeComponentComponent implements OnInit {
   giustificaV = false;
   formGiustifica: FormGroup;
   formAssenza:FormGroup;
-  selectedOption: string;
-  selectedOrario:string;
-  selectedData: string;
-  tipoG : string;
-  tipoO : string;
-  tipoD : string;
   concorreSelect : boolean;
-  studente : Studente;
+  //studente : Studente;
   profData : ProfData;
   observAssenza: Observable<Object>;
   selectedAssenza: string = '';
-  selectedStudente : string = '';
+  selectedStudente : Studente;
   sharedProfData : SharedProfDataService;
   observableChangeSelectedClass : Observable<Corrispondenza>;
   studenti : Studente[];
   assenze: Assenza[];
   @Output() assenzaOK : EventEmitter<Object>;
   selectedClass : Corrispondenza;
+  visuaForm: boolean;
 
   constructor(fb: FormBuilder,private http: HttpClient, sharedProfData : SharedProfDataService)
   {
@@ -48,7 +43,9 @@ export class AssenzeComponentComponent implements OnInit {
     this.formAssenza = fb.group(
       {
         'studente':[0, Validators.required],
+        'tipoAssenza' : [Validators.required],
         'data':['',Validators.required],
+        'concorre':[true],
         'orario':['',Validators.required]
       }
     )
@@ -64,19 +61,13 @@ export class AssenzeComponentComponent implements OnInit {
     this.observableChangeSelectedClass = this.sharedProfData.getObservable();
     this.onClassChange(this.sharedProfData.selectedClass);
     this.observableChangeSelectedClass.subscribe(selectedClass => this.onClassChange(selectedClass));
-    this.getStudenti();
   }
 
   giustifica(){
     this.giustificaV  = true;
     console.log("GiustificaV = true");
   }
-  selectChangeHandlerStudenti(value){
-    this.selectedStudente = value;
-    console.log('Studente selezionato: ', this.selectedStudente);
-    var splitted = this.selectedStudente.split(" ");
-    console.log('Studente', splitted);
-  }
+
   selectChangeHandler (value) { //TipoAssenza
     this.selectedAssenza = value;
   }
@@ -89,32 +80,30 @@ export class AssenzeComponentComponent implements OnInit {
   }
 
   onSubmitAssenza(value: string): void {
-    console.log('Tipo Assenza: ', this.selectedAssenza);
+    console.log('Tipo Assenza: ', this.formAssenza.controls['tipoAssenza']);
     console.log('Data: ', this.formAssenza.controls['data'].value);
     console.log('Orario: ', this.formAssenza.controls['orario'].value);
-    console.log('Concorre: ',this.concorreSelect);
+    console.log('Concorre: ',this.formAssenza.controls['concorre'].value);
     let assenzaOgg: Assenza = new Assenza();
-    assenzaOgg.Tipo = this.selectedAssenza;
-    if(assenzaOgg.Tipo == "A"){
-      assenzaOgg.Data = this.formAssenza.controls['data'].value;
-      assenzaOgg.Ora = null;
-      assenzaOgg.Concorre =this.concorreSelect;
-      assenzaOgg.CFProfessore=this.profData.CFPersona;
-    }else{
-      assenzaOgg.Data = this.formAssenza.controls['data'].value;
+    assenzaOgg.Tipo = this.formAssenza.controls['tipoAssenza'].value;
+    assenzaOgg.DataAssenza = this.formAssenza.controls['data'].value;
+    assenzaOgg.Ora = this.formAssenza.controls['orario'].value;
+    assenzaOgg.Concorre = this.formAssenza.controls['concorre'].value
+    assenzaOgg.CFProfessore = this.profData.CFPersona;
+    assenzaOgg.UsernameStudente = this.selectedStudente.Username;
+    if(assenzaOgg.Tipo == "A")
+      assenzaOgg.Ora = "";
+    else
       assenzaOgg.Ora = this.formAssenza.controls['orario'].value;
-      assenzaOgg.Concorre =this.concorreSelect;
-      assenzaOgg.CFProfessore=this.profData.CFPersona;
-    }
 
-   // this.observAssenza = this.http.post(environment.node_server + '/api/assenza/inserisciAssenza', assenzaOgg)
-    //this.observAssenza.subscribe(
-     // (data) => {
-        //alert('ok');
-     // this.assenzaOK.emit(data);
-     // }
-  //  )
-
+    let httpHeaders = new HttpHeaders({"Authorization" : String(this.profData.securedKey)})
+    this.observAssenza = this.http.post(environment.node_server + '/api/assenze/inserisciAssenza', assenzaOgg, {headers : httpHeaders});
+    this.observAssenza.subscribe(
+      (data) =>
+      {
+        console.log(data);
+      }
+    )
   }
   onSubmitGiustifica(value: string): void{
     console.log('Motivazione: ', this.formAssenza.controls['motivazione'].value);
@@ -126,22 +115,35 @@ export class AssenzeComponentComponent implements OnInit {
     this.httpClient.get<Studente[]>(environment.node_server + `/api/prof/getStudentiByClasse?codiceClasse=${this.selectedClass.CodiceClasse}`, {headers : httpHead})
     .subscribe((response) =>
     {
-
       this.studenti = response;
       console.log(this.studenti);
-
     })
   }
 
   getAssenze(){
     let httpHead = new HttpHeaders({Authorization : String(this.profData.securedKey)});
-    this.httpClient.get<Assenza[]>(environment.node_server + `/api/prof/assenze/getAssenzeByStudente?UsernameStudente=`, {headers : httpHead})
+    this.httpClient.get<Assenza[]>(environment.node_server + `/api/assenze/getAssenzeByStudente?UsernameStudente=${this.selectedStudente.Username}`, {headers : httpHead})
     .subscribe((response) =>
     {
-
-     this.assenze = response;
-     console.log(this.assenze);
-
+      this.assenze = response;
+      for(let assenza of this.assenze)
+      {
+        assenza.DataAssenza = assenza.DataAssenza.substring(0,10);
+        if(assenza.Ora != undefined)
+          assenza.Ora = assenza.Ora.substring(11, 16);
+        switch(assenza.Tipo)
+        {
+          case('A'):
+            assenza.Tipo = 'Assenza';
+            break;
+          case('E'):
+            assenza.Tipo = 'Entrata posticipata';
+            break;
+          case('U'):
+            assenza.Tipo = 'Uscita anticipata';
+            break;
+        }
+      }
     })
   }
 
@@ -151,5 +153,12 @@ export class AssenzeComponentComponent implements OnInit {
     this.selectedClass = selectedClass;
     this.studenti = null;
     this.getStudenti();
+  }
+  onStudentSelection(selectedStudent : Studente)
+  {
+    this.selectedStudente = selectedStudent;
+    this.visuaForm = (typeof(this.selectedStudente) == 'object');
+    if(this.visuaForm)
+      this.getAssenze();
   }
 }

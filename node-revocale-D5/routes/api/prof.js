@@ -52,7 +52,6 @@ profRouter.get('/getTeachingClasses', checkAuthorization, async function(req, re
     let allParameterReceived = (req.query.cfProfessore != undefined);
     let cfProfessore;
     let cfProfessoreOK = false;
-    console.log(req.query.cfProfessore);
     if(allParameterReceived)
     {
         cfProfessore = req.query.cfProfessore;

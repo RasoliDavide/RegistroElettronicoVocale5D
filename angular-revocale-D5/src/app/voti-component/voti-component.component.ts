@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, /*OnDestroy*/ } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import { Classi } from '../classi.model';
@@ -10,16 +10,28 @@ import { Voti } from '../voti.model';
 import { environment } from 'src/environments/environment';
 import { Corrispondenza } from '../corrispondenze.model';
 import { Injectable } from '@angular/core';
+
+//import { AudioRecordingService } from './audio-recording.service';
+
+
 import * as RecordRTC from 'recordrtc';
-import { AudioRecordingService } from './audio-recording.service';
 import { DomSanitizer } from '@angular/platform-browser';
 @Component({
   selector: 'app-voti-component',
   templateUrl: './voti-component.component.html',
   styleUrls: ['./voti-component.component.css']
 })
-@Injectable()
-export class VotiComponentComponent implements OnInit, OnDestroy {
+//@Injectable()
+export class VotiComponentComponent implements OnInit {
+  private record;
+  //Will use this flag for detect recording
+  recording = false;
+  //Url of Blob
+  url: string;
+  private error;
+
+
+
   isRecording = false;
   recordedTime;
   blobUrl;
@@ -39,6 +51,8 @@ export class VotiComponentComponent implements OnInit, OnDestroy {
   @Output() votoOK: EventEmitter<Object>;
   formVoto: FormGroup;
   selectedClass: Corrispondenza;
+  observVoto: Observable<Object>;
+
   /*private stream;
   private recorder;
   private interval;
@@ -46,7 +60,7 @@ export class VotiComponentComponent implements OnInit, OnDestroy {
   private _recorded = new Subject<any>();
   private _recordingTime = new Subject<string>();
   private _recordingFailed = new Subject<string>();*/
-  constructor(fb: FormBuilder, private http: HttpClient, sharedProfData: SharedProfDataService, private audioRecordingService: AudioRecordingService, private sanitizer: DomSanitizer) {
+  constructor(fb: FormBuilder, private http: HttpClient, sharedProfData: SharedProfDataService, private domSanitizer: DomSanitizer /*private audioRecordingService: AudioRecordingService, private sanitizer: DomSanitizer*/) {
     this.httpClient = http;
     this.sharedProfData = sharedProfData;
     this.formVoto = fb.group(
@@ -57,7 +71,7 @@ export class VotiComponentComponent implements OnInit, OnDestroy {
 
       }
     )
-    this.audioRecordingService.recordingFailed().subscribe(() => {
+    /*this.audioRecordingService.recordingFailed().subscribe(() => {
       this.isRecording = false;
     });
 
@@ -97,9 +111,57 @@ export class VotiComponentComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.abortRecording();
+  }*/
+
   }
+  sanitize(url: string) {
+    return this.domSanitizer.bypassSecurityTrustUrl(url);
+  }
+  initiateRecording() {
 
-
+    this.recording = true;
+    let mediaConstraints = {
+      video: false,
+      audio: true
+    };
+    navigator.mediaDevices
+      .getUserMedia(mediaConstraints)
+      .then(this.successCallback.bind(this), this.errorCallback.bind(this));
+  }
+  /**
+   * Will be called automatically.
+   */
+  successCallback(stream) {
+    var options = {
+      mimeType: "audio/wav",
+      numberOfAudioChannels: 1
+    };
+    //Start Actuall Recording
+    var StereoAudioRecorder = RecordRTC.StereoAudioRecorder;
+    this.record = new StereoAudioRecorder(stream, options);
+    this.record.record();
+  }
+  /**
+   * Stop recording.
+   */
+  stopRecording() {
+    this.recording = false;
+    this.record.stop(this.processRecording.bind(this));
+  }
+  /**
+   * processRecording Do what ever you want with blob
+   * @param  {any} blob Blog
+   */
+  processRecording(blob) {
+    this.url = URL.createObjectURL(blob);
+    console.log(this.url);
+  }
+  /**
+   * Process Error.
+   */
+  errorCallback(error) {
+    this.error = 'Can not play audio in your browser';
+  }
 
   ngOnInit(): void {
     this.profData = this.sharedProfData.profData;
@@ -159,6 +221,7 @@ export class VotiComponentComponent implements OnInit, OnDestroy {
             console.log("Peso: " + v.peso);
             console.log('Tipo: ', v.tipo);
 
+
           }
         }
       }
@@ -176,6 +239,13 @@ export class VotiComponentComponent implements OnInit, OnDestroy {
           }
         }
       }
+      let httpHeaders = new HttpHeaders({ "Authorization": String(this.profData.securedKey) })
+      this.observVoto = this.http.post(environment.node_server + '/api/voti/inserisciVoto', v, { headers: httpHeaders });
+      this.observVoto.subscribe(
+        (data) => {
+          console.log(data);
+        }
+      )
 
       /*v.Data = this.formAssenza.controls['data'].value;
       v.Ora = this.formAssenza.controls['orario'].value;

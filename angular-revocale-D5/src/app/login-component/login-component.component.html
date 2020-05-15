@@ -3,47 +3,47 @@
 <head>
 </head>
 
-  <body>
+<body>
 
-    <div *ngIf = "loginS">
-      <h1>LOGIN</h1>
-      <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="jumbotron ng-valid">
+	<div *ngIf="loginS">
+		<h1>LOGIN</h1>
+		<form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="jumbotron ng-valid">
 
-        <div class="form-group">
-          <label for="username">Inserisci Username</label>
-          <input type="text"
+			<div class="form-group">
+				<label for="username">Inserisci Username</label>
+				<input type="text"
               id="username"
               placeholder="username"
               name="username"
               [formControl]="myForm.controls['username']"
               class="form-control">
 
-          <div *ngIf="!myForm.controls['username'].valid" class="alert alert-danger">"username" non è valido</div>
-          <div *ngIf="myForm.controls['username'].hasError('required')" class="alert alert-danger">"username" è
-            richiesto
-          </div>
-        </div>
+				<div *ngIf="!myForm.controls['username'].valid" class="alert alert-danger">"username" non è valido</div>
+				<div *ngIf="myForm.controls['username'].hasError('required')" class="alert alert-danger">"username" è
+					richiesto
+				</div>
+			</div>
 
-        <br>
+			<br>
 
-        <div class="form-group">
-          <label for="username">Inserisci Password</label>
-          <input type="password"
+			<div class="form-group">
+				<label for="username">Inserisci Password</label>
+				<input type="password"
               id="password"
               placeholder="password"
               name="password"
               [formControl]="myForm.controls['password']"
               class="form-control">
 
-          <div *ngIf="!myForm.controls['password'].valid" class="alert alert-danger">"password" non è valido</div>
-          <div *ngIf="myForm.controls['password'].hasError('required')" class="alert alert-danger">"password" è
-            richiesto
-          </div>
-        </div>
-        <button class="btn btn-primary btn-block" type="submit" [disabled]="!myForm.valid">Login</button>
-      </form>
-    </div>
+				<div *ngIf="!myForm.controls['password'].valid" class="alert alert-danger">"password" non è valido</div>
+				<div *ngIf="myForm.controls['password'].hasError('required')" class="alert alert-danger">"password" è
+					richiesto
+				</div>
+			</div>
+			<button class="btn btn-primary btn-block" type="submit" [disabled]="!myForm.valid">Login</button>
+		</form>
+	</div>
 
-  </body>
+</body>
 
 </html>

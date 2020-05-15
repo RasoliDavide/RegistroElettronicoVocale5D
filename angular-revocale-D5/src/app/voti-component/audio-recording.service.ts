@@ -1,4 +1,4 @@
-
+/*
 import { Injectable, NgZone } from '@angular/core';
 import * as RecordRTC from 'recordrtc';
 import * as moment from 'moment';
@@ -116,4 +116,4 @@ export class AudioRecordingService {
     }
   }
 
-}
+}*/

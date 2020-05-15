@@ -15,19 +15,19 @@ let inserisciAssenza = async function(assenza)
             if(errConn)
                 reject(errConn);
             let preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('cfStudente', dbConnection.Char(16));
-            preparedStatement.input('cfProfessore', dbConnection.Char(16));
-            preparedStatement.input('tipo', dbConnection.Char(1));
-            preparedStatement.input('dataAssenza', dbConnection.Date());
-            preparedStatement.input('concorre', dbConnection.Bit());
-            if(assenza.tipo == 'A')
+            preparedStatement.input('CFStudente', dbConnection.Char(16));
+            preparedStatement.input('CFProfessore', dbConnection.Char(16));
+            preparedStatement.input('Tipo', dbConnection.Char(1));
+            preparedStatement.input('DataAssenza', dbConnection.Date());
+            preparedStatement.input('Concorre', dbConnection.Bit());
+            if(assenza.Tipo == 'A')
             {
-                query = 'INSERT INTO Assenza (cfStudente, cfProfessore, tipo, dataAssenza, concorre) VALUES (@cfStudente, @cfProfessore, @tipo, @dataAssenza, @concorre)';
+                query = 'INSERT INTO Assenza (CFStudente, CFProfessore, Tipo, DataAssenza, Concorre) VALUES (@CFStudente, @CFProfessore, @Tipo, @DataAssenza, @Concorre)';
             }
             else
             {
-                preparedStatement.input('ora', dbConnection.VarChar(5));
-                query = 'INSERT INTO Assenza (cfStudente, cfProfessore, tipo, dataAssenza, concorre, ora) VALUES (@cfStudente, @cfProfessore, @tipo, @dataAssenza, @concorre, @ora)';
+                preparedStatement.input('Ora', dbConnection.VarChar(5));
+                query = 'INSERT INTO Assenza (CFStudente, CFProfessore, Tipo, DataAssenza, Concorre, Ora) VALUES (@CFStudente, @CFProfessore, @Tipo, @DataAssenza, @Concorre, @Ora)';
             }
             preparedStatement.prepare(query,
             errPrep => 
@@ -35,12 +35,12 @@ let inserisciAssenza = async function(assenza)
                 if(errPrep)
                     reject(errPrep);
                 //console.log(assenza)
-                preparedStatement.execute({'cfStudente' : assenza.cfStudente, 
-                                           'cfProfessore' : assenza.cfProfessore,
-                                           'tipo' : assenza.tipo,
-                                           'dataAssenza' : assenza.dataAssenza,
-                                           'concorre' : assenza.concorre,
-                                           'ora' : assenza.ora},
+                preparedStatement.execute({'CFStudente' : assenza.CFStudente, 
+                                           'CFProfessore' : assenza.CFProfessore,
+                                           'Tipo' : assenza.Tipo,
+                                           'DataAssenza' : assenza.DataAssenza,
+                                           'Concorre' : assenza.Concorre,
+                                           'Ora' : assenza.Ora},
                 
                 (errExec, result) =>
                 {      
@@ -74,24 +74,24 @@ let inserisciAssenza = async function(assenza)
 
 assenzeRouter.post('/inserisciAssenza', checkAuthorization, async function(req, res)
 {
-    //tipo, dataAssenza, concorre, ora, cfProfessore, usernameStudente
+    //Tipo, DataAssenza, Concorre, Ora, CFProfessore, UsernameStudente
     let assenza = req.body;
-    
-    let allParameterReceived = (assenza.tipo && assenza.dataAssenza && assenza.concorre && assenza.cfProfessore && assenza.usernameStudente);
+    console.log(assenza);
+    let allParameterReceived = (assenza.Tipo && assenza.DataAssenza && assenza.Concorre != undefined && assenza.CFProfessore && assenza.UsernameStudente);
     
     let assenzaOK = false;
     if(allParameterReceived)
-        assenzaOK  = ((assenza.tipo == 'A' && (assenza.ora == undefined || assenza.ora == "")) ||  ((assenza.tipo == 'E' || assenza.tipo == 'U') && (assenza.ora || assenza.ora != "")));
+        assenzaOK  = ((assenza.Tipo == 'A' && (assenza.Ora == undefined || assenza.Ora == "")) ||  ((assenza.Tipo == 'E' || assenza.Tipo == 'U') && (assenza.Ora || assenza.Ora != "")));
     
-    let cfStudente;
+    let CFStudente;
     if(allParameterReceived && assenzaOK)
-        cfStudente = await RECommonFunctions.getCFStudenteByUsername(assenza.usernameStudente);
+        CFStudente = await RECommonFunctions.getCFStudenteByUsername(assenza.UsernameStudente);
     
     let result;
-    if(allParameterReceived && assenzaOK && cfStudente != undefined)
+    if(allParameterReceived && assenzaOK && CFStudente != undefined)
     {
-        delete assenza.usernameStudente;
-        assenza['cfStudente'] = cfStudente;
+        delete assenza.UsernameStudente;
+        assenza['CFStudente'] = CFStudente;
         result = await inserisciAssenza(assenza);
     }
     console.log("130", result)
@@ -99,7 +99,7 @@ assenzeRouter.post('/inserisciAssenza', checkAuthorization, async function(req, 
         res.status(400).send({success : false, message : "Missing parameter(s)"});
     else if(!assenzaOK)
         res.status(400).send({success : false, message : "Tipo di assenza e ora non compatibili"});
-    else if(!cfStudente)
+    else if(!CFStudente)
         res.status(404).send({success : false, message : "Username dello studente non trovato nel database"});
     else if(!result.success)
         res.status(500).send(result);
@@ -117,11 +117,11 @@ let giustificaAssenza = async function(giustifica)
                 reject(errConn);
 
             let preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('cfStudente', dbConnection.Char(16));
-            preparedStatement.input('tipo', dbConnection.Char(1));
-            preparedStatement.input('dataAssenza', dbConnection.Date());
+            preparedStatement.input('CFStudente', dbConnection.Char(16));
+            preparedStatement.input('Tipo', dbConnection.Char(1));
+            preparedStatement.input('DataAssenza', dbConnection.Date());
             preparedStatement.input('motivazione', dbConnection.VarChar(200));
-            let query = 'UPDATE Assenza SET motivazione = @motivazione WHERE cfStudente = @cfStudente AND tipo = @tipo AND dataAssenza = @dataAssenza';
+            let query = 'UPDATE Assenza SET motivazione = @motivazione WHERE CFStudente = @CFStudente AND Tipo = @Tipo AND DataAssenza = @DataAssenza';
             
             preparedStatement.prepare(query,
             errPrep => 
@@ -129,9 +129,9 @@ let giustificaAssenza = async function(giustifica)
                 if(errPrep)
                     reject(errPrep);
 
-                preparedStatement.execute({'cfStudente' : giustifica.cfStudente, 
-                                           'tipo' : giustifica.tipo,
-                                           'dataAssenza' : giustifica.dataAssenza,
+                preparedStatement.execute({'CFStudente' : giustifica.CFStudente, 
+                                           'Tipo' : giustifica.Tipo,
+                                           'DataAssenza' : giustifica.DataAssenza,
                                            'motivazione' : giustifica.motivazione,
                                         },
                 (errExec, result) =>
@@ -165,24 +165,24 @@ let giustificaAssenza = async function(giustifica)
 
 assenzeRouter.post('/giustificaAssenza', checkAuthorization, async function(req, res)
 {
-    //usernameStudente, tipo, dataAssenza, motivazione
+    //UsernameStudente, Tipo, DataAssenza, motivazione
     let giustifica = req.body;
     let result;
 
-    let allParameterReceived = (giustifica.tipo && giustifica.dataAssenza && giustifica.motivazione && giustifica.usernameStudente);
+    let allParameterReceived = (giustifica.Tipo && giustifica.DataAssenza && giustifica.motivazione && giustifica.UsernameStudente);
     
     motivazioneOK = false;
     if(allParameterReceived)
         motivazioneOK = (giustifica.motivazione && giustifica.motivazione != "");
     
-    let cfStudente;
+    let CFStudente;
     if(allParameterReceived && motivazioneOK)
-        cfStudente = await RECommonFunctions.getCFStudenteByUsername(giustifica.usernameStudente);
+        CFStudente = await RECommonFunctions.getCFStudenteByUsername(giustifica.UsernameStudente);
     
-    if(allParameterReceived && cfStudente != undefined)
+    if(allParameterReceived && CFStudente != undefined)
     {
-        delete giustifica.usernameStudente;
-        giustifica['cfStudente'] = cfStudente;
+        delete giustifica.UsernameStudente;
+        giustifica['CFStudente'] = CFStudente;
         result = await giustificaAssenza(giustifica);
     }
 
@@ -190,7 +190,7 @@ assenzeRouter.post('/giustificaAssenza', checkAuthorization, async function(req,
         res.status(400).send({success : false, message : "Missing parameter(s)"});
     else if(!motivazioneOK)
         res.status(400).send({success : false, message : "Motivazione vuota"});
-    else if(!cfStudente)
+    else if(!CFStudente)
         res.status(404).send({success : false, message : "Username dello studente non trovato nel database"});
     else if(!result.success)
         res.status(500).send(result);
@@ -198,7 +198,7 @@ assenzeRouter.post('/giustificaAssenza', checkAuthorization, async function(req,
         res.status(201).send(result);
 })
 
-let getAssenzaByStudente = async function(cfStudente)
+let getAssenzaByStudente = async function(CFStudente)
 {
     let dbQuery = new Promise(
     (resolve, reject) =>
@@ -208,15 +208,15 @@ let getAssenzaByStudente = async function(cfStudente)
                 reject(errConn);
 
             let preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('cfStudente', dbConnection.Char(16));
-            let query = 'SELECT * FROM Assenza WHERE cfStudente = @cfStudente';
+            preparedStatement.input('CFStudente', dbConnection.Char(16));
+            let query = 'SELECT * FROM Assenza WHERE CFStudente = @CFStudente';
             preparedStatement.prepare(query,
             errPrep => 
             {
                 if(errPrep)
                     reject(errPrep);
 
-                preparedStatement.execute({'cfStudente' : cfStudente},
+                preparedStatement.execute({'CFStudente' : CFStudente},
                 (errExec, result) =>
                 {                
                     if(errExec)
@@ -237,28 +237,28 @@ let getAssenzaByStudente = async function(cfStudente)
 assenzeRouter.get('/getAssenzeByStudente', checkAuthorization, async function(req, res)
 {
     let result;
-    let allParameterReceived = (req.query.usernameStudente != undefined);
-    let usernameStudente;
-    let usernameStudenteOK = false;
+    let allParameterReceived = (req.query.UsernameStudente != undefined);
+    let UsernameStudente;
+    let UsernameStudenteOK = false;
     if(allParameterReceived)
     {
-        usernameStudente = req.query.usernameStudente;
-        usernameStudenteOK = (usernameStudente.length == 5);
+        UsernameStudente = req.query.UsernameStudente;
+        UsernameStudenteOK = (UsernameStudente.length == 5);
     }
         
     
-    let cfStudente;
-    if(allParameterReceived && usernameStudenteOK)
-        cfStudente = await RECommonFunctions.getCFStudenteByUsername(usernameStudente);
+    let CFStudente;
+    if(allParameterReceived && UsernameStudenteOK)
+        CFStudente = await RECommonFunctions.getCFStudenteByUsername(UsernameStudente);
 
-    if(cfStudente != undefined)
-        result = await getAssenzaByStudente(cfStudente);
+    if(CFStudente != undefined)
+        result = await getAssenzaByStudente(CFStudente);
     
     if(!allParameterReceived)
         res.status(400).send({success : false, message : "Missing parameter(s)"});
-    else if(!usernameStudenteOK)
+    else if(!UsernameStudenteOK)
         res.status(400).send({success : false, message : "L'username inserito non ha il numero corretto di caratteri"});
-    else if(!cfStudente)
+    else if(!CFStudente)
         res.status(404).send({success : false, message : "Username dello studente non trovato nel database"});
     else
         res.status(200).send(result);
