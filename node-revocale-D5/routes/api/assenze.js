@@ -1,7 +1,9 @@
 const express = require('express');
 const assenzeRouter = express.Router();
+const RECommonFunctions = require('../common-functions');
+checkAuthorization = (req, res, next) => {return RECommonFunctions.checkAuthorization(req, res, next);}
 
-let checkAuthorization = function(req, res, next)
+let checkAuthorization2 = function(req, res, next)
 {
     let inputKey = req.get('authorization');//recupero il codice di autorizzazione dall'header
     let verifiedKey = 1;

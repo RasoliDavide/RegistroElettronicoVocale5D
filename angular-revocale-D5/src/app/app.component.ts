@@ -4,6 +4,7 @@ import { Corrispondenza } from './corrispondenze.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SharedProfDataService } from './shared-prof-data.service';
 import {MatSelectModule} from '@angular/material/select';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -29,7 +30,7 @@ export class AppComponent {
   getDatiProf(profProv : Object)
   {
     let httpHead = new HttpHeaders({Authorization : profProv['securedKey']});
-    this.httpClient.get<Corrispondenza[]>(`https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/prof/getTeachingClasses?cfProfessore=${profProv['CFPersona']}`, {headers : httpHead})
+    this.httpClient.get<Corrispondenza[]>(environment.node_server + `/api/prof/getTeachingClasses?cfProfessore=${profProv['CFPersona']}`, {headers : httpHead})
     .subscribe((response) =>
     {
       this.profData.CFPersona = profProv['CFPersona'];

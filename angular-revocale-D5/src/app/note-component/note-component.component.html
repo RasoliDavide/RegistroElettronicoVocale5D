@@ -1,57 +1,43 @@
-<!--Codice, Tipologia, Testo, TipoPenalità, CFProfessore, CodiceClasse
+<!--Codice, Tipologia, Testo, TipoPenalità, CFProfessore, CodiceClasse-->
 
 <form [formGroup]="formNota" (ngSubmit)="onSubmitNota(formNota.value)" class="jumbotron ng-valid">
-		<table style="width:100%">
+	<div style="width:200px;">
+		<select id="listaStudenti" name= "listaStudenti">
+        <option value="0">Seleziona lo studente</option>
+        <option *ngFor='let s of studenti'>{{s.Cognome}} {{s.Nome}}</option>
+      </select>
+	</div>
+	<table style="width:100%">
 
-	<tr>
+		<tr>
 			<th>
 				<p>Tipologia nota</p>
 				<select name="tipoNota" size="2" (change)="selectChangeHandler($event)">
-              <option value="0">Singola</option>
-              <option value="1">Classe</option>
+              <option value=0>Singola</option>
+              <option value=1>Classe</option>
             </select>
 
 			</th>
 			<th>
 				<p>Tipo penalità</p>
-				<select name="pesoVoto" size="11" (change)="selectChangeHandler($event)">
-              <option value="0">0 </option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="30">30</option>
-              <option value="40">40</option>
-              <option value="50">50</option>
-              <option value="60">60</option>
-              <option value="70">70</option>
-              <option value="80">80</option>
-              <option value="90">90</option>
-              <option value="100">100</option>
+				<select name="tipoPenalita" size="3" (change)="selectChangeHandler($event)">
+              <option value="1">Sospensione </option>
+              <option value="2">Espulsione</option>
+              <option value="0">Nessuna</option>
             </select>
 
 			</th>
 			<th>
 				<p>inserisci Descrizione</p>
-				<input type="text" name="descrizione" id="descrizione" [formControl]="formVoto.controls['descrizione']" >
+				<input type="text" name="descrizione" id="descrizione" [formControl]="formNota.controls['descrizione']" >
         </th>
-			<th>
-				<p>inserisci voto</p>
-				<input type="text" name="voto" id="voto" [formControl]="formVoto.controls['voto']" >
-        </th>
-			<th>
+				<!--<th>
 				<p>Inserisci data</p>
-				<input type="date" name="data" id="data" [formControl]="formVoto.controls['data']" >
-          </th>
-			<th>
-				<div class="wrapper">
-					<input id="concorre" name="concorre" type="checkbox" value="concorre" (change)="toggleEditable($event)">
-					<label for="concorre">Concorre al calcolo</label>
-				</div>
-			</th>
+				<input type="date" name="data" id="data" [formControl]="formNota.controls['data']" >
+          </th>-->
 			<th>
 				<button class="btn btn-secondary btn-block" type="submit">Inserisci nota</button>
 			</th>
 	</table>
 
 </form>
-
--->

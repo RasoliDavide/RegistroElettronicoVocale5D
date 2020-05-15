@@ -5,20 +5,14 @@ const randomint = require('random-int');
 
 const apiProf = require('./api/prof');
 const apiAssenze = require('./api/assenze');
-const apiVoti = require('./api/voti')
+const apiVoti = require('./api/voti');
+const RECommonFunctions = require('./common-functions');
 
 apiRouter.use('/prof', apiProf);
 apiRouter.use('/assenze', apiAssenze);
 apiRouter.use('/voti', apiVoti);
 
 
-authorizedKey = 
-[
-    {
-            'cfProf' : "dsa",
-            'securedKey' : "all"
-    }
-];
 
 apiRouter.post('/*', function(req, res, next)
 {
@@ -128,42 +122,7 @@ apiRouter.post('/login', checkPostPayloadMiddleware, async function(req, res)
     res.send(result);
 })
 
-let checkAuthorization = function(req, res, next)
-{
-    let inputKey = req.get('authorization');//recupero il codice di autorizzazione dall'header
-    let verifiedKey = 1;
-    //0 = no key, 1 = wrong key, 2 = correct key
 
-    if(inputKey != undefined && inputKey != "")
-    {
-        for(let i = 0; ((i < authorizedKey.length)); i++)
-        {
-            if(authorizedKey[i].securedKey == inputKey)
-            {
-                verifiedKey = 2;
-                break;
-            }
-        }
-    }
-    else
-    {
-        verifiedKey = 0;
-    }
-    switch(verifiedKey)
-    {
-        case(0):
-            console.log('Auth key not found');
-            res.status(401).send('Auth key not found');
-            break;
-        case(1):
-            console.log('Wrong auth key');
-            res.status(401).send('Wrong auth key');
-            break;
-        case(2):
-            next();
-            break;
-    }
-}
 
 getCFStudenteByUsername = async function(username)
 {
@@ -203,6 +162,7 @@ getCFStudenteByUsername = async function(username)
     let queryResult = await dbQuery;
     return queryResult;
 }
+checkAuthorization = (req, res, next) => {return RECommonFunctions.checkAuthorization(req, res, next);}
 
 apiRouter.post('/logout', checkAuthorization, function(req, res)
 {

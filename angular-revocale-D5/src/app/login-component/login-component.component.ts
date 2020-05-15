@@ -8,6 +8,7 @@ import { sha512 } from 'js-sha512';
 import { Login } from './Login.model';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-login-component',
   templateUrl: './login-component.component.html',
@@ -35,7 +36,7 @@ export class LoginComponentComponent implements OnInit {
     l.username = "Admin";
     l.password = "99da612880312b6db4c7ee8048326fcfd7ca4fff90048bd1f897d02c515d2b7f083e3fd1f830841a59f810ce8ab27c34cbfdb9cdf4f7a303940300340990d6eb";
     //console.log(l);
-    this.pastaAllaCarbonara = this.http.post('https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/login', l)
+    this.pastaAllaCarbonara = this.http.post(environment.node_server + '/api/login', l)
     this.pastaAllaCarbonara.subscribe(
       (data) => {
         this.scompare = true;
@@ -52,7 +53,7 @@ export class LoginComponentComponent implements OnInit {
     l.username = this.myForm.controls['username'].value;
     l.password = sha512(this.myForm.controls['password'].value);
     //console.log(l);
-    this.pastaAllaCarbonara = this.http.post('https://3000-fd55686c-fe67-43e1-9d74-11cde241e001.ws-eu01.gitpod.io/api/login', l)
+    this.pastaAllaCarbonara = this.http.post(environment.node_server + '/api/login', l)
     this.pastaAllaCarbonara.subscribe(
       (data) => {
         //alert('ok');

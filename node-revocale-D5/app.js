@@ -15,7 +15,6 @@ config = {
 
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var angularRouter = require('./routes/api');
 
 
@@ -29,7 +28,5 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/api', angularRouter);
-scope = "Ciao Mamma"
 module.exports = app;

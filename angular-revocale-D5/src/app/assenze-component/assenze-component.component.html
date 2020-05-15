@@ -8,12 +8,21 @@
 <!-- https://www.w3schools.com/howto/howto_custom_select.asp-->
   <h3>Seleziona lo studente</h3>
   <div style="width:200px;">
-      <select id="listaStudenti" name= "listaStudenti">
+      <select id="listaStudenti" name= "listaStudenti"  #s (change)="selectChangeHandlerStudenti(s.value)">
         <option value="0">Seleziona lo studente</option>
         <option *ngFor='let s of studenti'>{{s.Cognome}} {{s.Nome}}</option>
       </select>
   </div>
   <br>
+  <!--Tipo, Data, Concorre, Ora-->
+   <table style="width:100%">
+          <tr>
+            <th>Tipologia</th>
+            <th>Data</th>
+            <th>Concorrenza al calcolo </th>
+            <th>Ora</th>
+          </tr>
+    </table>
   <div> <!--Inserire condizione di visione della form una volta scelto lo studente-->
       <form [formGroup]="formAssenza" (ngSubmit)="onSubmitAssenza(formAssenza.value)" class="jumbotron ng-valid">
         <table style="width:100%">
