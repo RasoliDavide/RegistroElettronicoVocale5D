@@ -1,42 +1,8 @@
 const express = require('express');
 const profRouter = express.Router();
 
-let checkAuthorization = function(req, res, next)
-{
-    let inputKey = req.get('authorization');//recupero il codice di autorizzazione dall'header
-    let verifiedKey = 1;
-    //0 = no key, 1 = wrong key, 2 = correct key
-
-    if(inputKey != undefined && inputKey != "")
-    {
-        for(let i = 0; ((i < authorizedKey.length)); i++)
-        {
-            if(authorizedKey[i].securedKey == inputKey)
-            {
-                verifiedKey = 2;
-                break;
-            }
-        }
-    }
-    else
-    {
-        verifiedKey = 0;
-    }
-    switch(verifiedKey)
-    {
-        case(0):
-            console.log('Auth key not found');
-            res.status(401).send('Auth key not found');
-            break;
-        case(1):
-            console.log('Wrong auth key');
-            res.status(401).send('Wrong auth key');
-            break;
-        case(2):
-            next();
-            break;
-    }
-}
+const RECommonFunctions = require('../common-functions');
+checkAuthorization = (req, res, next) => {return RECommonFunctions.checkAuthorizationM(req, res, next);}
 
 let getTeachingClasses = async function(cfProfessore)
 {
@@ -60,25 +26,52 @@ let getTeachingClasses = async function(cfProfessore)
                     preparedStatement.unprepare(
                         err => reject(err)
                     )
-                    resolve(result.recordset);
-                }
-                )
+                    resolve(result);
+                })
             })
         });
-    })
+    }).catch((err) => {console.log(err); return {success : false, message : "Database error: " + err}});
 
     let reutrnedObject = await dbQuery;
-
-    for(let i = 0; i < reutrnedObject.length; i++)
-        delete reutrnedObject[i].CFProfessore;
-
-    return reutrnedObject;
+    if(reutrnedObject.recordset)
+    {
+        for(let i = 0; i < reutrnedObject.recordset.length; i++)
+            delete reutrnedObject.recordset[i].CFProfessore;
+        return {success: true, recordset : reutrnedObject.recordset};
+    }
+    else
+    {
+        return reutrnedObject;
+    }
+    
 }
 
 profRouter.get('/getTeachingClasses', checkAuthorization, async function(req, res)
 {
-    let result = await getTeachingClasses(req.query.cfProfessore);
-    res.send(result);
+    let result;
+    let allParameterReceived = (req.query.cfProfessore != undefined);
+    let cfProfessore;
+    let cfProfessoreOK = false;
+    console.log(req.query.cfProfessore);
+    if(allParameterReceived)
+    {
+        cfProfessore = req.query.cfProfessore;
+        cfProfessoreOK = (cfProfessore.length == 16);
+    }
+
+    if(allParameterReceived && cfProfessoreOK)
+        result = await getTeachingClasses(cfProfessore);
+    
+    if(!allParameterReceived)
+        res.status(400).send({success : false, message : "Missing parameter(s)"});
+    else if(!cfProfessoreOK)
+        res.status(400).send({success : false, message : "Il codice fiscale inserito non ha il numero corretto di caratteri"});
+    else if(!result.success)
+        res.status(500).send(result);
+    else if(result.success && result.recordset.length < 1)
+        res.status(404).send({success : false, message : "Nessuna classe associata al codice fiscale inserito"}); 
+    else
+        res.status(200).send(result.recordset);
 })
 
 let getStudentiByClasse = async function(codiceClasse)

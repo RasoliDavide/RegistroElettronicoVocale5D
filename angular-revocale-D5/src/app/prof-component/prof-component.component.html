@@ -1,18 +1,28 @@
 <html>
+
 <head></head>
 <!--Cosa visualizzare: i dati del database del prof, classi che ha il prof, CF, Sesso, Username-->
 
-  <body>
-    <div>
-      <h1>{{datiProf.Cognome}}  {{datiProf.Nome}}</h1>
-      <!--<p>Username: {{datiProf.Username}}</p>-->
-      <p>Dirigente: {{datiProf.Dirigente}}</p>
-      <p *ngIf="coordinatore">Coordinatore di classe: {{datiProf.CoordinaClasse}}</p>
-      <p>Prof di Laboratorio: {{datiProf.Laboratorio}}</p>
-      <!--<p>CF: {{datiProf.CF}}</p>
-      <p>Data di Nascita: {{datiProf.DataNascita}}</p>
+<body>
+	<div>
+		<h1>{{datiProf.Cognome}} {{datiProf.Nome}}</h1>
+		<!--<p>Username: {{datiProf.Username}}</p>-->
+		<p>Dirigente: {{datiProf.Dirigente}}</p>
+		<p *ngIf="coordinatore">Coordinatore di classe: {{datiProf.CoordinaClasse}}</p>
+		<p>Prof di Laboratorio: {{datiProf.Laboratorio}}</p>
+		<p>CF: {{datiProf.CFPersona}}</p>
+		<div>
+			<p>Classe/i:<p>
+					<div *ngFor="let corrispondenza of sharedProfData.profData.Corrispondenze">
+						<ul>
+							<li> {{corrispondenza.CodiceClasse}} - {{corrispondenza.Materia}}</li>
+						</ul>
+					</div>
+		</div>
+		<!--<p>Data di Nascita: {{datiProf.DataNascita}}</p>
       <p>Sesso: {{datiProf.Sesso}}</p>
       <p *ngFor = "datiProf.Classi">Classi: {{datiProf.Classi}}</p>-->
-    </div>
-  </body>
+	</div>
+</body>
+
 </html>

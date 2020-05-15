@@ -6,7 +6,7 @@
 </head>
 <body>
 <!-- https://www.w3schools.com/howto/howto_custom_select.asp-->
-  <h3>Seleziona lo studente</h3>
+  <h4>Seleziona lo studente</h4>
   <div style="width:200px;">
       <select id="listaStudenti" name= "listaStudenti"  #s (change)="selectChangeHandlerStudenti(s.value)">
         <option value="0">Seleziona lo studente</option>
@@ -15,14 +15,23 @@
   </div>
   <br>
   <!--Tipo, Data, Concorre, Ora-->
-   <table style="width:100%">
+   <h4>Riepilogo assenze</h4>
+   <table style="width:75%" class="assenze">
           <tr>
-            <th>Tipologia</th>
             <th>Data</th>
+            <th>Tipologia</th>
             <th>Concorrenza al calcolo </th>
             <th>Ora</th>
           </tr>
+          <tr>
+            <td>02/10/2012</td>
+            <td>Assenza</td>
+            <td>True</td>
+            <td>Null</td>
+          </tr>
     </table>
+<br>
+  <h4>Inserisci assenza</h4>
   <div> <!--Inserire condizione di visione della form una volta scelto lo studente-->
       <form [formGroup]="formAssenza" (ngSubmit)="onSubmitAssenza(formAssenza.value)" class="jumbotron ng-valid">
         <table style="width:100%">

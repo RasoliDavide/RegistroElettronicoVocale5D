@@ -40,3 +40,27 @@
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+
+.assenze {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.assenze td, #customers th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.assenze tr:nth-child(even){background-color: #f2f2f2;}
+
+.assenze tr:hover {background-color: #ddd;}
+
+.assenze th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color:rgb(52, 92, 124);
+  color: white;
+}

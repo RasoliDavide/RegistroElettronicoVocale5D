@@ -1,44 +1,9 @@
 const express = require('express');
 const assenzeRouter = express.Router();
+
 const RECommonFunctions = require('../common-functions');
-checkAuthorization = (req, res, next) => {return RECommonFunctions.checkAuthorization(req, res, next);}
+checkAuthorization = (req, res, next) => {return RECommonFunctions.checkAuthorizationM(req, res, next);}
 
-let checkAuthorization2 = function(req, res, next)
-{
-    let inputKey = req.get('authorization');//recupero il codice di autorizzazione dall'header
-    let verifiedKey = 1;
-    //0 = no key, 1 = wrong key, 2 = correct key
-
-    if(inputKey != undefined && inputKey != "")
-    {
-        for(let i = 0; ((i < authorizedKey.length)); i++)
-        {
-            if(authorizedKey[i].securedKey == inputKey)
-            {
-                verifiedKey = 2;
-                break;
-            }
-        }
-    }
-    else
-    {
-        verifiedKey = 0;
-    }
-    switch(verifiedKey)
-    {
-        case(0):
-            console.log('Auth key not found');
-            res.status(401).send('Auth key not found');
-            break;
-        case(1):
-            console.log('Wrong auth key');
-            res.status(401).send('Wrong auth key');
-            break;
-        case(2):
-            next();
-            break;
-    }
-}
 
 let inserisciAssenza = async function(assenza)
 {
@@ -51,18 +16,18 @@ let inserisciAssenza = async function(assenza)
                 reject(errConn);
             let preparedStatement = new dbConnection.PreparedStatement();
             preparedStatement.input('cfStudente', dbConnection.Char(16));
-            preparedStatement.input('CFProfessore', dbConnection.Char(16));
-            preparedStatement.input('Tipo', dbConnection.Char(1));
-            preparedStatement.input('DataAssenza', dbConnection.Date());
-            preparedStatement.input('Concorre', dbConnection.Bit());
+            preparedStatement.input('cfProfessore', dbConnection.Char(16));
+            preparedStatement.input('tipo', dbConnection.Char(1));
+            preparedStatement.input('dataAssenza', dbConnection.Date());
+            preparedStatement.input('concorre', dbConnection.Bit());
             if(assenza.tipo == 'A')
             {
-                query = 'INSERT INTO Assenza (cfStudente, CFProfessore, Tipo, DataAssenza, Concorre) VALUES (@cfStudente, @CFProfessore, @Tipo, @DataAssenza, @Concorre)';
+                query = 'INSERT INTO Assenza (cfStudente, cfProfessore, tipo, dataAssenza, concorre) VALUES (@cfStudente, @cfProfessore, @tipo, @dataAssenza, @concorre)';
             }
             else
             {
-                preparedStatement.input('Ora', dbConnection.VarChar(5));
-                query = 'INSERT INTO Assenza (cfStudente, CFProfessore, Tipo, DataAssenza, Concorre, Ora) VALUES (@cfStudente, @CFProfessore, @Tipo, @DataAssenza, @Concorre, @Ora)';
+                preparedStatement.input('ora', dbConnection.VarChar(5));
+                query = 'INSERT INTO Assenza (cfStudente, cfProfessore, tipo, dataAssenza, concorre, ora) VALUES (@cfStudente, @cfProfessore, @tipo, @dataAssenza, @concorre, @ora)';
             }
             preparedStatement.prepare(query,
             errPrep => 
@@ -71,11 +36,11 @@ let inserisciAssenza = async function(assenza)
                     reject(errPrep);
                 //console.log(assenza)
                 preparedStatement.execute({'cfStudente' : assenza.cfStudente, 
-                                           'CFProfessore' : assenza.cfProfessore,
-                                           'Tipo' : assenza.tipo,
-                                           'DataAssenza' : assenza.dataAssenza,
-                                           'Concorre' : assenza.concorre,
-                                           'Ora' : assenza.ora},
+                                           'cfProfessore' : assenza.cfProfessore,
+                                           'tipo' : assenza.tipo,
+                                           'dataAssenza' : assenza.dataAssenza,
+                                           'concorre' : assenza.concorre,
+                                           'ora' : assenza.ora},
                 
                 (errExec, result) =>
                 {      
@@ -120,7 +85,7 @@ assenzeRouter.post('/inserisciAssenza', checkAuthorization, async function(req, 
     
     let cfStudente;
     if(allParameterReceived && assenzaOK)
-        cfStudente = await getCFStudenteByUsername(assenza.usernameStudente);
+        cfStudente = await RECommonFunctions.getCFStudenteByUsername(assenza.usernameStudente);
     
     let result;
     if(allParameterReceived && assenzaOK && cfStudente != undefined)
@@ -147,59 +112,90 @@ let giustificaAssenza = async function(giustifica)
     let dbQuery = new Promise(
     (resolve, reject) =>
     {
-        dbConnection.connect(config, function(err) {
+        dbConnection.connect(config, function(errConn) {
+            if(errConn)
+                reject(errConn);
+
             let preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('CFStudente', dbConnection.Char(16));
-            preparedStatement.input('Tipo', dbConnection.Char(1));
-            preparedStatement.input('DataAssenza', dbConnection.Date());
-            preparedStatement.input('Motivazione', dbConnection.VarChar(200));
-            let query = 'UPDATE Assenza SET Motivazione = @Motivazione WHERE CFStudente = @CFStudente AND Tipo = @Tipo AND DataAssenza = @DataAssenza';
+            preparedStatement.input('cfStudente', dbConnection.Char(16));
+            preparedStatement.input('tipo', dbConnection.Char(1));
+            preparedStatement.input('dataAssenza', dbConnection.Date());
+            preparedStatement.input('motivazione', dbConnection.VarChar(200));
+            let query = 'UPDATE Assenza SET motivazione = @motivazione WHERE cfStudente = @cfStudente AND tipo = @tipo AND dataAssenza = @dataAssenza';
             
             preparedStatement.prepare(query,
-            errP => 
+            errPrep => 
             {
-                if(errP)
-                    console.log(errP);
+                if(errPrep)
+                    reject(errPrep);
 
-                preparedStatement.execute({'CFStudente' : giustifica.CFStudente, 
-                                           'Tipo' : giustifica.Tipo,
-                                           'DataAssenza' : giustifica.DataAssenza,
-                                           'Motivazione' : giustifica.Motivazione,
+                preparedStatement.execute({'cfStudente' : giustifica.cfStudente, 
+                                           'tipo' : giustifica.tipo,
+                                           'dataAssenza' : giustifica.dataAssenza,
+                                           'motivazione' : giustifica.motivazione,
                                         },
-                (errE, result) =>
-                {                
-                    if(errE)
-                        console.log(errE);
-
+                (errExec, result) =>
+                {              
+                    if(errExec)
+                        reject(errExec);
+                        
                     preparedStatement.unprepare(
-                        errU => console.log(errU)
+                        errUnprep => reject(errUnprep)
                     )
-                    console.log(result)
-                    resolve(result);
+                    if(result)
+                        resolve(result.rowsAffected[0]);
+                    else
+                    {
+                        err = new Error("No modified values")
+                        reject(errExec);
+                    }
                 })
             })
         });
-    });
+    }).catch((err) => {console.log(err); return {success : false, message : "Database error: " + err}});
+
     let queryResult = await dbQuery;
-    return queryResult
+    if(queryResult == 1)
+        return {success : true};
+    else if(queryResult == 0)
+        return {success : false, message : "No row affected"}
+    else
+        return queryResult;
 }
 
 assenzeRouter.post('/giustificaAssenza', checkAuthorization, async function(req, res)
 {
-    //UsernameStudente, Tipo, DataAssenza, Motivazione
+    //usernameStudente, tipo, dataAssenza, motivazione
     let giustifica = req.body;
-    console.log(giustifica)
     let result;
-    if((giustifica.Tipo == 'A' || giustifica.Tipo == 'E' || giustifica.Tipo == 'U') && giustifica.Motivazione && giustifica.DataAssenza && giustifica.UsernameStudente)
+
+    let allParameterReceived = (giustifica.tipo && giustifica.dataAssenza && giustifica.motivazione && giustifica.usernameStudente);
+    
+    motivazioneOK = false;
+    if(allParameterReceived)
+        motivazioneOK = (giustifica.motivazione && giustifica.motivazione != "");
+    
+    let cfStudente;
+    if(allParameterReceived && motivazioneOK)
+        cfStudente = await RECommonFunctions.getCFStudenteByUsername(giustifica.usernameStudente);
+    
+    if(allParameterReceived && cfStudente != undefined)
     {
-        console.log("Dentro l'if");
-        let cfStudente = await getCFStudenteByUsername(giustifica.UsernameStudente);
-        delete giustifica.UsernameStudente;
-        giustifica['CFStudente'] = cfStudente;
-        console.log(giustifica);
+        delete giustifica.usernameStudente;
+        giustifica['cfStudente'] = cfStudente;
         result = await giustificaAssenza(giustifica);
     }
-    res.send(result);
+
+    if(!allParameterReceived)
+        res.status(400).send({success : false, message : "Missing parameter(s)"});
+    else if(!motivazioneOK)
+        res.status(400).send({success : false, message : "Motivazione vuota"});
+    else if(!cfStudente)
+        res.status(404).send({success : false, message : "Username dello studente non trovato nel database"});
+    else if(!result.success)
+        res.status(500).send(result);
+    else
+        res.status(201).send(result);
 })
 
 let getAssenzaByStudente = async function(cfStudente)
@@ -207,26 +203,28 @@ let getAssenzaByStudente = async function(cfStudente)
     let dbQuery = new Promise(
     (resolve, reject) =>
     {
-        dbConnection.connect(config, function(err) {
-            let preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('CFStudente', dbConnection.Char(16));
-            let query = 'SELECT * FROM Assenza WHERE CFStudente = @CFStudente';
-            preparedStatement.prepare(query,
-            errP => 
-            {
-                if(errP)
-                    console.log(errP);
+        dbConnection.connect(config, function(errConn) {
+            if(errConn)
+                reject(errConn);
 
-                preparedStatement.execute({'CFStudente' : cfStudente},
-                (errE, result) =>
+            let preparedStatement = new dbConnection.PreparedStatement();
+            preparedStatement.input('cfStudente', dbConnection.Char(16));
+            let query = 'SELECT * FROM Assenza WHERE cfStudente = @cfStudente';
+            preparedStatement.prepare(query,
+            errPrep => 
+            {
+                if(errPrep)
+                    reject(errPrep);
+
+                preparedStatement.execute({'cfStudente' : cfStudente},
+                (errExec, result) =>
                 {                
-                    if(errE)
-                        console.log(errE);
+                    if(errExec)
+                        reject(errExec);
 
                     preparedStatement.unprepare(
-                        errU => console.log(errU)
+                        errUnprep => reject(errUnprep)
                     )
-                    console.log(result)
                     resolve(result.recordset);
                 })
             })
@@ -239,12 +237,31 @@ let getAssenzaByStudente = async function(cfStudente)
 assenzeRouter.get('/getAssenzeByStudente', checkAuthorization, async function(req, res)
 {
     let result;
-    let cfStudente = await getCFStudenteByUsername(req.query.UsernameStudente);
-    if(cfStudente != undefined)
+    let allParameterReceived = (req.query.usernameStudente != undefined);
+    let usernameStudente;
+    let usernameStudenteOK = false;
+    if(allParameterReceived)
     {
-        result = await getAssenzaByStudente(cfStudente);
+        usernameStudente = req.query.usernameStudente;
+        usernameStudenteOK = (usernameStudente.length == 5);
     }
-    res.send(result);
+        
+    
+    let cfStudente;
+    if(allParameterReceived && usernameStudenteOK)
+        cfStudente = await RECommonFunctions.getCFStudenteByUsername(usernameStudente);
+
+    if(cfStudente != undefined)
+        result = await getAssenzaByStudente(cfStudente);
+    
+    if(!allParameterReceived)
+        res.status(400).send({success : false, message : "Missing parameter(s)"});
+    else if(!usernameStudenteOK)
+        res.status(400).send({success : false, message : "L'username inserito non ha il numero corretto di caratteri"});
+    else if(!cfStudente)
+        res.status(404).send({success : false, message : "Username dello studente non trovato nel database"});
+    else
+        res.status(200).send(result);
 })
 
 module.exports = assenzeRouter;

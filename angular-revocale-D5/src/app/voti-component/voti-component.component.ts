@@ -1,6 +1,6 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Classi } from '../classi.model';
 import { ProfData } from '../prof.model';
 import { SharedProfDataService } from '../shared-prof-data.service';
@@ -9,13 +9,24 @@ import { Studente } from '../studente.model';
 import { Voti } from '../voti.model';
 import { environment } from 'src/environments/environment';
 import { Corrispondenza } from '../corrispondenze.model';
+import { Injectable } from '@angular/core';
+import * as RecordRTC from 'recordrtc';
+import { AudioRecordingService } from './audio-recording.service';
+import { DomSanitizer } from '@angular/platform-browser';
 @Component({
   selector: 'app-voti-component',
   templateUrl: './voti-component.component.html',
   styleUrls: ['./voti-component.component.css']
 })
-export class VotiComponentComponent implements OnInit {
-  studenti : Studente[];
+@Injectable()
+export class VotiComponentComponent implements OnInit, OnDestroy {
+  isRecording = false;
+  recordedTime;
+  blobUrl;
+
+
+
+  studenti: Studente[];
   httpClient: HttpClient;
   concorreSelect: boolean;
   pesoSelect: boolean;
@@ -27,19 +38,68 @@ export class VotiComponentComponent implements OnInit {
   sharedProfData: SharedProfDataService;
   @Output() votoOK: EventEmitter<Object>;
   formVoto: FormGroup;
-  selectedClass : Corrispondenza;
-  constructor(fb: FormBuilder, private http: HttpClient, sharedProfData: SharedProfDataService) {
+  selectedClass: Corrispondenza;
+  /*private stream;
+  private recorder;
+  private interval;
+  private startTime;
+  private _recorded = new Subject<any>();
+  private _recordingTime = new Subject<string>();
+  private _recordingFailed = new Subject<string>();*/
+  constructor(fb: FormBuilder, private http: HttpClient, sharedProfData: SharedProfDataService, private audioRecordingService: AudioRecordingService, private sanitizer: DomSanitizer) {
     this.httpClient = http;
     this.sharedProfData = sharedProfData;
     this.formVoto = fb.group(
       {
         'voto': ['', Validators.required],
         'descrizione': ['', Validators.required],
-        'data':['',Validators.required],
+        'data': ['', Validators.required],
 
       }
     )
+    this.audioRecordingService.recordingFailed().subscribe(() => {
+      this.isRecording = false;
+    });
+
+    this.audioRecordingService.getRecordedTime().subscribe((time) => {
+      this.recordedTime = time;
+    });
+
+    this.audioRecordingService.getRecordedBlob().subscribe((data) => {
+      this.blobUrl = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(data.blob));
+    });
   }
+
+  startRecording() {
+    if (!this.isRecording) {
+      this.isRecording = true;
+      this.audioRecordingService.startRecording();
+    }
+  }
+
+  abortRecording() {
+    if (this.isRecording) {
+      this.isRecording = false;
+      this.audioRecordingService.abortRecording();
+    }
+  }
+
+  stopRecording() {
+    if (this.isRecording) {
+      this.audioRecordingService.stopRecording();
+      this.isRecording = false;
+    }
+  }
+
+  clearRecordedData() {
+    this.blobUrl = null;
+  }
+
+  ngOnDestroy(): void {
+    this.abortRecording();
+  }
+
+
 
   ngOnInit(): void {
     this.profData = this.sharedProfData.profData;
@@ -124,23 +184,21 @@ export class VotiComponentComponent implements OnInit {
       //a.CFProfessore*/
     }
   }
-  getStudenti()
-  {
-    let httpHead = new HttpHeaders({Authorization : String(this.profData.securedKey)});
-    this.httpClient.get<Studente[]>(environment.node_server + `/api/prof/getStudentiByClasse?codiceClasse=${this.selectedClass.CodiceClasse}`, {headers : httpHead})
-    .subscribe((response) =>
-    {
-      //Cognome,Nome,Username
-      this.studenti = response;
-      console.log(this.studenti);
+  getStudenti() {
+    let httpHead = new HttpHeaders({ Authorization: String(this.profData.securedKey) });
+    this.httpClient.get<Studente[]>(environment.node_server + `/api/prof/getStudentiByClasse?codiceClasse=${this.selectedClass.CodiceClasse}`, { headers: httpHead })
+      .subscribe((response) => {
+        //Cognome,Nome,Username
+        this.studenti = response;
+        console.log(this.studenti);
 
-    })
+      })
   }
-  onClassChange(selectedClass : Corrispondenza)
-  {
+  onClassChange(selectedClass: Corrispondenza) {
     console.log(selectedClass);
     this.selectedClass = selectedClass;
   }
+
 
 
 }

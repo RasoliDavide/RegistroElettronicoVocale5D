@@ -1,42 +1,8 @@
 const express = require('express');
 const votiRouter = express.Router();
 
-let checkAuthorization = function(req, res, next)
-{
-    let inputKey = req.get('authorization');//recupero il codice di autorizzazione dall'header
-    let verifiedKey = 1;
-    //0 = no key, 1 = wrong key, 2 = correct key
-
-    if(inputKey != undefined && inputKey != "")
-    {
-        for(let i = 0; ((i < authorizedKey.length)); i++)
-        {
-            if(authorizedKey[i].securedKey == inputKey)
-            {
-                verifiedKey = 2;
-                break;
-            }
-        }
-    }
-    else
-    {
-        verifiedKey = 0;
-    }
-    switch(verifiedKey)
-    {
-        case(0):
-            console.log('Auth key not found');
-            res.status(401).send('Auth key not found');
-            break;
-        case(1):
-            console.log('Wrong auth key');
-            res.status(401).send('Wrong auth key');
-            break;
-        case(2):
-            next();
-            break;
-    }
-}
+const RECommonFunctions = require('../common-functions');
+checkAuthorization = (req, res, next) => {return RECommonFunctions.checkAuthorizationM(req, res, next);}
 
 let inserisciVoto = async function(voto)
 {
@@ -105,7 +71,7 @@ votiRouter.post('/inserisciVoto', checkAuthorization, async function(req, res)
     let voto = req.body;
     if(voto.UsernameStudente && voto.Voto && voto.Tipologia && voto.Peso &&  voto.CFProfessore && voto.CodiceMateria && voto.DataVoto)
     {
-        voto['CFStudente'] = await getCFStudenteByUsername(voto.UsernameStudente);
+        voto['CFStudente'] = await RECommonFunctions.getCFStudenteByUsername(voto.UsernameStudente);
         if(voto['CFStudente'] != undefined)
         {
             delete voto.UsernameStudente;
@@ -157,7 +123,7 @@ votiRouter.get('/getVotiByStudente', checkAuthorization, async function(req, res
     let usernameStudente = req.query.usernameStudente;
     if(usernameStudente != undefined)
     {
-        let cfStudente = await getCFStudenteByUsername(usernameStudente);
+        let cfStudente = await RECommonFunctions.getCFStudenteByUsername(usernameStudente);
         if(cfStudente != undefined)
         {
             result = await getVotiByStudente(cfStudente);

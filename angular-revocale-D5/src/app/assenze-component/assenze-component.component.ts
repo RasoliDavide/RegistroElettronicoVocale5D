@@ -73,6 +73,9 @@ export class AssenzeComponentComponent implements OnInit {
   }
   selectChangeHandlerStudenti(value){
     this.selectedStudente = value;
+    console.log('Studente selezionato: ', this.selectedStudente);
+    var splitted = this.selectedStudente.split(" ");
+    console.log('Studente', splitted);
   }
   selectChangeHandler (value) { //TipoAssenza
     this.selectedAssenza = value;
@@ -104,7 +107,7 @@ export class AssenzeComponentComponent implements OnInit {
       assenzaOgg.CFProfessore=this.profData.CFPersona;
     }
 
-   // this.observAssenza = this.http.post(environment.node_server + '/api/assenza/inserisciAssenza', a)
+   // this.observAssenza = this.http.post(environment.node_server + '/api/assenza/inserisciAssenza', assenzaOgg)
     //this.observAssenza.subscribe(
      // (data) => {
         //alert('ok');
@@ -130,20 +133,23 @@ export class AssenzeComponentComponent implements OnInit {
     })
   }
 
-  //getAssenze(){
-   // let httpHead = new HttpHeaders({Authorization : String(this.profData.securedKey)});
-   // this.httpClient.get<Assenza[]>(environment.node_server + `/api/prof/assenze/getAssenzeByStudente?UsernameStudente=`, {headers : httpHead})
-   // .subscribe((response) =>
-   // {
+  getAssenze(){
+    let httpHead = new HttpHeaders({Authorization : String(this.profData.securedKey)});
+    this.httpClient.get<Assenza[]>(environment.node_server + `/api/prof/assenze/getAssenzeByStudente?UsernameStudente=`, {headers : httpHead})
+    .subscribe((response) =>
+    {
 
-     // this.assenze = response;
-    //  console.log(this.assenze);
+     this.assenze = response;
+     console.log(this.assenze);
 
-    //})
- // }
+    })
+  }
+
   onClassChange(selectedClass : Corrispondenza)
   {
     console.log(selectedClass);
     this.selectedClass = selectedClass;
+    this.studenti = null;
+    this.getStudenti();
   }
 }

@@ -6,20 +6,29 @@ const randomint = require('random-int');
 const apiProf = require('./api/prof');
 const apiAssenze = require('./api/assenze');
 const apiVoti = require('./api/voti');
+
+
 const RECommonFunctions = require('./common-functions');
+checkAuthorization = (req, res, next) => {return RECommonFunctions.checkAuthorizationM(req, res, next);}
 
 apiRouter.use('/prof', apiProf);
 apiRouter.use('/assenze', apiAssenze);
 apiRouter.use('/voti', apiVoti);
 
-
-
+authorizedKey = 
+[
+    {
+            'cfProf' : "dsa",
+            'securedKey' : "all"
+    }
+];
+/*
 apiRouter.post('/*', function(req, res, next)
 {
     console.log("Forwarded");
     next();
 })
-
+*/
 const checkPostPayloadMiddleware = (req, res, next) =>
 {
     if(req.body)
@@ -124,45 +133,7 @@ apiRouter.post('/login', checkPostPayloadMiddleware, async function(req, res)
 
 
 
-getCFStudenteByUsername = async function(username)
-{
-    let dbQuery = new Promise(
-    (resolve, reject) =>
-    {
-        dbConnection.connect(config, function(err) {
-            let query = 'SELECT CFPersona FROM Persona WHERE Username = @username';
-            let preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('username', dbConnection.VarChar(5));
-            preparedStatement.prepare(query,
-            err => 
-            {
-                if(err)
-                    console.log(err);
 
-                preparedStatement.execute({'username' : username},
-                (err, result) =>
-                {
-                
-                    preparedStatement.unprepare(
-                        err => reject(err)
-                    )
-                    console.log(result.recordset.length);
-                    if(result.recordset.length == 1)
-                        resolve(result.recordset[0].CFPersona);
-                    else
-                    {
-                        let err = new Error("No CF found with the Username inserted");
-                        reject(err);
-                    }
-                        
-                })
-            })
-        });
-    }).catch((err) => {return undefined})
-    let queryResult = await dbQuery;
-    return queryResult;
-}
-checkAuthorization = (req, res, next) => {return RECommonFunctions.checkAuthorization(req, res, next);}
 
 apiRouter.post('/logout', checkAuthorization, function(req, res)
 {

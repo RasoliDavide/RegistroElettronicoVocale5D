@@ -30,6 +30,8 @@ export class NoteComponentComponent implements OnInit {
   @Output() votoOK: EventEmitter<Object>;
   formNota: FormGroup;
   selectedClass: Corrispondenza;
+  observableChangeSelectedClass : Observable<Corrispondenza>;
+
   constructor(fb: FormBuilder, private http: HttpClient, sharedProfData: SharedProfDataService) {
     this.httpClient = http;
     this.sharedProfData = sharedProfData;
@@ -45,7 +47,10 @@ export class NoteComponentComponent implements OnInit {
 
   ngOnInit(): void {
     this.profData = this.sharedProfData.profData;
-    console.log('Data: ', this.formNota.controls['data'].value);
+    this.observableChangeSelectedClass = this.sharedProfData.getObservable();
+    this.onClassChange(this.sharedProfData.selectedClass);
+    this.observableChangeSelectedClass.subscribe(selectedClass => this.onClassChange(selectedClass));
+    this.getStudenti();
   }
   selectChangeHandler(event: any) {
     this.selectedTipo = event.target.value;
@@ -63,7 +68,6 @@ export class NoteComponentComponent implements OnInit {
   onSubmitNota(value: string): void {
     let n: Nota = new Nota();
     console.log('Descrizione: ', this.formNota.controls['descrizione'].value);
-    console.log('Data: ', this.formNota.controls['data'].value);
     n.Tipologia = parseInt(this.selectedTipo);
     n.TipoPenalità = parseInt(this.selectedPenalita);
 
@@ -112,6 +116,10 @@ export class NoteComponentComponent implements OnInit {
   onClassChange(selectedClass: Corrispondenza) {
     console.log(selectedClass);
     this.selectedClass = selectedClass;
+    this.studenti = null;
+    this.getStudenti();
+
+
   }
 
 
