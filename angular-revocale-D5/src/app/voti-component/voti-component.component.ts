@@ -29,15 +29,9 @@ export class VotiComponentComponent implements OnInit {
   //Url of Blob
   url: string;
   private error;
-
-
-
   isRecording = false;
   recordedTime;
   blobUrl;
-
-
-
   studenti: Studente[];
   httpClient: HttpClient;
   concorreSelect: boolean;
@@ -52,7 +46,10 @@ export class VotiComponentComponent implements OnInit {
   formVoto: FormGroup;
   selectedClass: Corrispondenza;
   observVoto: Observable<Object>;
-
+  selectedStudente : Studente;
+  visuaForm: boolean;
+  voti: Voti[];
+  observableChangeSelectedClass : Observable<Corrispondenza>;
   /*private stream;
   private recorder;
   private interval;
@@ -65,9 +62,12 @@ export class VotiComponentComponent implements OnInit {
     this.sharedProfData = sharedProfData;
     this.formVoto = fb.group(
       {
-        'voto': ['', Validators.required],
+        'peso': ['', Validators.required],
+        'tipologia': ['', Validators.required],
         'descrizione': ['', Validators.required],
+        'voto': ['', Validators.required],
         'data': ['', Validators.required],
+
 
       }
     )
@@ -163,8 +163,17 @@ export class VotiComponentComponent implements OnInit {
     this.error = 'Can not play audio in your browser';
   }
 
+
+
+
+
   ngOnInit(): void {
     this.profData = this.sharedProfData.profData;
+    this.observableChangeSelectedClass = this.sharedProfData.getObservable();
+    this.onClassChange(this.sharedProfData.selectedClass);
+    this.observableChangeSelectedClass.subscribe(selectedClass => this.onClassChange(selectedClass));
+    this.getStudenti();
+
   }
   selectChangeHandler(event: any) {
     this.selectedVoto = event.target.value;
@@ -184,61 +193,24 @@ export class VotiComponentComponent implements OnInit {
     console.log('Voto: ', this.formVoto.controls['voto'].value);
     console.log('Descrizione: ', this.formVoto.controls['descrizione'].value);
     console.log('Data: ', this.formVoto.controls['data'].value);
-    v.tipo = this.selectedVoto;
-    v.peso = parseInt(this.selectedPeso);
-
-    if (v.tipo == "0") {
-      for (let i = 0; i < this.arrayPeso.length; i++) {
-        if (v.peso == this.arrayPeso[i]) {
-          v.voto = this.formVoto.controls['voto'].value;
-          v.descrizione = this.formVoto.controls['descrizione'].value;
-          v.tipo = "0";
-          v.peso = this.arrayPeso[i];
-          v.data = this.formVoto.controls['data'].value;
-          console.log("Peso: " + v.peso);
-          console.log('Tipo: ', v.tipo);
+    v.Tipologia = this.selectedVoto;
+    v.Peso = parseInt(this.selectedPeso);
 
 
-        }
-      }
+          v.Voto = this.formVoto.controls['voto'].value;
+          v.Descrizione = this.formVoto.controls['descrizione'].value;
+          v.Tipologia = "0";
+          v.Peso = this.formVoto.controls['peso'].value;
+          v.Tipologia = this.formVoto.controls['tipologia'].value;
+          v.DataVoto = this.formVoto.controls['data'].value;
+          v.UsernameStudente = this.selectedStudente.Username;
+          v.CFProfessore = this.profData.CFPersona;
+          v.CodiceMateria = this.selectedClass.CodiceMateria;
+          console.log("Peso: " + v.Peso);
+          console.log('Tipo: ', v.Tipologia);
 
 
 
-      /*v.Data = this.formVoto.controls['data'].value;
-      v.Ora = null;
-      v.Concorre =this.concorreSelect;*/
-      //a.CFStudente
-      //a.CFProfessore
-    } else {
-      if (v.tipo == "1") {
-        for (let i = 0; i < this.arrayPeso.length; i++) {
-          if (v.peso == this.arrayPeso[i]) {
-            v.voto = this.formVoto.controls['voto'].value;
-            v.descrizione = this.formVoto.controls['descrizione'].value;
-            v.tipo = "1";
-            v.peso = this.arrayPeso[i];
-            v.data = this.formVoto.controls['data'].value;
-            console.log("Peso: " + v.peso);
-            console.log('Tipo: ', v.tipo);
-
-
-          }
-        }
-      }
-      else {
-        for (let i = 0; i < this.arrayPeso.length; i++) {
-          if (v.peso == this.arrayPeso[i]) {
-            v.voto = this.formVoto.controls['voto'].value;
-            v.descrizione = this.formVoto.controls['descrizione'].value;
-            v.tipo = "0";
-            v.peso = this.arrayPeso[i];
-            v.data = this.formVoto.controls['data'].value;
-            console.log("Peso: " + v.peso);
-            console.log('Tipo: ', v.tipo);
-
-          }
-        }
-      }
       let httpHeaders = new HttpHeaders({ "Authorization": String(this.profData.securedKey) })
       this.observVoto = this.http.post(environment.node_server + '/api/voti/inserisciVoto', v, { headers: httpHeaders });
       this.observVoto.subscribe(
@@ -252,22 +224,62 @@ export class VotiComponentComponent implements OnInit {
       v.Concorre =this.concorreSelect;*/
       //a.CFStudente
       //a.CFProfessore*/
-    }
-  }
-  getStudenti() {
-    let httpHead = new HttpHeaders({ Authorization: String(this.profData.securedKey) });
-    this.httpClient.get<Studente[]>(environment.node_server + `/api/prof/getStudentiByClasse?codiceClasse=${this.selectedClass.CodiceClasse}`, { headers: httpHead })
-      .subscribe((response) => {
-        //Cognome,Nome,Username
-        this.studenti = response;
-        console.log(this.studenti);
 
-      })
   }
-  onClassChange(selectedClass: Corrispondenza) {
+
+  getStudenti()
+  {
+    let httpHead = new HttpHeaders({Authorization : String(this.profData.securedKey)});
+    this.httpClient.get<Studente[]>(environment.node_server + `/api/prof/getStudentiByClasse?codiceClasse=${this.selectedClass.CodiceClasse}`, {headers : httpHead})
+    .subscribe((response) =>
+    {
+      this.studenti = response;
+      console.log(this.studenti);
+    })
+  }
+  onClassChange(selectedClass : Corrispondenza)
+  {
     console.log(selectedClass);
     this.selectedClass = selectedClass;
+    this.studenti = null;
+    this.getStudenti();
   }
+  getVoti(){
+    let httpHead = new HttpHeaders({Authorization : String(this.profData.securedKey)});
+    this.httpClient.get<Voti[]>(environment.node_server + `/api/voti/getVotiByStudente?CFStudente=${this.selectedStudente.Username}`, {headers : httpHead})
+    .subscribe((response) =>
+    {
+      this.voti = response;
+      for(let voto of this.voti)
+      {
+        voto.DataVoto = voto.DataVoto.substring(0,10);
+        switch(voto.Tipologia)
+        {
+          case('0'):
+            voto.Tipologia = 'Valore';
+            this.concorreSelect = true;
+            break;
+          case('1'):
+            voto.Tipologia = 'Senza Valore';
+            this.concorreSelect = false;
+            break;
+          case('2'):
+            voto.Tipologia = 'Recupero';
+            this.concorreSelect = false;
+            break;
+        }
+      }
+    })
+  }
+  onStudentSelection(selectedStudent : Studente)
+  {
+    this.selectedStudente = selectedStudent;
+    this.visuaForm = (typeof(this.selectedStudente) == 'object');
+    if(this.visuaForm)
+      this.getVoti();
+
+  }
+
 
 
 

@@ -1,9 +1,12 @@
 //Codice, Voto, Tipologia, Descrizione, Peso, Data
 export class Voti{
-  codice: number;
-  voto: number;
-  tipo: string;
-  descrizione: string;
-  data: string;
-  peso: number;
+  Codice: number;
+  Voto: number;
+  Tipologia: string;
+  Descrizione: string;
+  DataVoto: string;
+  Peso: number;
+  UsernameStudente: String;
+  CFProfessore: String;
+  CodiceMateria: number;
 }

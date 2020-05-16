@@ -120,8 +120,8 @@ let giustificaAssenza = async function(giustifica)
             preparedStatement.input('CFStudente', dbConnection.Char(16));
             preparedStatement.input('Tipo', dbConnection.Char(1));
             preparedStatement.input('DataAssenza', dbConnection.Date());
-            preparedStatement.input('motivazione', dbConnection.VarChar(200));
-            let query = 'UPDATE Assenza SET motivazione = @motivazione WHERE CFStudente = @CFStudente AND Tipo = @Tipo AND DataAssenza = @DataAssenza';
+            preparedStatement.input('Motivazione', dbConnection.VarChar(200));
+            let query = 'UPDATE Assenza SET Motivazione = @Motivazione WHERE CFStudente = @CFStudente AND Tipo = @Tipo AND DataAssenza = @DataAssenza';
             
             preparedStatement.prepare(query,
             errPrep => 
@@ -132,7 +132,7 @@ let giustificaAssenza = async function(giustifica)
                 preparedStatement.execute({'CFStudente' : giustifica.CFStudente, 
                                            'Tipo' : giustifica.Tipo,
                                            'DataAssenza' : giustifica.DataAssenza,
-                                           'motivazione' : giustifica.motivazione,
+                                           'Motivazione' : giustifica.Motivazione,
                                         },
                 (errExec, result) =>
                 {              
@@ -168,12 +168,12 @@ assenzeRouter.post('/giustificaAssenza', checkAuthorization, async function(req,
     //UsernameStudente, Tipo, DataAssenza, motivazione
     let giustifica = req.body;
     let result;
-
-    let allParameterReceived = (giustifica.Tipo && giustifica.DataAssenza && giustifica.motivazione && giustifica.UsernameStudente);
+    console.log(giustifica)
+    let allParameterReceived = (giustifica.Tipo && giustifica.DataAssenza && giustifica.Motivazione && giustifica.UsernameStudente);
     
     motivazioneOK = false;
     if(allParameterReceived)
-        motivazioneOK = (giustifica.motivazione && giustifica.motivazione != "");
+        motivazioneOK = (giustifica.Motivazione && giustifica.Motivazione != "");
     
     let CFStudente;
     if(allParameterReceived && motivazioneOK)

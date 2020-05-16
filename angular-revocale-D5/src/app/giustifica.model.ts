@@ -1,6 +1,6 @@
 export class Giustifica{
-  CFStudente:String;
+  UsernameStudente:String;
   Tipo:string;
-  Data:string;
+  DataAssenza:string;
   Motivazione:string;
 }

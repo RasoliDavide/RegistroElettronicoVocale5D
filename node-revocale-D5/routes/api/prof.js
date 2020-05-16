@@ -113,6 +113,9 @@ profRouter.get('/getStudentiByClasse', checkAuthorization, async function(req, r
     res.send(result);
 })
 
-
+profRouter.post('/firma', checkAuthorization, async function(req, res)
+{
+    
+});
 
 module.exports = profRouter;

@@ -9,7 +9,9 @@ let inserisciVoto = async function(voto)
     let dbQuery = new Promise(
     (resolve, reject) =>
     {
-        dbConnection.connect(config, function(err) {
+        dbConnection.connect(config, function(errConn) {
+            if(errConn)
+                reject(errConn);
             let preparedStatement = new dbConnection.PreparedStatement();
             preparedStatement.input('CFStudente', dbConnection.Char(16));
             preparedStatement.input('CFProfessore', dbConnection.Char(16));
@@ -23,10 +25,10 @@ let inserisciVoto = async function(voto)
                 voto.Descrizione = '';
             let query = 'INSERT INTO Voto (Voto, Tipologia, Peso, Descrizione, CFStudente, CFProfessore, CodiceMateria, DataVoto) VALUES (@Voto, @Tipologia, @Peso, @Descrizione, @CFStudente, @CFProfessore, @CodiceMateria, @DataVoto)';
             preparedStatement.prepare(query,
-            errP => 
+            errPrep => 
             {
-                if(errP)
-                    console.log(errP);
+                if(errPrep)
+                    reject(errPrep);
 
                 preparedStatement.execute({ 'Voto' : voto.Voto,
                                             'Tipologia' : voto.Tipologia,
@@ -37,13 +39,13 @@ let inserisciVoto = async function(voto)
                                             'CodiceMateria' : voto.CodiceMateria,
                                             'DataVoto' : voto.DataVoto},
                                 
-                (errE, result) =>
+                (errExec, result) =>
                 {                
                     if(errE)
-                        console.log(errE);
+                        console.log(errExec);
 
                     preparedStatement.unprepare(
-                        errU => console.log(errU)
+                        errUnprep => console.log(errUnprep)
                     )
                     if(result)
                         resolve(result.rowsAffected[0]);
@@ -55,7 +57,7 @@ let inserisciVoto = async function(voto)
                 })
             })
         });
-    }).catch((err) => {return {success : "false"}});
+    }).catch((err) => {return {success : "false", message : err}});
     let queryResult = await dbQuery;
     if(queryResult == 1)
         return {success : "true"}
@@ -69,9 +71,10 @@ votiRouter.post('/inserisciVoto', checkAuthorization, async function(req, res)
     let result;
     //UsernameStudente, Voto, Tipologia, Peso, Descrizione, CFProfessore, CodiceMateria, DataVoto
     let voto = req.body;
-    if(voto.UsernameStudente && voto.Voto && voto.Tipologia && voto.Peso &&  voto.CFProfessore && voto.CodiceMateria && voto.DataVoto)
+    if(voto.UsernameStudente && voto.Voto && voto.Tipologia != undefined && voto.Peso &&  voto.CFProfessore && voto.CodiceMateria && voto.DataVoto)
     {
         voto['CFStudente'] = await RECommonFunctions.getCFStudenteByUsername(voto.UsernameStudente);
+        console.log(voto)
         if(voto['CFStudente'] != undefined)
         {
             delete voto.UsernameStudente;
@@ -120,7 +123,7 @@ votiRouter.get('/getVotiByStudente', checkAuthorization, async function(req, res
 {
     let result;
     //usernameStudente
-    let usernameStudente = req.query.usernameStudente;
+    let usernameStudente = req.query.UsernameStudente;
     if(usernameStudente != undefined)
     {
         let cfStudente = await RECommonFunctions.getCFStudenteByUsername(usernameStudente);
@@ -131,7 +134,7 @@ votiRouter.get('/getVotiByStudente', checkAuthorization, async function(req, res
         }
     }
     else
-        res.status(400).send({"message" : "Missing \"usernameStudente\" parameter"});
+        res.status(400).send({"message" : "Missing \"UsernameStudente\" parameter"});
     res.send(result);
 })
 

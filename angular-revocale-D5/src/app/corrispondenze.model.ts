@@ -1,6 +1,6 @@
 export class Corrispondenza
 {
   CodiceClasse : String;
-  CodcieMateria : number;
+  CodiceMateria : number;
   Materia : String;
 }

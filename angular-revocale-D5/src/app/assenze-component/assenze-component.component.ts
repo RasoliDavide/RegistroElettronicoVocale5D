@@ -9,6 +9,7 @@ import { Studente } from '../studente.model';
 import { Assenza } from '../assenza.model';
 import { Corrispondenza } from '../corrispondenze.model';
 import { environment } from 'src/environments/environment';
+import { Giustifica } from '../giustifica.model';
 
 @Component({
   selector: 'app-assenze-component',
@@ -23,10 +24,9 @@ export class AssenzeComponentComponent implements OnInit {
   formGiustifica: FormGroup;
   formAssenza:FormGroup;
   concorreSelect : boolean;
-  //studente : Studente;
   profData : ProfData;
   observAssenza: Observable<Object>;
-  selectedAssenza: string = '';
+  selectedAssenza: Assenza;
   selectedStudente : Studente;
   sharedProfData : SharedProfDataService;
   observableChangeSelectedClass : Observable<Corrispondenza>;
@@ -63,9 +63,10 @@ export class AssenzeComponentComponent implements OnInit {
     this.observableChangeSelectedClass.subscribe(selectedClass => this.onClassChange(selectedClass));
   }
 
-  giustifica(){
+  giustifica(clickedAssenza : Assenza){
     this.giustificaV  = true;
     console.log("GiustificaV = true");
+    this.selectedAssenza = clickedAssenza;
   }
 
   selectChangeHandler (value) { //TipoAssenza
@@ -99,14 +100,28 @@ export class AssenzeComponentComponent implements OnInit {
     let httpHeaders = new HttpHeaders({"Authorization" : String(this.profData.securedKey)})
     this.observAssenza = this.http.post(environment.node_server + '/api/assenze/inserisciAssenza', assenzaOgg, {headers : httpHeaders});
     this.observAssenza.subscribe(
-      (data) =>
+      (response) =>
       {
-        console.log(data);
+        console.log(response);
       }
     )
   }
+  //Input: UsernameStudente, Tipo, DataAssenza,Motivazione
   onSubmitGiustifica(value: string): void{
-    console.log('Motivazione: ', this.formAssenza.controls['motivazione'].value);
+    console.log('Motivazione: ', this.formGiustifica.controls['motivazione'].value);
+    let giustificaOgg: Giustifica = new Giustifica();
+    giustificaOgg.UsernameStudente = this.selectedStudente.Username;
+    giustificaOgg.DataAssenza = String(this.selectedAssenza.DataAssenza);
+    giustificaOgg.Motivazione = this.formGiustifica.controls['motivazione'].value;
+    giustificaOgg.Tipo = String(this.selectedAssenza.Tipo);
+    let httpHeaders = new HttpHeaders({"Authorization" : String(this.profData.securedKey)})
+    this.observAssenza = this.http.post(environment.node_server + '/api/assenze/giustificaAssenza', giustificaOgg, {headers : httpHeaders});
+    this.observAssenza.subscribe(
+      (response) =>
+      {
+        console.log(response);
+      }
+    )
   }
 
   getStudenti()
@@ -131,18 +146,7 @@ export class AssenzeComponentComponent implements OnInit {
         assenza.DataAssenza = assenza.DataAssenza.substring(0,10);
         if(assenza.Ora != undefined)
           assenza.Ora = assenza.Ora.substring(11, 16);
-        switch(assenza.Tipo)
-        {
-          case('A'):
-            assenza.Tipo = 'Assenza';
-            break;
-          case('E'):
-            assenza.Tipo = 'Entrata posticipata';
-            break;
-          case('U'):
-            assenza.Tipo = 'Uscita anticipata';
-            break;
-        }
+
       }
     })
   }
