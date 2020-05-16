@@ -41,8 +41,8 @@ let inserisciVoto = async function(voto)
                                 
                 (errExec, result) =>
                 {                
-                    if(errE)
-                        console.log(errExec);
+                    if(errExec)
+                        reject(errExec);
 
                     preparedStatement.unprepare(
                         errUnprep => console.log(errUnprep)
@@ -60,30 +60,60 @@ let inserisciVoto = async function(voto)
     }).catch((err) => {return {success : "false", message : err}});
     let queryResult = await dbQuery;
     if(queryResult == 1)
-        return {success : "true"}
+        return {success : true};
+    else if(queryResult == 0)
+        return {success : false, message : "No row affected"}
     else
-        return {success : "false"}
-    return queryResult;
+        return queryResult;
 }
 
 votiRouter.post('/inserisciVoto', checkAuthorization, async function(req, res)
 {
-    let result;
     //UsernameStudente, Voto, Tipologia, Peso, Descrizione, CFProfessore, CodiceMateria, DataVoto
     let voto = req.body;
-    if(voto.UsernameStudente && voto.Voto && voto.Tipologia != undefined && voto.Peso &&  voto.CFProfessore && voto.CodiceMateria && voto.DataVoto)
+    let allParameterReceived = (voto.UsernameStudente && voto.Voto && voto.Tipologia != undefined && voto.Peso &&  voto.CFProfessore && voto.CodiceMateria && voto.DataVoto);
+    let usernameStudenteOK, votoOK, tipologiaOK, pesoOK, cfProfessoreOK, coerenzaOK, allParameterOK;
+    if(allParameterReceived)
     {
-        voto['CFStudente'] = await RECommonFunctions.getCFStudenteByUsername(voto.UsernameStudente);
-        console.log(voto)
-        if(voto['CFStudente'] != undefined)
-        {
-            delete voto.UsernameStudente;
-            result = await inserisciVoto(voto);
-        }
-        else
-            result = {success : "false"};
+        usernameStudenteOK = (voto.UsernameStudente.length == 5);
+        votoOK = (voto.Voto >= 1 && voto.Voto <= 10);
+        tipologiaOK = (voto.Tipologia >= 0 && voto.Tipologia <= 2);
+        pesoOK = (voto.Peso >= 0 && voto.Peso <= 100);
+        coerenzaOK = (((voto.Tipologia == 0 || voto.Tipologia == 2) && (voto.Peso == 0)) || ((voto.Tipologia == 1) && (voto.Peso != 0)))
+        cfProfessoreOK = (voto.CFProfessore.length == 16);
+        allParameterOK = (usernameStudenteOK && votoOK && tipologiaOK && pesoOK && coerenzaOK && cfProfessoreOK)
     }
-    res.send(result);
+    let cfStudente;
+    if(allParameterOK)
+        cfStudente = await RECommonFunctions.getCFStudenteByUsername(voto.UsernameStudente);
+
+    let result;
+    if(allParameterOK && cfStudente != undefined)
+    {
+        voto['CFStudente'] = cfStudente;
+        delete voto.UsernameStudente;
+        result = await inserisciVoto(voto);
+    }
+    if(!allParameterReceived)
+        res.status(400).send({success : false, message : "Missing parameter(s)"});
+    else if(!usernameStudenteOK)
+        res.status(400).send({success : false, message : "Numero di caratteri di UsernameStudente non corretto"});
+    else if(!votoOK)
+        res.status(400).send({success : false, message : "Voto non nel range"});
+    else if(!tipologiaOK)
+        res.status(400).send({success : false, message : "Tipologia non corretta"});
+    else if(!pesoOK)
+        res.status(400).send({success : false, message : "Peso non nel range"});
+    else if(!coerenzaOK)
+        res.status(400).send({success : false, message : "Tipologia e peso inseriti non compatibili"});
+    else if(!cfProfessoreOK)
+        res.status(400).send({success : false, message : "Numero di caratteri di UsernameStudente non corretto"});
+    else if(!cfStudente == undefined)
+        res.status(404).send({success : false, message : "Lo Username inserito non è stato trovato nel database"});
+    else if(!result.success)
+        res.status(500).send(result);
+    else
+        res.status(201).send(result);
 })
 
 let getVotiByStudente = async function(cfStudente)
@@ -94,48 +124,66 @@ let getVotiByStudente = async function(cfStudente)
         dbConnection.connect(config, function(err) {
             let preparedStatement = new dbConnection.PreparedStatement();
             preparedStatement.input('CFStudente', dbConnection.Char(16));
-            let query = 'SELECT * FROM Voto WHERE CFStudente = @CFStudente';
+            let query = 'SELECT * FROM getVotiByStudente WHERE CFStudente = @CFStudente';
             preparedStatement.prepare(query,
-            errP => 
+            errPrep => 
             {
-                if(errP)
-                    reject(errP);
+                if(errPrep)
+                    reject(errPrep);
 
                 preparedStatement.execute({'CFStudente' : cfStudente},
-                (errE, result) =>
+                (errExec, result) =>
                 {                
-                    if(errE)
-                        reject(errE);
+                    if(errExec)
+                        reject(errExec);
 
                     preparedStatement.unprepare(
-                        errU => reject(errU)
+                        errUnprep => reject(errUnprep)
                     )
-                    resolve(result.recordset);
+                    resolve(result);
                 })
             })
         });
-    });
-    let queryResult = await dbQuery;
-    return queryResult;
+    }).catch((err) => {console.log(err); return {success : false, message : "Database error: " + err}});
+
+    let reutrnedObject = await dbQuery;
+    if(reutrnedObject.recordset)
+    {
+        for(let i = 0; i < reutrnedObject.recordset; i++)
+            delete reutrnedObject.recordset[i].CFStudente
+        return {success: true, recordset : reutrnedObject.recordset};
+    }
+    else
+        return reutrnedObject;
 }
 
 votiRouter.get('/getVotiByStudente', checkAuthorization, async function(req, res)
 {
+    //UsernameStudente
+    let allParameterReceived = req.query.UsernameStudente != undefined;
+    let usernameStudenteOK;
+    if(allParameterReceived)
+        usernameStudenteOK = (req.query.UsernameStudente.length == 5);
+
+    
+    let cfStudente;
+    if(usernameStudenteOK)
+        cfStudente = await RECommonFunctions.getCFStudenteByUsername(req.query.UsernameStudente);
+
     let result;
-    //usernameStudente
-    let usernameStudente = req.query.UsernameStudente;
-    if(usernameStudente != undefined)
-    {
-        let cfStudente = await RECommonFunctions.getCFStudenteByUsername(usernameStudente);
-        if(cfStudente != undefined)
-        {
-            result = await getVotiByStudente(cfStudente);
-            console.log(result)
-        }
-    }
+    if(usernameStudenteOK && cfStudente != undefined)
+        result = await getVotiByStudente(cfStudente);
+
+    if(!allParameterReceived)
+        res.status(400).send({success : false, message : "Missing parameter(s)"});
+    else if(!usernameStudenteOK)
+        res.status(400).send({success : false, message : "Numero di caratteri di UsernameStudente non corretto"});
+    else if(cfStudente == undefined)
+        res.status(404).send({success : false, message : "Lo Username inserito non è stato trovato nel database"});
+    else if(!result.success)
+        res.status(500).send(result);
     else
-        res.status(400).send({"message" : "Missing \"UsernameStudente\" parameter"});
-    res.send(result);
+        res.status(200).send(result.recordset);
 })
 
 module.exports = votiRouter;

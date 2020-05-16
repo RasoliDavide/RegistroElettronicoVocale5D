@@ -1,4 +1,21 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
+
+.select {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #f1f1f1;
+}
+.impform{
+  width: 100%;
+  margin: auto;
+  text-align: center;
+}
+.imptab{
+  width: 75%;
+  margin: auto;
+  text-align: center;
+}
 .start-button {
       background-color: #7ffe9f; /* Green */
       border: none;
@@ -32,12 +49,11 @@
       font-size: 16px;
       margin-bottom: 10px;
     }
-    .voti {
+.voti {
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
   border-collapse: collapse;
   width: 100%;
-
-}
+  }
 
 .voti td, #customers th {
   border: 1px solid #ddd;

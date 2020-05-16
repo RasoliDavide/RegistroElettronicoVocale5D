@@ -1,5 +1,9 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
-
+.impform{
+  width: 75%;
+  margin: auto;
+  text-align: center;
+}
 .topnav {
   background-color: 	#00BFFF;
   overflow: hidden;

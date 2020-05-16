@@ -1,9 +1,45 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+.rechicca {
+  width: 47px;
+  height: 47px;
+  background-color: rgb(52, 92, 124);
+  animation-name: re;
+  animation-duration: 3s;
+  float:right;
+  text-align:center;
+  margin:3px;
+  color: white;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-direction: alternate;
+  border-radius: 10px;
+}
+.selectionclass{
+  float:right;
+  margin:13px;
+  padding: 2px 5px;
+  border: none;
+  border-radius: 4px;
+  background-color: #f1f1f1;
+}
+.profwelcome{
+  float:right;
+  margin:9px;
+  color: white;
+  text-align:center;
+}
+@keyframes re {
+  0% {background-color: rgb(52, 92, 124)}
+  100% {background-color: rgb(93, 215, 219)}
+}
+
+
 .topnav {
   background-color: 	rgb(52, 92, 124);
   overflow: hidden;
-
+  border-radius: 10px;
 }
 
 .topnav a {
@@ -71,14 +107,15 @@
 
 div#hormenu li:hover ul
 {
-display: block;
-position: absolute;
-z-index:1;
-width:150px;
-padding: 0;
-margin: 0 0 0 -1px;
-border:1px solid black;
-background: white;
+  display: block;
+  position: absolute;
+  z-index:1;
+  width:150px;
+  height: 60px;
+  padding: 0;
+  margin: 0 0 0 -1px;
+  border:1px solid black;
+  background: white;
 }
 div#hormenu li li { border:none; width:150px; }
 div#hormenu li li a { padding:2px 2px 2px 10px; }

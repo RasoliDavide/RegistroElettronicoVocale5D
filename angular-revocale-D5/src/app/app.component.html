@@ -15,12 +15,13 @@
     <a routerLink="/firma" routerLinkActive="active">Firma</a>
     <a routerLink="/dirigente" routerLinkActive="active">Dirigente</a>
 		<a routerLink="/prof" routerLinkActive="active">Profilo</a>
+    <div class="rechicca"><h2>RE</h2></div>
 
-
-    <select (ngModelChange)="onClassSelection($event)" [(ngModel)]="selectedClass">
+    <h3 class="profwelcome">Benvenuto {{profData.Nome}} {{profData.Cognome}}</h3>
+    <select (ngModelChange)="onClassSelection($event)" [(ngModel)]="selectedClass" class="selectionclass">
       <option *ngFor="let corrispondenza of profData.Corrispondenze" [ngValue]="corrispondenza">{{corrispondenza.CodiceClasse}} - {{corrispondenza.Materia}}</option>
     </select>
-		<h3>Benvenuto {{profData.Nome}} {{profData.Cognome}}</h3>
+
 
 	</div>
 	<!--Login-->

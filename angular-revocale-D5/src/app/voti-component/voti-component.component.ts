@@ -46,10 +46,10 @@ export class VotiComponentComponent implements OnInit {
   formVoto: FormGroup;
   selectedClass: Corrispondenza;
   observVoto: Observable<Object>;
-  selectedStudente : Studente;
+  selectedStudente: Studente;
   visuaForm: boolean;
   voti: Voti[];
-  observableChangeSelectedClass : Observable<Corrispondenza>;
+  observableChangeSelectedClass: Observable<Corrispondenza>;
   /*private stream;
   private recorder;
   private interval;
@@ -62,13 +62,11 @@ export class VotiComponentComponent implements OnInit {
     this.sharedProfData = sharedProfData;
     this.formVoto = fb.group(
       {
-        'peso': ['', Validators.required],
-        'tipologia': ['', Validators.required],
+        'peso': [100, Validators.required],
+        'tipologia': [1, Validators.required],
         'descrizione': ['', Validators.required],
         'voto': ['', Validators.required],
         'data': ['', Validators.required],
-
-
       }
     )
     /*this.audioRecordingService.recordingFailed().subscribe(() => {
@@ -193,89 +191,78 @@ export class VotiComponentComponent implements OnInit {
     console.log('Voto: ', this.formVoto.controls['voto'].value);
     console.log('Descrizione: ', this.formVoto.controls['descrizione'].value);
     console.log('Data: ', this.formVoto.controls['data'].value);
-    v.Tipologia = this.selectedVoto;
     v.Peso = parseInt(this.selectedPeso);
-
-
-          v.Voto = this.formVoto.controls['voto'].value;
-          v.Descrizione = this.formVoto.controls['descrizione'].value;
-          v.Tipologia = "0";
-          v.Peso = this.formVoto.controls['peso'].value;
-          v.Tipologia = this.formVoto.controls['tipologia'].value;
-          v.DataVoto = this.formVoto.controls['data'].value;
-          v.UsernameStudente = this.selectedStudente.Username;
-          v.CFProfessore = this.profData.CFPersona;
-          v.CodiceMateria = this.selectedClass.CodiceMateria;
-          console.log("Peso: " + v.Peso);
-          console.log('Tipo: ', v.Tipologia);
+    v.Voto = this.formVoto.controls['voto'].value;
+    v.Descrizione = this.formVoto.controls['descrizione'].value;
+    v.Peso = this.formVoto.controls['peso'].value;
+    v.Tipologia = this.formVoto.controls['tipologia'].value;
+    v.DataVoto = this.formVoto.controls['data'].value;
+    v.UsernameStudente = this.selectedStudente.Username;
+    v.CFProfessore = this.profData.CFPersona;
+    v.CodiceMateria = this.selectedClass.CodiceMateria;
+    console.log("Peso: " + v.Peso);
+    console.log('Tipo: ', v.Tipologia);
 
 
 
-      let httpHeaders = new HttpHeaders({ "Authorization": String(this.profData.securedKey) })
-      this.observVoto = this.http.post(environment.node_server + '/api/voti/inserisciVoto', v, { headers: httpHeaders });
-      this.observVoto.subscribe(
-        (data) => {
-          console.log(data);
-        }
-      )
+    let httpHeaders = new HttpHeaders({ "Authorization": String(this.profData.securedKey) })
+    this.observVoto = this.http.post(environment.node_server + '/api/voti/inserisciVoto', v, { headers: httpHeaders });
+    this.observVoto.subscribe(
+      (data) => {
+        console.log(data);
+      }
+    )
 
-      /*v.Data = this.formAssenza.controls['data'].value;
-      v.Ora = this.formAssenza.controls['orario'].value;
-      v.Concorre =this.concorreSelect;*/
-      //a.CFStudente
-      //a.CFProfessore*/
+    /*v.Data = this.formAssenza.controls['data'].value;
+    v.Ora = this.formAssenza.controls['orario'].value;
+    v.Concorre =this.concorreSelect;*/
+    //a.CFStudente
+    //a.CFProfessore*/
 
   }
 
-  getStudenti()
-  {
-    let httpHead = new HttpHeaders({Authorization : String(this.profData.securedKey)});
-    this.httpClient.get<Studente[]>(environment.node_server + `/api/prof/getStudentiByClasse?codiceClasse=${this.selectedClass.CodiceClasse}`, {headers : httpHead})
-    .subscribe((response) =>
-    {
-      this.studenti = response;
-      console.log(this.studenti);
-    })
+  getStudenti() {
+    let httpHead = new HttpHeaders({ Authorization: String(this.profData.securedKey) });
+    this.httpClient.get<Studente[]>(environment.node_server + `/api/prof/getStudentiByClasse?codiceClasse=${this.selectedClass.CodiceClasse}`, { headers: httpHead })
+      .subscribe((response) => {
+        this.studenti = response;
+        console.log(this.studenti);
+      })
   }
-  onClassChange(selectedClass : Corrispondenza)
-  {
+  onClassChange(selectedClass: Corrispondenza) {
     console.log(selectedClass);
     this.selectedClass = selectedClass;
     this.studenti = null;
     this.getStudenti();
   }
-  getVoti(){
-    let httpHead = new HttpHeaders({Authorization : String(this.profData.securedKey)});
-    this.httpClient.get<Voti[]>(environment.node_server + `/api/voti/getVotiByStudente?CFStudente=${this.selectedStudente.Username}`, {headers : httpHead})
-    .subscribe((response) =>
-    {
-      this.voti = response;
-      for(let voto of this.voti)
-      {
-        voto.DataVoto = voto.DataVoto.substring(0,10);
-        switch(voto.Tipologia)
-        {
-          case('0'):
-            voto.Tipologia = 'Valore';
-            this.concorreSelect = true;
-            break;
-          case('1'):
-            voto.Tipologia = 'Senza Valore';
-            this.concorreSelect = false;
-            break;
-          case('2'):
-            voto.Tipologia = 'Recupero';
-            this.concorreSelect = false;
-            break;
+  getVoti() {
+    let httpHead = new HttpHeaders({ Authorization: String(this.profData.securedKey) });
+    this.httpClient.get<Voti[]>(environment.node_server + `/api/voti/getVotiByStudente?UsernameStudente=${this.selectedStudente.Username}`, { headers: httpHead })
+      .subscribe((response) => {
+        this.voti = response;
+        for (let voto of this.voti) {
+          voto.DataVoto = voto.DataVoto.substring(0, 10);
+          switch (voto.Tipologia) {
+            case ('0'):
+              voto.Tipologia = 'Valore';
+              this.concorreSelect = true;
+              break;
+            case ('1'):
+              voto.Tipologia = 'Senza Valore';
+              this.concorreSelect = false;
+              break;
+            case ('2'):
+              voto.Tipologia = 'Recupero';
+              this.concorreSelect = false;
+              break;
+          }
         }
-      }
-    })
+      })
   }
-  onStudentSelection(selectedStudent : Studente)
-  {
+  onStudentSelection(selectedStudent: Studente) {
     this.selectedStudente = selectedStudent;
-    this.visuaForm = (typeof(this.selectedStudente) == 'object');
-    if(this.visuaForm)
+    this.visuaForm = (typeof (this.selectedStudente) == 'object');
+    if (this.visuaForm)
       this.getVoti();
 
   }

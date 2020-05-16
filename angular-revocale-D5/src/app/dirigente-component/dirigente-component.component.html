@@ -1,10 +1,4 @@
-<html>
-
-<head>
-</head>
-
-<body>
-	<h1>Dirigente</h1>
+<div class="impform">
 	<h3>Inserisci circolare</h3>
 	<form [formGroup]="formDirigente" (ngSubmit)="onSubmitComunicazione()" class="jumbotron ng-valid">
 		<!--Comunicazioni = CodiceCircolare, Titolo, Testo-->
@@ -39,8 +33,4 @@
 		</div>
 		<button class="btn btn-primary btn-block" type="submit" [disabled]="!formDirigente.valid">Invia</button>
 	</form>
-
-
-</body>
-
-</html>
+</div>

@@ -10,22 +10,24 @@ let getTeachingClasses = async function(cfProfessore)
     let dbQuery = new Promise(
     (resolve, reject) => 
     {
-        dbConnection.connect(config, function(err) {
+        dbConnection.connect(config, function(errConn) {
+            if(errConn)
+                reject(errConn)
             let query = 'SELECT * FROM getMaterie WHERE CFProfessore = @cfProfessore';
             let preparedStatement = new dbConnection.PreparedStatement();
             preparedStatement.input('cfProfessore', dbConnection.Char(16));
             preparedStatement.prepare(query,
-            err => 
+            errPrep => 
             {
-                if(err)
-                    reject(err);
+                if(errPrep)
+                    reject(errPrep);
 
                 preparedStatement.execute({'cfProfessore' : cfProfessore},
-                (err, result) =>
+                (errExec, result) =>
                 {
-                    preparedStatement.unprepare(
-                        err => reject(err)
-                    )
+                    preparedStatement.unprepare(errUnprep => reject(errUnprep))
+                    if(errExec)
+                        reject(errExec);
                     resolve(result);
                 })
             })
@@ -43,7 +45,6 @@ let getTeachingClasses = async function(cfProfessore)
     {
         return reutrnedObject;
     }
-    
 }
 
 profRouter.get('/getTeachingClasses', checkAuthorization, async function(req, res)
@@ -78,39 +79,53 @@ let getStudentiByClasse = async function(codiceClasse)
     let dbQuery = new Promise(
     (resolve, reject) =>
     {
-        dbConnection.connect(config, function(err) {
+        dbConnection.connect(config, function(errConn) {
+            if(errConn)
+                reject(errConn);
+
             let query = 'SELECT * FROM getStudentiByClasse WHERE CodiceClasse = @codiceClasse';
             let preparedStatement = new dbConnection.PreparedStatement();
             preparedStatement.input('codiceClasse', dbConnection.VarChar(7));
             preparedStatement.prepare(query,
-            err => 
+            errPrep => 
             {
-                if(err)
-                    console.log(err);
+                if(errPrep)
+                    reject(errPrep);
 
                 preparedStatement.execute({'codiceClasse' : codiceClasse},
-                (err, result) =>
+                (errExec, result) =>
                 {
-                    preparedStatement.unprepare(
-                        err => reject(err)
-                    )
+                    preparedStatement.unprepare(errUnprep => reject(errUnprep))
+                    if(errExec)
+                        reject(errExec);
 
-                    resolve(result.recordset);
+                    resolve(result);
                 })
             })
         });
-    });
-    let queryResult = await dbQuery;
-    for(let i = 0; i < queryResult.length; i++)
-        delete queryResult[i].CodiceClasse
+    }).catch((err) => {console.log(err); return {success : false, message : "Database error: " + err}});
+    let reutrnedObject = await dbQuery;
 
-    return queryResult;
+    if(reutrnedObject.recordset)
+        return {success: true, recordset : reutrnedObject.recordset};
+    else
+        return reutrnedObject;
+    
 }
 
 profRouter.get('/getStudentiByClasse', checkAuthorization, async function(req, res)
 {
-    let result = await getStudentiByClasse(req.query.codiceClasse);
-    res.send(result);
+    let allParameterReceived = (req.query.codiceClasse != undefined);
+    let result;
+    if(allParameterReceived)
+        result = await getStudentiByClasse(req.query.codiceClasse);
+
+    if(!allParameterReceived)
+        res.status(400).send({success : false, message : "Missing parameter(s)"});
+    else if(!result.success)
+        res.status(500).send(result);
+    else
+        res.send(result.recordset);
 })
 
 profRouter.post('/firma', checkAuthorization, async function(req, res)

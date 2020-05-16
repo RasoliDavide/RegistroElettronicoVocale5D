@@ -16,21 +16,10 @@ import {   //Importare le funzionalità nella nostra applicazione
   FormsModule,
   ReactiveFormsModule
 } from '@angular/forms';
-import {
-  MatFormFieldModule,
-} from '@angular/material/form-field';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
 import {BrowserAnimationsModule} from
     '@angular/platform-browser/animations';
 @NgModule({
   exports: [
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatRippleModule,
   ],
   declarations: [
     AppComponent,
@@ -50,10 +39,6 @@ import {BrowserAnimationsModule} from
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    MatButtonModule,
-    MatInputModule,
-    MatRippleModule,
-    MatSelectModule,
     BrowserAnimationsModule
   ],
   providers: [],

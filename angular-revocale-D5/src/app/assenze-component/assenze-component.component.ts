@@ -156,6 +156,7 @@ export class AssenzeComponentComponent implements OnInit {
     console.log(selectedClass);
     this.selectedClass = selectedClass;
     this.studenti = null;
+    this.visuaForm = false;
     this.getStudenti();
   }
   onStudentSelection(selectedStudent : Studente)
