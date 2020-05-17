@@ -25,7 +25,7 @@
 
 		<div class="form-group">
 			<label for="text">Inserisci Testo</label>
-			<input type="text" id="testo" name="testo" [formControl]="formDirigente.controls['testo']" class="form-control">
+			<textarea type="text" id="testo" name="testo" rows="15"  [formControl]="formDirigente.controls['testo']" class="form-control"></textarea>
 			<div *ngIf="!formDirigente.controls['testo'].valid" class="alert alert-danger">Testo non è valido</div>
 			<div *ngIf="formDirigente.controls['testo'].hasError('required')" class="alert alert-danger">Testo è
 				richiesto

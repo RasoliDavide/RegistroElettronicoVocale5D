@@ -1,7 +1,7 @@
 <!--Codice, Tipologia, Testo, TipoPenalità, CFProfessore, CodiceClasse-->
 <h3>Seleziona lo studente</h3>
 <div style="width:200px;">
-		<select id="listaStudenti" name= "listaStudenti">
+		<select id="listaStudenti" name= "listaStudenti" class="select">
         <option value="0">Seleziona lo studente</option>
         <option *ngFor='let s of studenti'>{{s.Cognome}} {{s.Nome}}</option>
       </select>
@@ -9,38 +9,40 @@
   <br>
 <div class="impform">
 <form [formGroup]="formNota" (ngSubmit)="onSubmitNota(formNota.value)" class="jumbotron ng-valid">
-
-	<table style="width:100%">
+  <h3>Inserisci nota</h3>
+	<table style="width:100%" class="note">
 
 		<tr>
-			<th>
-				<p>Tipologia nota</p>
-				<select name="tipoNota" size="2" (change)="selectChangeHandler($event)">
-              <option value=0>Singola</option>
-              <option value=1>Classe</option>
-            </select>
-
-			</th>
-			<th>
-				<p>Tipo penalità</p>
-				<select name="tipoPenalita" size="3" (change)="selectChangeHandler($event)">
+			<th>Tipologia nota</th>
+      <th>Data</th>
+      <th>Tipo penalità</th>
+      <th>Descrizione</th>
+      <th>Invia</th>
+    </tr>
+    <tr>
+      <td>
+        <select name="tipoNota" (change)="selectChangeHandler($event)">
+            <option value=0>Singola</option>
+            <option value=1>Classe</option>
+          </select>
+        </td>
+         <td>
+          <input type="date" name="data" id="data" [formControl]="formNota.controls['data']" >
+        </td>
+        <td>
+				<select name="tipoPenalita"  (change)="selectChangeHandler($event)">
               <option value=1>Sospensione </option>
               <option value=2>Espulsione</option>
               <option value=0>Nessuna</option>
             </select>
-
-			</th>
-			<th>
-				<p>inserisci Descrizione</p>
-				<input type="text" name="descrizione" id="descrizione" [formControl]="formNota.controls['descrizione']" >
-        </th>
-				<!--<th>
-				<p>Inserisci data</p>
-				<input type="date" name="data" id="data" [formControl]="formNota.controls['data']" >
-          </th>-->
-			<th>
-				<button class="btn btn-secondary btn-block" type="submit">Inserisci nota</button>
-			</th>
+        </td>
+        <td>
+				<textarea type="text" name="descrizione" id="descrizione" [formControl]="formNota.controls['descrizione']" ></textarea>
+        </td>
+        <td>
+				<button class="btn btn-primary btn-block" type="submit">Inserisci nota</button>
+        </td>
+      </tr>
 	</table>
 
 </form>

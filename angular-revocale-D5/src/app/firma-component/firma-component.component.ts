@@ -3,6 +3,10 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ProfData } from '../prof.model';
 import { SharedProfDataService } from '../shared-prof-data.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Corrispondenza } from '../corrispondenze.model';
+import { Firma } from '../firma.model';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-firma-component',
@@ -14,6 +18,11 @@ export class FirmaComponentComponent implements OnInit {
   httpClient : HttpClient;
   @Input() profData : ProfData;
   sharedProfData : SharedProfDataService;
+  observableChangeSelectedClass : Observable<Corrispondenza>;
+  selectedClass : Corrispondenza;
+  visuaForm: boolean;
+  observFirma: Observable<Object>;
+
   constructor(fb : FormBuilder,private http: HttpClient, sharedProfData : SharedProfDataService) {
     this.httpClient = http;
     this.sharedProfData = sharedProfData;
@@ -22,21 +31,47 @@ export class FirmaComponentComponent implements OnInit {
       'data':['',Validators.required],
       'ora':['',Validators.required],
       'argomento':['',Validators.required],
-      'compiti':['',Validators.required]
+      'compiti':['']
     })
   }
 
   ngOnInit(): void {
     this.profData = this.sharedProfData.profData;
-    console.log(this.profData);
+    this.observableChangeSelectedClass = this.sharedProfData.getObservable();
+    this.onClassChange(this.sharedProfData.selectedClass);
+    this.observableChangeSelectedClass.subscribe(selectedClass => this.onClassChange(selectedClass));
   }
 
   onSubmitFirma(){
       console.log('Data: ', this.formFirma.controls['data'].value);
       console.log('Ora: ', this.formFirma.controls['ora'].value);
-      console.log('Ora: ', this.formFirma.controls['argomento'].value);
-      console.log('Ora: ', this.formFirma.controls['compiti'].value);
-//manca api
+      console.log('Argomento: ', this.formFirma.controls['argomento'].value);
+      console.log('Compiti: ', this.formFirma.controls['compiti'].value);
+      //CFProfessore, CodiceClasse, DataFirma, Ora, Argomento, CompitiAssegnati, CodiceMateria
+      let firmaOgg:Firma = new Firma();
+      firmaOgg.CFProfessore =this.profData.CFPersona;
+      firmaOgg.CodiceClasse = this.selectedClass.CodiceClasse;
+      firmaOgg.CodiceMateria =this.selectedClass.CodiceMateria;
+      firmaOgg.DataFirma = this.formFirma.controls['data'].value;
+      firmaOgg.Ora = this.formFirma.controls['ora'].value;
+      firmaOgg.Argomento = this.formFirma.controls['argomento'].value;
+      firmaOgg.CompitiAssegnati = this.formFirma.controls['compiti'].value;
+
+      let httpHeaders = new HttpHeaders({"Authorization" : String(this.profData.securedKey)})
+      this.observFirma = this.http.post(environment.node_server + '/api/prof/firma', firmaOgg, {headers : httpHeaders});
+      this.observFirma.subscribe(
+        (response) =>
+      {
+        console.log(response);
+      }
+    )
+  }
+   onClassChange(selectedClass : Corrispondenza)
+  {
+    console.log(selectedClass);
+    this.selectedClass = selectedClass;
+    this.visuaForm = false;
+
   }
 
 }

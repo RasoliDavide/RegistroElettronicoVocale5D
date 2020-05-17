@@ -1,10 +1,7 @@
-<html>
 
-<head>
-</head>
 
-<body>
-	<h1>Firma</h1>
+  <div class="impform">
+  <h1>Firma</h1>
 	<form [formGroup]="formFirma" (ngSubmit)="onSubmitFirma()" class="jumbotron ng-valid">
 		<!--Data, Ora, Argomento, CompitiAssegnati,-->
 		<div class="form-group">
@@ -20,7 +17,7 @@
 
 		<div class="form-group">
 			<label for="Ora">Inserisci Ora</label>
-			<input type="time" id="ora" name="ora" [formControl]="formFirma.controls['ora']" class="form-control">
+			<input type="text" id="ora" name="ora" [formControl]="formFirma.controls['ora']" class="form-control">
 
 			<div *ngIf="!formFirma.controls['ora'].valid" class="alert alert-danger">Ora non è valido</div>
 			<div *ngIf="formFirma.controls['ora'].hasError('required')" class="alert alert-danger">Ora è
@@ -41,16 +38,7 @@
 		<div class="form-group">
 			<label for="Compiti">Compiti Assegnati</label>
 			<input type="text" id="compiti" name="compiti" [formControl]="formFirma.controls['compiti']" class="form-control">
-
-			<div *ngIf="!formFirma.controls['compiti'].valid" class="alert alert-danger">Compiti non è valido</div>
-			<div *ngIf="formFirma.controls['compiti'].hasError('required')" class="alert alert-danger">Compiti è
-				richiesto
-			</div>
 		</div>
 		<button class="btn btn-primary btn-block" type="submit" [disabled]="!formFirma.valid">Firma</button>
 	</form>
-
-
-</body>
-
-</html>
+</div>

@@ -128,9 +128,106 @@ profRouter.get('/getStudentiByClasse', checkAuthorization, async function(req, r
         res.send(result.recordset);
 })
 
+let inserisciFirma = async function(firma)
+{
+    let query;
+    let dbQuery = new Promise(
+    (resolve, reject) =>
+    {
+        dbConnection.connect(config, function(errConn) {
+            if(errConn)
+                reject(errConn);
+            let preparedStatement = new dbConnection.PreparedStatement();
+            preparedStatement.input('CodiceClasse', dbConnection.VarChar(7));
+            preparedStatement.input('CFProfessore', dbConnection.Char(16));
+            preparedStatement.input('Ora', dbConnection.TinyInt());
+            preparedStatement.input('DataFirma', dbConnection.Date());
+            preparedStatement.input('Argomento', dbConnection.VarChar(500));
+            preparedStatement.input('CodiceMateria', dbConnection.Int());
+            
+            if(firma.CompitiAssegnati)
+            {
+                preparedStatement.input('CompitiAssegnati', dbConnection.VarChar(500));
+                query = 'INSERT INTO Firma (CFProfessore, CodiceClasse, DataFirma, Ora, Argomento, CompitiAssegnati, CodiceMateria) VALUES (@CFProfessore, @CodiceClasse, @DataFirma, @Ora, @Argomento, @CompitiAssegnati, @CodiceMateria)';
+            }
+            else
+            {
+                query = 'INSERT INTO Firma (CFProfessore, CodiceClasse, DataFirma, Ora, Argomento, CodiceMateria) VALUES (@CFProfessore, @CodiceClasse, @DataFirma, @Ora, @Argomento, @CodiceMateria)';
+            }
+            preparedStatement.prepare(query,
+            errPrep => 
+            {
+                if(errPrep)
+                    reject(errPrep);
+                preparedStatement.execute({'CFProfessore' : firma.CFProfessore,
+                                           'CodiceClasse' : firma.CodiceClasse,
+                                           'DataFirma' : firma.DataFirma,
+                                           'Ora' : firma.Ora,
+                                           'Argomento' : firma.Argomento,
+                                           'CompitiAssegnati' : firma.CompitiAssegnati,
+                                           'CodiceMateria' : firma.CodiceMateria},
+                
+                (errExec, result) =>
+                {      
+                    if(errExec)
+                        reject(errExec);
+
+                    preparedStatement.unprepare(
+                        errUnprep => reject(errUnprep)
+                    )
+
+                    if(result)
+                        resolve(result.rowsAffected[0]);
+                    else
+                    {
+                        err = new Error("No modified values")
+                        reject(errExec);
+                    }
+                })
+            })
+        });
+    }).catch((err) => {console.log(err); return {success : false, message : "Database error: " + err}});
+
+    let queryResult = await dbQuery;
+    if(queryResult == 1)
+        return {success : true};
+    else if(queryResult == 0)
+        return {success : false, message : "No row affected"}
+    else
+        return queryResult;
+}
+
 profRouter.post('/firma', checkAuthorization, async function(req, res)
 {
+    //CFProfessore, CodiceClasse, DataFirma, Ora, Argomento, CompitiAssegnati, CodiceMateria
+    let firma = req.body;
+    console.log(firma);
+    let allParameterReceived = (firma.CFProfessore && firma.CodiceClasse && firma.DataFirma && firma.Ora && firma.Argomento && firma.CodiceMateria);
+    let cfProfessoreOK;
+    if(allParameterReceived)
+        cfProfessoreOK = (firma.CFProfessore.length == 16);
     
+    let oraOK;
+    if(allParameterReceived && cfProfessoreOK)
+        oraOK = (firma.Ora >= 1 && firma.Ora <= 7);
+
+    if(firma.CompitiAssegnati == "")
+        firma.CompitiAssegnati = undefined;
+
+    let result;
+    if(allParameterReceived && cfProfessoreOK && oraOK)
+        result = await inserisciFirma(firma);
+    
+    if(!allParameterReceived)
+        res.status(400).send({success : false, message : "Missing parameter(s)"});
+    else if(!cfProfessoreOK)
+        res.status(400).send({success : false, message : "Il codice fiscale inserito non ha il numero corretto di caratteri"});
+    else if(!oraOK)
+        res.status(404).send({success : false, message : "Ora inserita fuori dal range"});
+    else if(!result.success)
+        res.status(500).send(result);
+    else
+        res.status(201).send(result);
 });
 
 module.exports = profRouter;

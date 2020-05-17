@@ -1,28 +1,42 @@
-<html>
-
-<head></head>
-<!--Cosa visualizzare: i dati del database del prof, classi che ha il prof, CF, Sesso, Username-->
-
-<body>
-	<div>
-		<h1>{{datiProf.Cognome}} {{datiProf.Nome}}</h1>
+<br>
+<br>
+	<div class="flip-card">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+    <br>
+    <br>
+    <h1>Benvenuto</h1>
+		<h2>{{datiProf.Nome}}</h2>
+    <h2>{{datiProf.Cognome}}</h2>
 		<!--<p>Username: {{datiProf.Username}}</p>-->
-		<p>Dirigente: {{datiProf.Dirigente}}</p>
-		<p *ngIf="coordinatore">Coordinatore di classe: {{datiProf.CoordinaClasse}}</p>
-		<p>Prof di Laboratorio: {{datiProf.Laboratorio}}</p>
-		<p>CF: {{datiProf.CFPersona}}</p>
+    <br>
+    <br>
+    <h5>Tocca per informazioni aggiuntive</h5>
+    </div>
+    <div class="flip-card-back">
+    <br>
+      <h4> Nome: {{datiProf.Nome}}</h4>
+      <h4> Cognome: {{datiProf.Cognome}}</h4>
+      <h4> CF: {{datiProf.CFPersona}}</h4>
+      <h4 *ngIf="datiProf.Dirigente">Dirigente: Si</h4>
+      <h4 *ngIf="!datiProf.Dirigente">Dirigente: No</h4>
+      <h4 *ngIf="datiProf.CoordinaClasse">Coordinatore di classe: Si</h4>
+      <h4 *ngIf="!datiProf.CoordinaClasse">Coordinatore di classe: No</h4>
+      <h4 *ngIf="datiProf.Laboratorio">Prof di Laboratorio: Si</h4>
+      <h4 *ngIf="!datiProf.Laboratorio">Prof di Laboratorio: No</h4>
+
 		<div>
-			<p>Classe/i:<p>
+			<h4>Classe/i:</h4>
 					<div *ngFor="let corrispondenza of sharedProfData.profData.Corrispondenze">
 						<ul>
-							<li> {{corrispondenza.CodiceClasse}} - {{corrispondenza.Materia}}</li>
+						<h5>	<li> {{corrispondenza.CodiceClasse}} - {{corrispondenza.Materia}}</li></h5>
 						</ul>
 					</div>
 		</div>
 		<!--<p>Data di Nascita: {{datiProf.DataNascita}}</p>
       <p>Sesso: {{datiProf.Sesso}}</p>
       <p *ngFor = "datiProf.Classi">Classi: {{datiProf.Classi}}</p>-->
-	</div>
-</body>
 
-</html>
+
+
+

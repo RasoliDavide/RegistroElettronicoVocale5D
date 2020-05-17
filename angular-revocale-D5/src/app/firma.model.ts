@@ -2,9 +2,9 @@ export class Firma
 {
   CFProfessore: String;
   CodiceClasse: String;
-  Data: String;
-  Ora:String;
+  DataFirma: String;
+  Ora:number;
   Argomento:String;
   CompitiAssegnati:String;
-  CodiceMateria:String;
+  CodiceMateria:number;
 }
