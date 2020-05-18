@@ -5,6 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SharedProfDataService } from './shared-prof-data.service';
 //import {MatSelectModule} from '@angular/material/select';
 import { environment } from 'src/environments/environment';
+import { Colore } from './colore.model';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +20,8 @@ export class AppComponent {
   scompare: boolean;
   sharedProfData : SharedProfDataService;
   selectedClass : Corrispondenza;
+  selectedColor : Colore;
+  vettColori: any[] =["rosso","giallo","verde"]
   constructor(http : HttpClient, sharedProfData : SharedProfDataService)
   {
     this.httpClient = http;
@@ -43,7 +46,6 @@ export class AppComponent {
       this.profData.Corrispondenze = response;
       this.sharedProfData.setProfData(this.profData);
       this.selectedClass = this.profData.Corrispondenze[0];
-      console.log(this.profData);
       this.sharedProfData.setSelectedClass(this.sharedProfData.profData.Corrispondenze[0]);
     });
 
@@ -53,5 +55,19 @@ export class AppComponent {
   {
     //console.log(selectedClass);
     this.sharedProfData.setSelectedClass(selectedClass);
+  }
+  onColorSelection(selectedColor: Colore){
+    if(selectedColor.rosso = true){
+      selectedColor.giallo = false;
+      selectedColor.verde = false;
+    }
+    else if(selectedColor.giallo = true){
+      selectedColor.verde = false;
+      selectedColor.rosso = false;
+    }
+    else if(selectedColor.verde = true){
+      selectedColor.rosso = false;
+      selectedColor.giallo = false;
+    }
   }
 }

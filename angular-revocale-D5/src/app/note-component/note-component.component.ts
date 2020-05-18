@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Classi } from '../classi.model';
+import { Classe } from '../classe.model';
 import { ProfData } from '../prof.model';
 import { SharedProfDataService } from '../shared-prof-data.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';

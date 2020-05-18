@@ -61,6 +61,12 @@
   background-color: 	#1E90FF;
   color: white;
 }
+@media screen and (max-width: 500px) {
+  .topnav a {
+    float: none;
+    display: block;
+  }
+}
 
 .subnav {
   float: left;

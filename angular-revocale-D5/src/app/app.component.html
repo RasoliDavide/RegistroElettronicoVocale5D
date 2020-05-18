@@ -4,6 +4,7 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
@@ -14,13 +15,18 @@
 		<a routerLink="/assenze" routerLinkActive="active">Assenze</a>
     <a routerLink="/firma" routerLinkActive="active">Firma</a>
     <a routerLink="/dirigente" routerLinkActive="active">Dirigente</a>
-		<a routerLink="/prof" routerLinkActive="active">Profilo</a>
+		<a routerLink="/prof" routerLinkActive="active"><i class="fa fa-fw fa-user"></i>Profilo</a>
     <div class="rechicca"><h2>RE</h2></div>
 
     <h3 class="profwelcome">Benvenuto {{profData.Nome}} {{profData.Cognome}}</h3>
     <select (ngModelChange)="onClassSelection($event)" [(ngModel)]="selectedClass" class="selectionclass">
       <option *ngFor="let corrispondenza of profData.Corrispondenze" [ngValue]="corrispondenza">{{corrispondenza.CodiceClasse}} - {{corrispondenza.Materia}}</option>
     </select>
+    <section (ngModelChange)="onColorSelection($event)"[(ngModel)]="selectedColor">
+      <!--<option value="rosso">Rosso</option>
+      <option value="giallo">Giallo</option>
+      <option value="verde">Verde</option>-->
+    </section>
 
 
 	</div>
@@ -30,4 +36,5 @@
 </body>
 
 </html>
+
 

@@ -63,9 +63,10 @@ export class FirmaComponentComponent implements OnInit {
       let httpHeaders = new HttpHeaders({"Authorization" : String(this.profData.securedKey)})
       this.observFirma = this.http.post(environment.node_server + '/api/prof/firma', firmaOgg, {headers : httpHeaders});
       this.observFirma.subscribe(
-        (response) =>
+      (response) =>
       {
         console.log(response);
+        this.firme.push(firmaOgg);
       }
     )
     this.formFirma.reset();
@@ -76,18 +77,19 @@ export class FirmaComponentComponent implements OnInit {
     console.log(selectedClass);
     this.selectedClass = selectedClass;
     this.visuaForm = false;
-
-
   }
 
- getFirme(){
+  getFirme(){
     let httpHead = new HttpHeaders({Authorization : String(this.profData.securedKey)});
     this.httpClient.get<Firma[]>(environment.node_server + `/api/prof/getFirme`, {headers : httpHead})
     .subscribe((response) =>
     {
-      this.firme = response;
+      this.firme = response['recordSet'];
+      for(let firma of this.firme)
+      {
+        firma.DataFirma = firma.DataFirma.substring(0,10);
+      }
+      console.log(this.firme);
     }
   )}
-
-
 }

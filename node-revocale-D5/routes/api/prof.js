@@ -223,7 +223,7 @@ profRouter.post('/firma', checkAuthorization, async function(req, res)
     else if(!cfProfessoreOK)
         res.status(400).send({success : false, message : "Il codice fiscale inserito non ha il numero corretto di caratteri"});
     else if(!oraOK)
-        res.status(404).send({success : false, message : "Ora inserita fuori dal range"});
+        res.status(400).send({success : false, message : "Ora inserita fuori dal range"});
     else if(!result.success)
         res.status(500).send(result);
     else
@@ -263,7 +263,7 @@ let getFirme = async function(cfProfessore)
     let reutrnedObject = await dbQuery;
 
     if(reutrnedObject.recordset)
-        return {success: true, recordset : reutrnedObject.recordset};
+        return {success: true, recordSet : reutrnedObject.recordset};
     else
         return reutrnedObject;
 }
