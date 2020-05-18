@@ -1,5 +1,5 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+/*@import "~@angular/material/prebuilt-themes/indigo-pink.css";*/
 
 .rechicca {
   width: 47px;
@@ -40,6 +40,7 @@
   background-color: 	rgb(52, 92, 124);
   overflow: hidden;
   border-radius: 10px;
+  display: block;
 }
 
 .topnav a {

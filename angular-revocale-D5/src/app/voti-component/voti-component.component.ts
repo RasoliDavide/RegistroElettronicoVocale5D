@@ -16,13 +16,18 @@ import { Injectable } from '@angular/core';
 
 import * as RecordRTC from 'recordrtc';
 import { DomSanitizer } from '@angular/platform-browser';
+
+
+
 @Component({
   selector: 'app-voti-component',
   templateUrl: './voti-component.component.html',
   styleUrls: ['./voti-component.component.css']
 })
 //@Injectable()
+
 export class VotiComponentComponent implements OnInit {
+
   private record;
   //Will use this flag for detect recording
   recording = false;
@@ -57,6 +62,7 @@ export class VotiComponentComponent implements OnInit {
   private _recorded = new Subject<any>();
   private _recordingTime = new Subject<string>();
   private _recordingFailed = new Subject<string>();*/
+
   constructor(fb: FormBuilder, private http: HttpClient, sharedProfData: SharedProfDataService, private domSanitizer: DomSanitizer /*private audioRecordingService: AudioRecordingService, private sanitizer: DomSanitizer*/) {
     this.httpClient = http;
     this.sharedProfData = sharedProfData;
@@ -69,6 +75,7 @@ export class VotiComponentComponent implements OnInit {
         'data': ['', Validators.required],
       }
     )
+
     /*this.audioRecordingService.recordingFailed().subscribe(() => {
       this.isRecording = false;
     });
@@ -172,6 +179,7 @@ export class VotiComponentComponent implements OnInit {
     this.observableChangeSelectedClass.subscribe(selectedClass => this.onClassChange(selectedClass));
     this.getStudenti();
 
+
   }
   selectChangeHandler(event: any) {
     this.selectedVoto = event.target.value;
@@ -204,14 +212,18 @@ export class VotiComponentComponent implements OnInit {
     console.log('Tipo: ', v.Tipologia);
 
 
-
     let httpHeaders = new HttpHeaders({ "Authorization": String(this.profData.securedKey) })
     this.observVoto = this.http.post(environment.node_server + '/api/voti/inserisciVoto', v, { headers: httpHeaders });
     this.observVoto.subscribe(
       (data) => {
         console.log(data);
+        if(data = true){
+          this.voti.push(v);
+        }
       }
     )
+    this.formVoto.reset();
+
 
     /*v.Data = this.formAssenza.controls['data'].value;
     v.Ora = this.formAssenza.controls['orario'].value;
@@ -220,6 +232,7 @@ export class VotiComponentComponent implements OnInit {
     //a.CFProfessore*/
 
   }
+
 
   getStudenti() {
     let httpHead = new HttpHeaders({ Authorization: String(this.profData.securedKey) });

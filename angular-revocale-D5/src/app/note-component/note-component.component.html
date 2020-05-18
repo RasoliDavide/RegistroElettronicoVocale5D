@@ -1,12 +1,13 @@
 <!--Codice, Tipologia, Testo, TipoPenalità, CFProfessore, CodiceClasse-->
 <h3>Seleziona lo studente</h3>
 <div style="width:200px;">
-		<select id="listaStudenti" name= "listaStudenti" class="select">
-        <option value="0">Seleziona lo studente</option>
-        <option *ngFor='let s of studenti'>{{s.Cognome}} {{s.Nome}}</option>
-      </select>
-	</div>
+	<select (ngModelChange)="onStudentSelection($event)" [(ngModel)]="selectedStudente" class="select">
+    <option>Seleziona uno studente</option>
+    <option *ngFor="let studente of studenti" [ngValue]="studente">{{studente['Cognome']}} {{studente['Nome']}} </option>
+  </select>
+</div>
   <br>
+<div *ngIf="visuaForm">
 <div class="impform">
 <form [formGroup]="formNota" (ngSubmit)="onSubmitNota(formNota.value)" class="jumbotron ng-valid">
   <h3>Inserisci nota</h3>
@@ -21,7 +22,7 @@
     </tr>
     <tr>
       <td>
-        <select name="tipoNota" (change)="selectChangeHandler($event)">
+        <select name="tipoNota" [formControl]="formNota.controls['tipoNota']">
             <option value=0>Singola</option>
             <option value=1>Classe</option>
           </select>
@@ -30,7 +31,7 @@
           <input type="date" name="data" id="data" [formControl]="formNota.controls['data']" >
         </td>
         <td>
-				<select name="tipoPenalita"  (change)="selectChangeHandler($event)">
+				<select name="tipoPenalita" (change)="selectChangeHandler($event)" [formControl]="formNota.controls['tipoPenalita']">
               <option value=1>Sospensione </option>
               <option value=2>Espulsione</option>
               <option value=0>Nessuna</option>
@@ -46,4 +47,5 @@
 	</table>
 
 </form>
+</div>
 </div>

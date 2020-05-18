@@ -230,4 +230,61 @@ profRouter.post('/firma', checkAuthorization, async function(req, res)
         res.status(201).send(result);
 });
 
+let getFirme = async function(cfProfessore)
+{
+    let dbQuery = new Promise(
+    (resolve, reject) =>
+    {
+        dbConnection.connect(config, function(errConn) {
+            if(errConn)
+                reject(errConn);
+
+            let query = 'SELECT * FROM firma WHERE CFProfessore = @CFProfessore';
+            let preparedStatement = new dbConnection.PreparedStatement();
+            preparedStatement.input('CFProfessore', dbConnection.Char(16));
+            preparedStatement.prepare(query,
+            errPrep => 
+            {
+                if(errPrep)
+                    reject(errPrep);
+
+                preparedStatement.execute({'CFProfessore' : cfProfessore},
+                (errExec, result) =>
+                {
+                    preparedStatement.unprepare(errUnprep => reject(errUnprep))
+                    if(errExec)
+                        reject(errExec);
+
+                    resolve(result);
+                })
+            })
+        });
+    }).catch((err) => {console.log(err); return {success : false, message : "Database error: " + err}});
+    let reutrnedObject = await dbQuery;
+
+    if(reutrnedObject.recordset)
+        return {success: true, recordset : reutrnedObject.recordset};
+    else
+        return reutrnedObject;
+}
+
+profRouter.get('/getFirme', checkAuthorization, async function(req, res)
+{
+    var loggedIn = authorizedKey.find((key) => {
+        console.log(key)
+        return key.securedKey == req.get('authorization');
+    });
+    
+    var cfProfessore = loggedIn.cfProf;
+
+    if(cfProfessore)
+        result = await getFirme(cfProfessore);
+        
+    if (loggedIn == undefined)
+        res.status(404).send({ success: false, message: "Login not found" });
+    else if (!result.success)
+        res.status(500).send(result);
+    else
+        res.send(result);
+})
 module.exports = profRouter;

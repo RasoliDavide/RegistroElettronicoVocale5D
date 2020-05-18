@@ -31,15 +31,17 @@ export class NoteComponentComponent implements OnInit {
   formNota: FormGroup;
   selectedClass: Corrispondenza;
   observableChangeSelectedClass : Observable<Corrispondenza>;
-
+  visuaForm: boolean;
+  selectedStudente: Studente;
   constructor(fb: FormBuilder, private http: HttpClient, sharedProfData: SharedProfDataService) {
     this.httpClient = http;
     this.sharedProfData = sharedProfData;
     this.formNota = fb.group(
       {
-
+        'tipoNota' : ['0', Validators.required],
         'descrizione': ['', Validators.required],
-        //'data':['',Validators.required],
+        'data':['',Validators.required],
+        'tipoPenalita':['0', Validators.required]
 
       }
     )
@@ -66,42 +68,52 @@ export class NoteComponentComponent implements OnInit {
     }
   }
   onSubmitNota(value: string): void {
-    let n: Nota = new Nota();
+    let notaOgg: Nota = new Nota();
     console.log('Descrizione: ', this.formNota.controls['descrizione'].value);
-    n.Tipologia = parseInt(this.selectedTipo);
-    n.TipoPenalità = parseInt(this.selectedPenalita);
+    console.log("Tipo: " + this.formNota.controls['tipoNota'].value);
+    console.log("Penalità: ", this.formNota.controls['tipoPenalita'].value);
+    console.log("Data: ", this.formNota.controls['data'].value);
 
-    if (n.Tipologia == 0) {
-      n.Testo = this.formNota.controls['descrizione'].value;
-      console.log("Tipo: " + n.Tipologia);
-      console.log('Penalità: ', n.TipoPenalità);
+    notaOgg.Tipologia =  this.formNota.controls['tipoNota'].value;
+    notaOgg.TipoPenalità = this.formNota.controls['tipoPenalita'].value;
+    notaOgg.Data = this.formNota.controls['data'].value;
+    notaOgg.Testo = this.formNota.controls['descrizione'].value;
+
+    this.formNota.reset();
+
+   /* if (notaOgg.Tipologia == 0) {
+      notaOgg.Testo = this.formNota.controls['descrizione'].value;
+      console.log("Tipo: " + notaOgg.Tipologia);
+      console.log("Penalità: ", notaOgg.TipoPenalità);
 
 
 
     } else {
-      if (n.Tipologia == 1) {
+      if (notaOgg.Tipologia == 1) {
 
-        n.Testo = this.formNota.controls['descrizione'].value;
-        console.log("Tipo: " + n.Tipologia);
-        console.log('Penalità: ', n.TipoPenalità);
+        notaOgg.Testo = this.formNota.controls['descrizione'].value;
+        console.log("Tipo: " + notaOgg.Tipologia);
+        console.log('Penalità: ', notaOgg.TipoPenalità);
 
 
 
       }
       else {
 
-        n.Testo = this.formNota.controls['descrizione'].value;
-        console.log("Tipo: " + n.Tipologia);
-        console.log('Penalità: ', n.TipoPenalità);
+        notaOgg.Testo = this.formNota.controls['descrizione'].value;
+        console.log("Tipo: " + notaOgg.Tipologia);
+        console.log('Penalità: ', notaOgg.TipoPenalità);
 
       }
 
-      /*v.Data = this.formAssenza.controls['data'].value;
+      v.Data = this.formAssenza.controls['data'].value;
       v.Ora = this.formAssenza.controls['orario'].value;
-      v.Concorre =this.concorreSelect;*/
+      v.Concorre =this.concorreSelect;
       //a.CFStudente
-      //a.CFProfessore*/
-    }
+      //a.CFProfessore
+
+        }
+      }*/
   }
   getStudenti() {
     let httpHead = new HttpHeaders({ Authorization: String(this.profData.securedKey) });
@@ -113,15 +125,26 @@ export class NoteComponentComponent implements OnInit {
 
       })
   }
+  getNote(){
+
+  }
   onClassChange(selectedClass: Corrispondenza) {
     console.log(selectedClass);
     this.selectedClass = selectedClass;
     this.studenti = null;
     this.getStudenti();
+  }
 
+  onStudentSelection(selectedStudent: Studente) {
+    this.selectedStudente = selectedStudent;
+    this.visuaForm = (typeof (this.selectedStudente) == 'object');
+    if (this.visuaForm)
+      this.getNote();
 
   }
 
 
 
 }
+
+

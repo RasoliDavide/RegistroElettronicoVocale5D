@@ -6,6 +6,7 @@ const randomint = require('random-int');
 const apiProf = require('./api/prof');
 const apiAssenze = require('./api/assenze');
 const apiVoti = require('./api/voti');
+const apiDirigente = require('./api/dirigente');
 
 
 const RECommonFunctions = require('./common-functions');
@@ -14,12 +15,13 @@ checkAuthorization = (req, res, next) => {return RECommonFunctions.checkAuthoriz
 apiRouter.use('/prof', apiProf);
 apiRouter.use('/assenze', apiAssenze);
 apiRouter.use('/voti', apiVoti);
+apiRouter.use('/dirigente', apiDirigente)
 
 authorizedKey = 
 [
     {
-            'cfProf' : "dsa",
-            'securedKey' : "all"
+        'cfProf' : "BMOBRK61M04F205E",
+        'securedKey' : "all"
     }
 ];
 /*

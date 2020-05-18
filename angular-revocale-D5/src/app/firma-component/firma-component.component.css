@@ -4,3 +4,34 @@
   margin: auto;
   text-align: center;
 }
+
+.firme {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 75%;
+  margin: auto;
+}
+
+.firme td, #customers th {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.firme tr:nth-child(even){
+  background-color: #f2f2f2;
+}
+
+.firme tr:hover {
+  background-color: #ddd;
+}
+
+.firme th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color:rgb(52, 92, 124);
+  color: white;
+}
+
+

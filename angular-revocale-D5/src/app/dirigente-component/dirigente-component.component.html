@@ -1,19 +1,7 @@
 <div class="impform">
 	<h3>Inserisci circolare</h3>
 	<form [formGroup]="formDirigente" (ngSubmit)="onSubmitComunicazione()" class="jumbotron ng-valid">
-		<!--Comunicazioni = CodiceCircolare, Titolo, Testo-->
-		<div class="form-group">
-			<label for="text">Inserisci Codice Circolare</label>
-			<input type="text" id="codiceCircolare" name="codiceCircolare" [formControl]="formDirigente.controls['codiceCircolare']" class="form-control">
-			<!--CONTROLLARE SE CODICE CIRCOLARE È TEXT O NUMBER-->
-			<div *ngIf="!formDirigente.controls['codiceCircolare'].valid" class="alert alert-danger">Codice Circolare
-				non è valido</div>
-			<div *ngIf="formDirigente.controls['codiceCircolare'].hasError('required')" class="alert alert-danger">
-				Codice Circolare è
-				richiesto
-			</div>
-		</div>
-
+		<!--Comunicazioni = Titolo, Testo-->
 		<div class="form-group">
 			<label for="text">Inserisci Titolo</label>
 			<input type="text" id="titolo" name="titolo" [formControl]="formDirigente.controls['titolo']" class="form-control">

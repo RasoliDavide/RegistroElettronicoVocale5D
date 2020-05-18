@@ -1,7 +1,5 @@
-
-
   <div class="impform">
-  <h1>Firma</h1>
+  <h3>Firma</h3>
 	<form [formGroup]="formFirma" (ngSubmit)="onSubmitFirma()" class="jumbotron ng-valid">
 		<!--Data, Ora, Argomento, CompitiAssegnati,-->
 		<div class="form-group">
@@ -41,4 +39,30 @@
 		</div>
 		<button class="btn btn-primary btn-block" type="submit" [disabled]="!formFirma.valid">Firma</button>
 	</form>
+  <div class ="impform">
+    <h4>Riepilogo firme </h4>
+    <table style="width:75%" class="firme">
+    <!--cf prof, codiceclasse, data, ora, argomento, compiti, codicemateria-->
+      <tr>
+        <th>Firma di:</th>
+        <th>Classe<th>
+        <th>Materia</th>
+        <th>Data</th>
+        <th>Ora</th>
+        <th>Argomento</th>
+        <th>Compiti Assegnati</th>
+      </tr>
+      <tr *ngFor="let firma of firme">
+        <td>{{firma.CFProfessore}}</td>
+        <td>{{firma.Codiceclasse}}</td>
+        <td>{{firma.CodiceMateria}}</td>
+        <td>{{firma.DataFirma}}</td>
+        <td>{{firma.Ora}}</td>
+        <td>{{firma.Argomento}}</td>
+        <td *ngIf="firma.CompitiAssegnati">{{firma.CompitiAssegnati}}</td>
+        <td *ngIf="!firma.CompitiAssegnati">-</td>
+      </tr>
+    </table>
+		<br>
+    </div>
 </div>

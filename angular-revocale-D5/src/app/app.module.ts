@@ -16,8 +16,10 @@ import {   //Importare le funzionalità nella nostra applicazione
   FormsModule,
   ReactiveFormsModule
 } from '@angular/forms';
-import {BrowserAnimationsModule} from
-    '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from
+  '@angular/platform-browser/animations';
+import { NgAlertModule } from '@theo4u/ng-alert';
+
 @NgModule({
   exports: [
   ],
@@ -39,7 +41,9 @@ import {BrowserAnimationsModule} from
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    NgAlertModule,
+
   ],
   providers: [],
   bootstrap: [AppComponent]

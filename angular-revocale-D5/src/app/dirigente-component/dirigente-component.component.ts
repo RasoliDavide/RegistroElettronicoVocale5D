@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ProfData } from '../prof.model';
 import { SharedProfDataService } from '../shared-prof-data.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Comunicazione } from '../comunicazione.model';
 
 @Component({
   selector: 'app-dirigente-component',
@@ -19,7 +20,6 @@ export class DirigenteComponentComponent implements OnInit {
     this.sharedProfData = sharedProfData;
     this.formDirigente = fb.group(
     {
-      'codiceCircolare':['',Validators.required],
       'titolo':['',Validators.required],
       'testo':['',Validators.required]
     })
@@ -31,10 +31,12 @@ export class DirigenteComponentComponent implements OnInit {
   }
 
   onSubmitComunicazione(){
-      console.log('codiceCircolare: ', this.formDirigente.controls['codiceCircolare'].value);
       console.log('titolo: ', this.formDirigente.controls['titolo'].value);
       console.log('testo: ', this.formDirigente.controls['testo'].value);
-      //manca api
+      let comunicazioneOgg:Comunicazione = new Comunicazione();
+      comunicazioneOgg.Titolo= this.formDirigente.controls['titolo'].value;
+      comunicazioneOgg.Testo = this.formDirigente.controls['testo'].value;
+      //this.formDirigente.reset();
   }
 
 }

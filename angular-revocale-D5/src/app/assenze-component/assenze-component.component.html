@@ -6,7 +6,7 @@
 <h3>Seleziona lo studente</h3>
 <div style="width:200px;">
 	<select (ngModelChange)="onStudentSelection($event)" [(ngModel)]="selectedStudente" class="select">
-    <option selected>Seleziona uno studente</option>
+    <option value=null>Seleziona uno studente</option>
     <option *ngFor="let studente of studenti" [ngValue]="studente">{{studente['Cognome']}} {{studente['Nome']}} </option>
   </select>
 </div>

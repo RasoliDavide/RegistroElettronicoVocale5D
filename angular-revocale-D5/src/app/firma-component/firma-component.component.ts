@@ -21,6 +21,7 @@ export class FirmaComponentComponent implements OnInit {
   observableChangeSelectedClass : Observable<Corrispondenza>;
   selectedClass : Corrispondenza;
   visuaForm: boolean;
+  firme:Firma[];
   observFirma: Observable<Object>;
 
   constructor(fb : FormBuilder,private http: HttpClient, sharedProfData : SharedProfDataService) {
@@ -33,6 +34,7 @@ export class FirmaComponentComponent implements OnInit {
       'argomento':['',Validators.required],
       'compiti':['']
     })
+
   }
 
   ngOnInit(): void {
@@ -40,6 +42,7 @@ export class FirmaComponentComponent implements OnInit {
     this.observableChangeSelectedClass = this.sharedProfData.getObservable();
     this.onClassChange(this.sharedProfData.selectedClass);
     this.observableChangeSelectedClass.subscribe(selectedClass => this.onClassChange(selectedClass));
+    this.getFirme();
   }
 
   onSubmitFirma(){
@@ -65,6 +68,8 @@ export class FirmaComponentComponent implements OnInit {
         console.log(response);
       }
     )
+    this.formFirma.reset();
+
   }
    onClassChange(selectedClass : Corrispondenza)
   {
@@ -72,6 +77,17 @@ export class FirmaComponentComponent implements OnInit {
     this.selectedClass = selectedClass;
     this.visuaForm = false;
 
+
   }
+
+ getFirme(){
+    let httpHead = new HttpHeaders({Authorization : String(this.profData.securedKey)});
+    this.httpClient.get<Firma[]>(environment.node_server + `/api/prof/getFirme`, {headers : httpHead})
+    .subscribe((response) =>
+    {
+      this.firme = response;
+    }
+  )}
+
 
 }

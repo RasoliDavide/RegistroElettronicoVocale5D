@@ -27,7 +27,7 @@ export class AssenzeComponentComponent implements OnInit {
   profData : ProfData;
   observAssenza: Observable<Object>;
   selectedAssenza: Assenza;
-  selectedStudente : Studente;
+  selectedStudente : Studente = null;
   sharedProfData : SharedProfDataService;
   observableChangeSelectedClass : Observable<Corrispondenza>;
   studenti : Studente[];
@@ -43,7 +43,7 @@ export class AssenzeComponentComponent implements OnInit {
     this.formAssenza = fb.group(
       {
         'studente':[0, Validators.required],
-        'tipoAssenza' : [Validators.required],
+        'tipoAssenza' : ['A', Validators.required],
         'data':['',Validators.required],
         'concorre':[true],
         'orario':['',Validators.required]
@@ -103,8 +103,12 @@ export class AssenzeComponentComponent implements OnInit {
       (response) =>
       {
         console.log(response);
+        if(response){
+          this.assenze.push(assenzaOgg);
+        }
       }
     )
+    this.formAssenza.reset();
   }
   //Input: UsernameStudente, Tipo, DataAssenza,Motivazione
   onSubmitGiustifica(value: string): void{
@@ -122,6 +126,7 @@ export class AssenzeComponentComponent implements OnInit {
         console.log(response);
       }
     )
+    this.formGiustifica.reset();
   }
 
   getStudenti()
