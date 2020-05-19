@@ -1,4 +1,4 @@
-<div class="impform">
+<div class="impform" *ngIf="formDirigente">
 	<h3>Inserisci circolare</h3>
 	<form [formGroup]="formDirigente" (ngSubmit)="onSubmitComunicazione()" class="jumbotron ng-valid">
 		<!--Comunicazioni = Titolo, Testo-->
@@ -9,9 +9,6 @@
 			<div *ngIf="formDirigente.controls['titolo'].hasError('required')" class="alert alert-danger">Titolo è
 				richiesto
 			</div>
-		</div>
-
-		<div class="form-group">
 			<label for="text">Inserisci Testo</label>
 			<textarea type="text" id="testo" name="testo" rows="15"  [formControl]="formDirigente.controls['testo']" class="form-control"></textarea>
 			<div *ngIf="!formDirigente.controls['testo'].valid" class="alert alert-danger">Testo non è valido</div>
@@ -19,6 +16,10 @@
 				richiesto
 			</div>
 		</div>
+    <div *ngFor="let controllo of formDirigente.controls['destinatari']['controls']; let i = index">
+      <input id="class{{i}}" type="checkbox" [formControl]="controllo">
+      <label for="class{{i}}">{{classi[i]['CodiceClasse']}}</label>
+    </div>
 		<button class="btn btn-primary btn-block" type="submit" [disabled]="!formDirigente.valid">Invia</button>
 	</form>
 </div>

@@ -201,7 +201,6 @@ profRouter.post('/firma', checkAuthorization, async function(req, res)
 {
     //CFProfessore, CodiceClasse, DataFirma, Ora, Argomento, CompitiAssegnati, CodiceMateria
     let firma = req.body;
-    console.log(firma);
     let allParameterReceived = (firma.CFProfessore && firma.CodiceClasse && firma.DataFirma && firma.Ora && firma.Argomento && firma.CodiceMateria);
     let cfProfessoreOK;
     if(allParameterReceived)
@@ -271,7 +270,6 @@ let getFirme = async function(cfProfessore)
 profRouter.get('/getFirme', checkAuthorization, async function(req, res)
 {
     var loggedIn = authorizedKey.find((key) => {
-        console.log(key)
         return key.securedKey == req.get('authorization');
     });
     

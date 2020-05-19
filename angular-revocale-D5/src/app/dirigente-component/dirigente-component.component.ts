@@ -21,6 +21,7 @@ export class DirigenteComponentComponent implements OnInit {
   sharedProfData: SharedProfDataService;
   classi: Object[];
   obsClassi: Observable<ClassiResponse>;
+  obsComunicazione : Observable<Object>;
   formBuilder: FormBuilder;
   constructor(fb: FormBuilder, private http: HttpClient, sharedProfData: SharedProfDataService) {
     this.httpClient = http;
@@ -67,9 +68,28 @@ export class DirigenteComponentComponent implements OnInit {
   onSubmitComunicazione() {
     console.log('titolo: ', this.formDirigente.controls['titolo'].value);
     console.log('testo: ', this.formDirigente.controls['testo'].value);
-    let comunicazioneOgg: Comunicazione = new Comunicazione();
-    comunicazioneOgg.Titolo = this.formDirigente.controls['titolo'].value;
-    comunicazioneOgg.Testo = this.formDirigente.controls['testo'].value;
-    //this.formDirigente.reset();
+    let destinatari = [];
+    for(let i = 0; i < this.formDirigente.controls['destinatari']['controls'].length; i++)
+    {
+      if(this.formDirigente.controls['destinatari']['controls'][i].value)
+        destinatari.push(this.classi[i]['CodiceClasse']);
+    }
+    if(destinatari.length > 0)
+    {
+      let comunicazione : Comunicazione = new Comunicazione();
+      comunicazione.Titolo = this.formDirigente.controls['titolo'].value;
+      comunicazione.Testo = this.formDirigente.controls['testo'].value;
+      comunicazione.Destinatari = destinatari;
+      let httpHeaders = new HttpHeaders({"Authorization": String(this.profData.securedKey)});
+      this.obsComunicazione = this.httpClient.post<Object>(environment.node_server + '/api/dirigente/inserisciComunicazione', comunicazione, {headers : httpHeaders});
+      this.obsComunicazione.subscribe((response) =>
+      {
+        console.log(response);
+        if(response['success'])
+          this.formDirigente.reset();
+      });
+    }
+    else
+      alert("Seleziona almeno una classe");
   }
 }

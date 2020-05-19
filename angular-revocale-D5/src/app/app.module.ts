@@ -12,14 +12,10 @@ import { NoteComponentComponent } from './note-component/note-component.componen
 import { AssenzeComponentComponent } from './assenze-component/assenze-component.component';
 import { FirmaComponentComponent } from './firma-component/firma-component.component';
 import { InserimentoVocaleConRiepilogoComponentComponent } from './inserimento-vocale-con-riepilogo-component/inserimento-vocale-con-riepilogo-component.component';
-import {   //Importare le funzionalità nella nostra applicazione
-  FormsModule,
-  ReactiveFormsModule
-} from '@angular/forms';
-import { BrowserAnimationsModule } from
-  '@angular/platform-browser/animations';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgAlertModule } from '@theo4u/ng-alert';
-
+import {MatIconModule} from '@angular/material/icon';
 @NgModule({
   exports: [
   ],
@@ -43,6 +39,7 @@ import { NgAlertModule } from '@theo4u/ng-alert';
     HttpClientModule,
     BrowserAnimationsModule,
     NgAlertModule,
+    MatIconModule
 
   ],
   providers: [],

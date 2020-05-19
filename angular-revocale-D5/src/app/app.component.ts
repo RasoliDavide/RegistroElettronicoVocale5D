@@ -3,7 +3,7 @@ import { ProfData } from './prof.model';
 import { Corrispondenza } from './corrispondenze.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SharedProfDataService } from './shared-prof-data.service';
-//import {MatSelectModule} from '@angular/material/select';
+import {MatSelectModule} from '@angular/material/select';
 import { environment } from 'src/environments/environment';
 import { Colore } from './colore.model';
 
@@ -56,18 +56,5 @@ export class AppComponent {
     //console.log(selectedClass);
     this.sharedProfData.setSelectedClass(selectedClass);
   }
-  onColorSelection(selectedColor: Colore){
-    if(selectedColor.rosso = true){
-      selectedColor.giallo = false;
-      selectedColor.verde = false;
-    }
-    else if(selectedColor.giallo = true){
-      selectedColor.verde = false;
-      selectedColor.rosso = false;
-    }
-    else if(selectedColor.verde = true){
-      selectedColor.rosso = false;
-      selectedColor.giallo = false;
-    }
-  }
+
 }

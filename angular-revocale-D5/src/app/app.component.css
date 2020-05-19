@@ -9,7 +9,7 @@
   animation-duration: 3s;
   float:right;
   text-align:center;
-  margin:3px;
+  margin:4px;
   color: white;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
@@ -35,7 +35,11 @@
   100% {background-color: rgb(93, 215, 219)}
 }
 
-
+.with-icon {
+  display: inline-flex;
+  vertical-align: middle;
+  margin-right:5px;
+}
 .topnav {
   background-color: 	rgb(52, 92, 124);
   overflow: hidden;
