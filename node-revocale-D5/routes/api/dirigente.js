@@ -56,13 +56,13 @@ let inserisciComunicazione = async function (comunicazione) {
                         let continua = false;
                         let preparedStatementCom = new dbConnection.PreparedStatement(transaction);
                         preparedStatementCom.input('Titolo', dbConnection.VarChar(100));
-                        preparedStatementCom.input('CFProfessore', dbConnection.VarChar(5000));
+                        preparedStatementCom.input('Testo', dbConnection.VarChar(5000));
                         query = 'INSERT INTO Comunicazione (Titolo, Testo) VALUES (@Titolo, @Testo)';
-                        await preparedStatementCom.prepare(query);
+                        await preparedStatementCom.prepare(query).catch((error) => reject(error));
                         let resultComunicazione = await preparedStatementCom.execute({
                             'Titolo': comunicazione.Titolo,
                             'Testo': comunicazione.Testo
-                        });
+                        }).catch((error) => reject(error));
 
                         if (resultComunicazione) {
                             if (resultComunicazione.rowsAffected == 1)
@@ -70,10 +70,10 @@ let inserisciComunicazione = async function (comunicazione) {
                             else
                                 continua = false;
                         }
-                        await preparedStatementCom.unprepare();
+                        await preparedStatementCom.unprepare().catch((error) => reject(error));
 
                         if (!continua) {
-                            await transaction.rollback();
+                            await transaction.rollback().catch((error) => reject(error));;
                             errRollback = new Error("Non continua");
                             reject(errRollback);
                         }
@@ -85,19 +85,19 @@ let inserisciComunicazione = async function (comunicazione) {
                         preparedStatementGetNumero.input('Titolo', dbConnection.VarChar(100));
                         preparedStatementGetNumero.input('Testo', dbConnection.VarChar(5000));
 
-                        await preparedStatementGetNumero.prepare(query);
+                        await preparedStatementGetNumero.prepare(query).catch((error) => reject(error));;
                         let resultCircolare = await preparedStatementGetNumero.execute({
                             'Titolo': comunicazione.Titolo,
                             'Testo': comunicazione.Testo
-                        });
+                        }).catch((error) => reject(error));
 
                         if (resultCircolare) {
                             numeroCircolare = resultCircolare.recordset[0].CodiceCircolare;
-                            await preparedStatementGetNumero.unprepare();
+                            await preparedStatementGetNumero.unprepare().catch((error) => reject(error));
                         }
                         else {
-                            await preparedStatementGetNumero.unprepare();
-                            await transaction.rollback();
+                            await preparedStatementGetNumero.unprepare().catch((error) => reject(error));
+                            await transaction.rollback().catch((error) => reject(error));;
                             let errRollback = new Error("Problema durante il recupero del numero circolare");
                             reject(errRollback);
                         }
@@ -109,26 +109,27 @@ let inserisciComunicazione = async function (comunicazione) {
                         let preparedStatementDest = new dbConnection.PreparedStatement(transaction);
                         preparedStatementDest.input('CodiceCircolare', dbConnection.Int());
                         preparedStatementDest.input('CodiceClasse', dbConnection.VarChar(7));
-                        await preparedStatementDest.prepare(query);
+                        await preparedStatementDest.prepare(query).catch((error) => reject(error));
                         for (let i = 0; i < destinatari.length; i++) {
                             let resultDest = await preparedStatementDest.execute({
                                 'CodiceCircolare': numeroCircolare,
                                 'CodiceClasse': destinatari[i]
-                            });
+                            }).catch((error) => reject(error));
                             if (resultDest.rowsAffected == 1)
                                 continua = true;
                             else
                                 continua = false;
 
                             if (!continua) {
-                                await preparedStatementDest.unprepare();
-                                await transaction.rollback();
+                                await preparedStatementDest.unprepare().catch((error) => reject(error));
+                                await transaction.rollback().catch((error) => reject(error));
                                 let errRollback = new Error('Errore durante l\'inserimento destinatari');
                                 reject(errRollback);
                             }
                         }
                         if (continua) {
-                            await transaction.commit();
+                            await preparedStatementDest.unprepare().catch((error) => reject(error));
+                            await transaction.commit().catch((error) => reject(error));
                             resolve({ success: true })
                         }
                     });
@@ -163,10 +164,23 @@ dirigenteRouter.post('/inserisciComunicazione', checkAuthorization, async functi
         allParameterOK = titoloOK && testoOK && destinatariOK;
     }
 
-
+    let result;
     if (allParameterOK) {
-        let result = inserisciComunicazione(comunicazione);
+        result = await inserisciComunicazione(comunicazione);
     }
+    console.log(result);
+    if(!allParameterReceived)
+        res.status(400).send({success : false, message : "Missing parameter(s)"});
+    else if(!titoloOK)
+        res.status(400).send({success : false, message : "Numero di caratteri del titolo troppo alto"});
+    else if(!testoOK)
+        res.status(400).send({success : false, message : "Numero di caratteri del testo troppo alto"});
+    else if(!destinatariOK)
+        res.status(400).send({success : false, message : "Errore nella lettura dei destinatari"});
+    else if(!result.success)
+        res.status(500).send(result);
+    else
+        res.status(201).send(result);
 })
 
 
