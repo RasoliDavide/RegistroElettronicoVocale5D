@@ -1,4 +1,10 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
+.impform{
+  width: 75%;
+  margin: auto;
+  text-align: center;
+}
+
 .flip-card {
   background-color: transparent;
   width: 500px;

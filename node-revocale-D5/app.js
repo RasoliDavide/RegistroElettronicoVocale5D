@@ -20,6 +20,11 @@ var angularRouter = require('./routes/api');
 
 var app = express();
 
+
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -29,4 +34,40 @@ app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/api', angularRouter);
+
+app.get('/assenze', (req, res) => {  
+  res.render('assenze', {
+    title: `assenze`
+  });
+});
+app.get('/compiti', (req, res) => {  
+  res.render('compiti', {
+    title: `compiti`
+  });
+});
+app.get('/comunicazioni', (req, res) => {  
+  res.render('comunicazioni', {
+    title: `comunicazioni`
+  });
+});
+app.get('/lezioni', (req, res) => {  
+  res.render('lezioni', {
+    title: `lezioni`
+  });
+});
+app.get('/note', (req, res) => {  
+  res.render('note', {
+    title: `note`
+  });
+});
+app.get('/profilo', (req, res) => {  
+  res.render('profilo', {
+    title: `profilo`
+  });
+});
+app.get('/voti', (req, res) => {  
+  res.render('voti', {
+    title: `voti`
+  });
+});
 module.exports = app;

@@ -118,9 +118,7 @@ let inserisciComunicazione = async function (comunicazione) {
                             if (resultDest.rowsAffected == 1)
                                 continua = true;
                             else
-                                continua = false;
-
-                            if (!continua) {
+                            {
                                 await preparedStatementDest.unprepare().catch((error) => reject(error));
                                 await transaction.rollback().catch((error) => reject(error));
                                 let errRollback = new Error('Errore durante l\'inserimento destinatari');

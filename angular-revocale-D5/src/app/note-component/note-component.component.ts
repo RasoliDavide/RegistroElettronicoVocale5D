@@ -138,8 +138,7 @@ export class NoteComponentComponent implements OnInit {
   onStudentSelection(selectedStudent: Studente) {
     this.selectedStudente = selectedStudent;
     this.visuaForm = (typeof (this.selectedStudente) == 'object');
-    if (this.visuaForm)
-      this.getNote();
+    this.getNote();
 
   }
 

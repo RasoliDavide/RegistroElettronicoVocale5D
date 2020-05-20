@@ -175,7 +175,7 @@ let inserisciFirma = async function(firma)
                     preparedStatement.unprepare(
                         errUnprep => reject(errUnprep)
                     )
-
+                    
                     if(result)
                         resolve(result.rowsAffected[0]);
                     else

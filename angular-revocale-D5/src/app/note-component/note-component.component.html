@@ -1,14 +1,7 @@
 <!--Codice, Tipologia, Testo, TipoPenalità, CFProfessore, CodiceClasse-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<h3>Seleziona lo studente</h3>
-<div style="width:200px;">
-	<select (ngModelChange)="onStudentSelection($event)" [(ngModel)]="selectedStudente" class="select">
-    <option>Seleziona uno studente</option>
-    <option *ngFor="let studente of studenti" [ngValue]="studente">{{studente['Cognome']}} {{studente['Nome']}} </option>
-  </select>
-</div>
   <br>
-<div *ngIf="visuaForm">
+
 <div class="impform">
 <form [formGroup]="formNota" (ngSubmit)="onSubmitNota(formNota.value)" class="jumbotron ng-valid">
   <h3>Inserisci nota</h3>
@@ -16,6 +9,7 @@
 
 		<tr>
 			<th>Tipologia nota</th>
+      <th>Studenti</th>
       <th>Data</th>
       <th>Tipo penalità</th>
       <th>Descrizione</th>
@@ -26,6 +20,12 @@
         <select name="tipoNota" [formControl]="formNota.controls['tipoNota']">
             <option value=0>Singola</option>
             <option value=1>Classe</option>
+          </select>
+        </td>
+        <td>
+        <select name="listaStudenti" [formControl]="formNota.controls['listaStudenti']" *ngIf="formNota.controls['tipoNota'].value=='0'">
+            <option value=null>Seleziona uno studente</option>
+            <option *ngFor="let studente of studenti" [ngValue]="studente">{{studente['Cognome']}} {{studente['Nome']}} </option>
           </select>
         </td>
          <td>
@@ -64,4 +64,4 @@
 		</table>
 		<br>
 </div>
-</div>
+

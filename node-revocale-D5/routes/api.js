@@ -135,8 +135,6 @@ apiRouter.post('/login', checkPostPayloadMiddleware, async function(req, res)
 
 
 
-
-
 apiRouter.post('/logout', checkAuthorization, function(req, res)
 {
     for(let i = 0; i < authorizedKey.length; i++)
@@ -147,7 +145,6 @@ apiRouter.post('/logout', checkAuthorization, function(req, res)
             break;
         }
     }
-    console.log(authorizedKey)
     res.send('logged out');
 })
 
