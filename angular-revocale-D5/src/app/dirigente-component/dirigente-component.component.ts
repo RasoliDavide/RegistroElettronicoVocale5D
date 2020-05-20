@@ -23,6 +23,7 @@ export class DirigenteComponentComponent implements OnInit {
   obsClassi: Observable<ClassiResponse>;
   obsComunicazione : Observable<Object>;
   formBuilder: FormBuilder;
+  comunicazioni:Comunicazione[];
   constructor(fb: FormBuilder, private http: HttpClient, sharedProfData: SharedProfDataService) {
     this.httpClient = http;
     this.sharedProfData = sharedProfData;

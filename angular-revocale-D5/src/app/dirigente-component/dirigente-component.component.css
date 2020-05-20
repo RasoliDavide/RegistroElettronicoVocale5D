@@ -4,3 +4,34 @@
   margin: auto;
   text-align: center;
 }
+
+.comunicazioni {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 75%;
+  margin: auto;
+}
+
+.comunicazioni td, #customers th {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.comunicazioni tr:nth-child(even){
+  background-color: #f2f2f2;
+}
+
+.comunicazioni tr:hover {
+  background-color: #ddd;
+}
+
+.comunicazioni th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color:rgb(52, 92, 124);
+  color: white;
+}
+
+
