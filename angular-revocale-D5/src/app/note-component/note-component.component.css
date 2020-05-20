@@ -43,3 +43,8 @@
 }
 
 
+.scrollable
+{
+  overflow: auto;
+  height: 150px;
+}

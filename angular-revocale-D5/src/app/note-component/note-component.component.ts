@@ -22,10 +22,8 @@ export class NoteComponentComponent implements OnInit {
   tipoSelect: boolean;
   penalitaSelect: boolean;
   @Input() profData: ProfData;
-  //@Input() studente: Studente;
   selectedTipo: string = '';
   selectedPenalita: string = '';
-  //arrayPeso: number[] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
   sharedProfData: SharedProfDataService;
   @Output() votoOK: EventEmitter<Object>;
   formNota: FormGroup;
@@ -33,18 +31,11 @@ export class NoteComponentComponent implements OnInit {
   observableChangeSelectedClass : Observable<Corrispondenza>;
   visuaForm: boolean;
   selectedStudente: Studente;
+  formBuilder : FormBuilder;
   constructor(fb: FormBuilder, private http: HttpClient, sharedProfData: SharedProfDataService) {
     this.httpClient = http;
     this.sharedProfData = sharedProfData;
-    this.formNota = fb.group(
-      {
-        'tipoNota' : ['0', Validators.required],
-        'descrizione': ['', Validators.required],
-        'data':['',Validators.required],
-        'tipoPenalita':['0', Validators.required]
-
-      }
-    )
+    this.formBuilder = fb;
   }
 
   ngOnInit(): void {
@@ -52,7 +43,6 @@ export class NoteComponentComponent implements OnInit {
     this.observableChangeSelectedClass = this.sharedProfData.getObservable();
     this.onClassChange(this.sharedProfData.selectedClass);
     this.observableChangeSelectedClass.subscribe(selectedClass => this.onClassChange(selectedClass));
-    this.getStudenti();
   }
   selectChangeHandler(event: any) {
     this.selectedTipo = event.target.value;
@@ -67,8 +57,9 @@ export class NoteComponentComponent implements OnInit {
       this.penalitaSelect = false;
     }
   }
-  onSubmitNota(value: string): void {
-    let notaOgg: Nota = new Nota();
+  onSubmitNota(): void {
+    console.log(this.formNota);
+     /*let notaOgg: Nota = new Nota();
     console.log('Descrizione: ', this.formNota.controls['descrizione'].value);
     console.log("Tipo: " + this.formNota.controls['tipoNota'].value);
     console.log("Penalità: ", this.formNota.controls['tipoPenalita'].value);
@@ -81,7 +72,7 @@ export class NoteComponentComponent implements OnInit {
 
     this.formNota.reset();
 
-   /* if (notaOgg.Tipologia == 0) {
+   if (notaOgg.Tipologia == 0) {
       notaOgg.Testo = this.formNota.controls['descrizione'].value;
       console.log("Tipo: " + notaOgg.Tipologia);
       console.log("Penalità: ", notaOgg.TipoPenalità);
@@ -121,10 +112,30 @@ export class NoteComponentComponent implements OnInit {
       .subscribe((response) => {
         //Cognome,Nome,Username
         this.studenti = response;
-        console.log(this.studenti);
-
+        for(let i = 0; i < this.studenti.length; i++)
+          this.studenti[i]['selected'] = false;
+        this.buildForm();
+        console.log(this.studenti)
       })
   }
+
+  buildForm()
+  {
+    let formArray = this.studenti.map((studente) => {
+      return this.formBuilder.control(studente['selected']);
+    });
+    this.formNota = this.formBuilder.group(
+      {
+        'tipologia' : [0, Validators.required],
+        'testo': ['', Validators.required],
+        'dataNota':['',Validators.required],
+        'tipoPenalita':[0, Validators.required],
+        'studentiDestinatari': this.formBuilder.array(formArray)
+      }
+    )
+    console.log(this.formNota);
+  }
+
   getNote(){
 
   }

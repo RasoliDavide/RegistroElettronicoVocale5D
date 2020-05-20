@@ -57,7 +57,6 @@ export class DirigenteComponentComponent implements OnInit {
     let formArray = this.classi.map((checkbox) => {
       return this.formBuilder.control(checkbox['selected']);
     });
-    console.log(formArray);
     this.formDirigente = this.formBuilder.group(
       {
         'titolo': ['', Validators.required],

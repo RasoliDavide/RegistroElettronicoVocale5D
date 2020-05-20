@@ -40,31 +40,31 @@ app.get('/assenze', (req, res) => {
     title: `assenze`
   });
 });
-app.get('/compiti', (req, res) => {  
-  res.render('compiti', {
-    title: `compiti`
-  });
-});
+
 app.get('/comunicazioni', (req, res) => {  
   res.render('comunicazioni', {
     title: `comunicazioni`
   });
 });
+
 app.get('/lezioni', (req, res) => {  
   res.render('lezioni', {
     title: `lezioni`
   });
 });
+
 app.get('/note', (req, res) => {  
   res.render('note', {
     title: `note`
   });
 });
+
 app.get('/profilo', (req, res) => {  
   res.render('profilo', {
     title: `profilo`
   });
 });
+
 app.get('/voti', (req, res) => {  
   res.render('voti', {
     title: `voti`

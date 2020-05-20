@@ -1,67 +1,68 @@
 <!--Codice, Tipologia, Testo, TipoPenalità, CFProfessore, CodiceClasse-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <br>
+<br>
 
-<div class="impform">
-<form [formGroup]="formNota" (ngSubmit)="onSubmitNota(formNota.value)" class="jumbotron ng-valid">
-  <h3>Inserisci nota</h3>
-	<table style="width:100%" class="note">
+<div class="impform" *ngIf="formNota">
+	<form [formGroup]="formNota" (ngSubmit)="onSubmitNota()" class="jumbotron ng-valid">
+		<h3>Inserisci nota</h3>
+		<table style="width:100%" class="note">
 
-		<tr>
-			<th>Tipologia nota</th>
-      <th>Studenti</th>
-      <th>Data</th>
-      <th>Tipo penalità</th>
-      <th>Descrizione</th>
-      <th>Invia</th>
-    </tr>
-    <tr>
-      <td>
-        <select name="tipoNota" [formControl]="formNota.controls['tipoNota']">
-            <option value=0>Singola</option>
-            <option value=1>Classe</option>
-          </select>
-        </td>
-        <td>
-        <select name="listaStudenti" [formControl]="formNota.controls['listaStudenti']" *ngIf="formNota.controls['tipoNota'].value=='0'">
-            <option value=null>Seleziona uno studente</option>
-            <option *ngFor="let studente of studenti" [ngValue]="studente">{{studente['Cognome']}} {{studente['Nome']}} </option>
-          </select>
-        </td>
-         <td>
-          <input type="date" name="data" id="data" [formControl]="formNota.controls['data']" >
-        </td>
-        <td>
-				<select name="tipoPenalita" (change)="selectChangeHandler($event)" [formControl]="formNota.controls['tipoPenalita']">
-              <option value=1>Sospensione </option>
-              <option value=2>Espulsione</option>
-              <option value=0>Nessuna</option>
-            </select>
-        </td>
-        <td>
-				<textarea type="text" name="descrizione" id="descrizione" [formControl]="formNota.controls['descrizione']" ></textarea>
-        </td>
-        <td>
-				<button class="btn btn-primary btn-block" type="submit">Inserisci nota</button>
-        </td>
-      </tr>
-	</table>
-
-</form>
-</div>
-<div class="impform">
-		<h4>Riepilogo note</h4>
-		<table style="width:75%" class="note" >
 			<tr>
-					<th>Tipologia nota</th>
-          <th>Data</th>
-          <th>Tipo penalità</th>
-          <th>Descrizione</th>
+				<th>Tipologia nota</th>
+				<th>Studenti</th>
+				<th>Data</th>
+				<th>Tipo penalità</th>
+				<th>Descrizione</th>
+				<th>Invia</th>
 			</tr>
-			<tr *ngFor="">
-
+			<tr>
+				<td>
+					<select name="tipologia" [formControl]="formNota.controls['tipologia']">
+            <option value=0>Per studente/i</option>
+            <option value=1>Per classe</option>
+          </select>
+				</td>
+				<td>
+					<div class="scrollable">
+            <div *ngFor="let studenteDestinatario of formNota.controls['studentiDestinatari']['controls']; let i = index">
+              <input name="studenteDestinatario{{i}}" type="checkbox" [formControl]="studenteDestinatario">
+              <label for="studenteDestinatario{{i}}">{{studenti[i]['Cognome']}}  {{studenti[i]['Nome']}}</label>
+            </div>
+					</div>
+				</td>
+				<td>
+					<input type="date" name="data" id="data" [formControl]="formNota.controls['dataNota']" >
+        </td>
+				<td>
+					<select name="tipoPenalita" (change)="selectChangeHandler($event)" [formControl]="formNota.controls['tipoPenalita']">
+                <option value=0>Nessuna</option>
+                <option value=1>Sospensione </option>
+                <option value=2>Espulsione</option>
+          </select>
+				</td>
+				<td>
+					<textarea type="text" name="descrizione" id="descrizione" [formControl]="formNota.controls['testo']" ></textarea>
+				</td>
+				<td>
+					<button class="btn btn-primary btn-block" type="submit">Inserisci nota</button>
+				</td>
 			</tr>
 		</table>
-		<br>
-</div>
 
+	</form>
+</div>
+<div class="impform">
+	<h4>Riepilogo note</h4>
+	<table style="width:75%" class="note">
+		<tr>
+			<th>Tipologia nota</th>
+			<th>Data</th>
+			<th>Tipo penalità</th>
+			<th>Descrizione</th>
+		</tr>
+		<tr *ngFor="">
+
+		</tr>
+	</table>
+	<br>
+</div>
