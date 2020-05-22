@@ -132,7 +132,6 @@ let inserisciNota = async function (nota) {
 
                     });
                 }catch (err) {
-                    console.log("cought");
                     reject(err);
                 }
             });
@@ -165,4 +164,18 @@ noteRouter.post('/inserisciNota', checkAuthorization, async function (res, req) 
     {
         result = inserisciNota(nota);
     }
+    if(!allParameterReceived)
+        res.status(400).send({success : false, message : "Missing parameter(s)"});
+    else if(!tipologiaOK)
+        res.status(400).send({success : false, message : "Tipologia non valida"});
+    else if(!testoOK)
+        res.status(400).send({success : false, message : "Testo non valido"});
+    else if(!coerenzaOK)
+        res.status(400).send({success : false, message : "Errore nella lettura dei destinatari"});
+    else if(!cfProfessoreOK)
+        res.status(400).send({success : false, message : "Codice fiscale professore non valido"});
+    else if(!result.success)
+        res.status(500).send(result);
+    else
+        res.status(201).send(result);
 })

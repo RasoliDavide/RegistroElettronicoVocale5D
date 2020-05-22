@@ -16,6 +16,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgAlertModule } from '@theo4u/ng-alert';
 import {MatIconModule} from '@angular/material/icon';
+import { AudioRecordingService } from './inserimento-vocale-con-riepilogo-component/audio-recording.service';
+
 @NgModule({
   exports: [
   ],
@@ -42,7 +44,7 @@ import {MatIconModule} from '@angular/material/icon';
     MatIconModule
 
   ],
-  providers: [],
+  providers: [AudioRecordingService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

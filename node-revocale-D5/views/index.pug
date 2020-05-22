@@ -1,3 +1,21 @@
 extends layout
 
 block content
+
+    link(rel='stylesheet', href='/css/style.css')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    link(rel='stylesheet', href='/css/bootstrap.min.css')
+    
+
+    body
+    .impform
+      h1 LOGIN STUDENTE
+      form([formgroup]='myForm', (ngsubmit)='onSubmit()')
+        .form-group
+          label(for='username') Inserisci Username
+          input.inputusername#username.form-control(type='text', placeholder='username', name='username', [formcontrol]="myForm.controls['username']")
+        br
+        .form-group
+          label(for='password') Inserisci Password
+          input.inputpassword#password.form-control(type='password', placeholder='password', name='password', [formcontrol]="myForm.controls['password']")
+        button.buttonlogin(type='submit', [disabled]='!myForm.valid') Login

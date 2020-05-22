@@ -17,12 +17,13 @@
   border-radius: 10px;
 }
 .selectionclass{
-  float:right;
+
   margin:13px;
   padding: 2px 5px;
   border: none;
   border-radius: 4px;
   background-color: #f1f1f1;
+  width: 98%;
 }
 .profwelcome{
   float:right;

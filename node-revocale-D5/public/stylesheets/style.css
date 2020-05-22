@@ -1,9 +1,46 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
+.inputusername[type=text]{
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.inputpassword[type=password]{
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.buttonlogin{
+  width: 100%;
+  background-color: rgb(77, 163, 233);
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit]:hover {
+  background-color: #45a049;
+}
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 a {
   color: #00B7FF;
+}
+.formsfondo {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
 }
 .profwelcome{
   float:right;

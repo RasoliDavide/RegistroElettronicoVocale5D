@@ -2,10 +2,13 @@ html
   head
     link(rel='stylesheet', href='/css/style.css')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    link(rel='stylesheet', href='/css/bootstrap.min.css')
+    
+
   body
-    .impform(*ngif='loginS')
+    .impform
       h1 LOGIN STUDENTE
-      form.jumbotron.ng-valid([formgroup]='myForm', (ngsubmit)='onSubmit()')
+      form([formgroup]='myForm', (ngsubmit)='onSubmit()')
         .form-group
           label(for='username') Inserisci Username
           input#username.form-control(type='text', placeholder='username', name='username', [formcontrol]="myForm.controls['username']")

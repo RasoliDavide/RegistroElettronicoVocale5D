@@ -96,6 +96,7 @@ export class AudioRecordingService {
           const mp3Name = encodeURIComponent('audio_' + new Date().getTime() + '.mp3');
           this.stopMedia();
           this._recorded.next({ blob: blob, title: mp3Name });
+
         }
       }, () => {
         this.stopMedia();

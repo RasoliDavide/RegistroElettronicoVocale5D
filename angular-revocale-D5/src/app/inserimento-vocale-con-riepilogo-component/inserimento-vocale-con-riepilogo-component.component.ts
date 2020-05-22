@@ -1,71 +1,83 @@
 import { Component, OnInit } from '@angular/core';
 import * as RecordRTC from 'recordrtc';
 import { DomSanitizer } from '@angular/platform-browser';
+import { OnDestroy } from '@angular/core';
+import { AudioRecordingService } from './audio-recording.service';
+import { Injectable } from '@angular/core';
+
+
 @Component({
   selector: 'app-inserimento-vocale-con-riepilogo-component',
   templateUrl: './inserimento-vocale-con-riepilogo-component.component.html',
   styleUrls: ['./inserimento-vocale-con-riepilogo-component.component.css']
 })
-export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit {
- private record;
-  //Will use this flag for detect recording
-  recording = false;
-  //Url of Blob
-  url: string;
-  private error;
+@Injectable()
+export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, OnDestroy {
   isRecording = false;
   recordedTime;
   blobUrl;
-  constructor(private domSanitizer: DomSanitizer) { }
-   sanitize(url: string) {
-    return this.domSanitizer.bypassSecurityTrustUrl(url);
-  }
-  initiateRecording() {
 
-    this.recording = true;
-    let mediaConstraints = {
-      video: false,
-      audio: true
-    };
-    navigator.mediaDevices
-      .getUserMedia(mediaConstraints)
-      .then(this.successCallback.bind(this), this.errorCallback.bind(this));
+
+  constructor(private audioRecordingService: AudioRecordingService, private sanitizer: DomSanitizer) {
+
+    this.audioRecordingService.recordingFailed().subscribe(() => {
+      this.isRecording = false;
+    });
+
+    this.audioRecordingService.getRecordedTime().subscribe((time) => {
+      this.recordedTime = time;
+    });
+
+    this.audioRecordingService.getRecordedBlob().subscribe((data) => {
+      this.blobUrl = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(data.blob));
+    });
+    const toBase64 = mp3Name => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(mp3Name);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+
+    async function Main() {
+      //const file = document.querySelector('#myfile').files[0];
+     // console.log(await toBase64(file));
+    }
+
+    Main();
+
+
+
   }
-  /**
-   * Will be called automatically.
-   */
-  successCallback(stream) {
-    var options = {
-      mimeType: "audio/wav",
-      numberOfAudioChannels: 1
-    };
-    //Start Actuall Recording
-    var StereoAudioRecorder = RecordRTC.StereoAudioRecorder;
-    this.record = new StereoAudioRecorder(stream, options);
-    this.record.record();
+  ngOnInit() {
+
   }
-  /**
-   * Stop recording.
-   */
+  startRecording() {
+    if (!this.isRecording) {
+      this.isRecording = true;
+      this.audioRecordingService.startRecording();
+    }
+  }
+
+  abortRecording() {
+    if (this.isRecording) {
+      this.isRecording = false;
+      this.audioRecordingService.abortRecording();
+    }
+  }
+
   stopRecording() {
-    this.recording = false;
-    this.record.stop(this.processRecording.bind(this));
+    if (this.isRecording) {
+      this.audioRecordingService.stopRecording();
+      this.isRecording = false;
+    }
   }
-  /**
-   * processRecording Do what ever you want with blob
-   * @param  {any} blob Blog
-   */
-  processRecording(blob) {
-    this.url = URL.createObjectURL(blob);
-    console.log(this.url);
+
+  clearRecordedData() {
+    this.blobUrl = null;
   }
-  /**
-   * Process Error.
-   */
-  errorCallback(error) {
-    this.error = 'Can not play audio in your browser';
-  }
-  ngOnInit(): void {
+
+  ngOnDestroy(): void {
+    this.abortRecording();
   }
 
 }
