@@ -23,11 +23,12 @@
           </select>
 				</td>
 				<td>
-					<div class="scrollable">
-            <div *ngFor="let studenteDestinatario of formNota.controls['studentiDestinatari']['controls']; let i = index">
-              <input name="studenteDestinatario{{i}}" type="checkbox" [formControl]="studenteDestinatario">
-              <label for="studenteDestinatario{{i}}">{{studenti[i]['Cognome']}}  {{studenti[i]['Nome']}}</label>
-            </div>
+					<div class="scrollable"  *ngIf="formNota.controls['tipologia'].value=='0'">
+						<div
+							*ngFor="let studenteDestinatario of formNota.controls['studentiDestinatari']['controls']; let i = index">
+							<input name="studenteDestinatario{{i}}" type="checkbox" [formControl]="studenteDestinatario">
+							<label for="studenteDestinatario{{i}}">{{studenti[i]['Cognome']}}  {{studenti[i]['Nome']}}</label>
+						</div>
 					</div>
 				</td>
 				<td>

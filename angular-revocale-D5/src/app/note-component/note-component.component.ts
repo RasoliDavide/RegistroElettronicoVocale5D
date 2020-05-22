@@ -66,16 +66,16 @@ export class NoteComponentComponent implements OnInit {
     console.log("Data: ", this.formNota.controls['testo'].value);
 
     notaOgg.Tipologia = this.formNota.controls['tipologia'].value;
-    notaOgg.TipoPenalità = this.formNota.controls['tipoPenalita'].value;
+    notaOgg.TipoPenalita = this.formNota.controls['tipoPenalita'].value;
     notaOgg.DataNota = this.formNota.controls['dataNota'].value;
     notaOgg.Testo = this.formNota.controls['testo'].value;
     notaOgg.CFProfessore = this.profData.CFPersona;
     if(notaOgg.Tipologia == 0)
     {
       notaOgg.Destinatari = new Array<String>();
-      for(let i = 0; i < this.formNota.controls['destintatari']['controls']; i++)
+      for(let i = 0; i < this.formNota.controls['studentiDestinatari']['controls'].length; i++)
       {
-        if(this.formNota.controls['destintatari']['controls'][i].selected)
+        if(this.formNota.controls['studentiDestinatari']['controls'][i].value)
           notaOgg.Destinatari.push(this.studenti[i].Username);
       }
     }
@@ -83,7 +83,13 @@ export class NoteComponentComponent implements OnInit {
     {
       notaOgg.CodiceClasse = this.selectedClass.CodiceClasse;
     }
-    //this.obsInserNota =
+    let httpHeaders : HttpHeaders = new HttpHeaders({Authorization : String(this.profData.securedKey)});
+    this.obsInserNota = this.httpClient.post(environment.node_server + '/api/note/inserisciNota', notaOgg, {headers : httpHeaders});
+    this.obsInserNota.subscribe(
+    (response) =>
+    {
+      console.log(response);
+    });
   }
   getStudenti() {
     let httpHead = new HttpHeaders({ Authorization: String(this.profData.securedKey) });

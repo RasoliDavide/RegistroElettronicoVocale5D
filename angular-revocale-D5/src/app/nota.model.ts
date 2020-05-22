@@ -3,7 +3,7 @@ export class Nota{
   Tipologia:Number;
   Testo: String;
   DataNota:String;
-  TipoPenalità:Number;
+  TipoPenalita:Number;
   CFProfessore: String;
   CodiceClasse: String;
   Destinatari:String[];

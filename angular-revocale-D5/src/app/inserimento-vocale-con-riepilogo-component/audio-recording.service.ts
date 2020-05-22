@@ -98,6 +98,7 @@ export class AudioRecordingService {
           this._recorded.next({ blob: blob, title: mp3Name });
 
         }
+
       }, () => {
         this.stopMedia();
         this._recordingFailed.next();

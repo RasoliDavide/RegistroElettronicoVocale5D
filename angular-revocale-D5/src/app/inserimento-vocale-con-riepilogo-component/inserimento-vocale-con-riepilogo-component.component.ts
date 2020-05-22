@@ -31,7 +31,7 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
     this.audioRecordingService.getRecordedBlob().subscribe((data) => {
       this.blobUrl = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(data.blob));
     });
-    const toBase64 = mp3Name => new Promise((resolve, reject) => {
+    /*const toBase64 = mp3Name => new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(mp3Name);
       reader.onload = () => resolve(reader.result);
@@ -43,7 +43,7 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
      // console.log(await toBase64(file));
     }
 
-    Main();
+    Main();*/
 
 
 

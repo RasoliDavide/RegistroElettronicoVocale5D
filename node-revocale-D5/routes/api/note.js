@@ -16,7 +16,7 @@ let inserisciNota = async function (nota) {
                     transaction.begin(async function (errBegin) {
                         if (errBegin)
                             reject(errBegin);
-                        //Prima parte: inserimento comunicazione.
+                        //Prima parte: inserimento nota.
                         let continua = false;
                         let preparedStatementNota = new dbConnection.PreparedStatement(transaction);
                         preparedStatementNota.input('Tipologia', dbConnection.Bit());
@@ -25,15 +25,15 @@ let inserisciNota = async function (nota) {
                         preparedStatementNota.input('CFProfessore', dbConnection.Char(16));
                         preparedStatementNota.input('DataNota', dbConnection.Date());
                         if (nota.Tipologia == 0) {
-                            query = 'INSERT INTO Comunicazione (Tipologia, Testo, TipoPenalita, CFProfessore, DataNota) VALUES (@Tipologia, @Testo, @TipoPenalita, @CFProfessore, @DataNota)';
+                            query = 'INSERT INTO nota (Tipologia, Testo, TipoPenalita, CFProfessore, DataNota) VALUES (@Tipologia, @Testo, @TipoPenalita, @CFProfessore, @DataNota)';
                             await preparedStatementNota.prepare(query).catch((error) => reject(error));
                             let resultNota = await preparedStatementNota.execute({
-                                'Tipologia': comunicazione.Tipologia,
-                                'Testo': comunicazione.Testo,
-                                'TipoPenalita': comunicazione.TipoPenalita,
-                                'CFProfessore': comunicazione.CFProfessore,
-                                'DataNota': comunicazione.DataNota
-                            }).catch((error) => reject(error));
+                                'Tipologia': nota.Tipologia,
+                                'Testo': nota.Testo,
+                                'TipoPenalita': nota.TipoPenalita,
+                                'CFProfessore': nota.CFProfessore,
+                                'DataNota': nota.DataNota
+                            }).catch((error) => { reject(error) });
 
                             if (resultNota) {
                                 if (resultNota.rowsAffected[0] == 1)
@@ -51,11 +51,11 @@ let inserisciNota = async function (nota) {
                             }
                             //Seconda parte: recupero il codice della nota appena inserita perchè è autoincrementante sul database
                             let numeroNota;
-                            query = 'SELECT MAX(CodiceNota) FROM Nota';
+                            query = 'SELECT MAX(CodiceNota) AS CodiceNota FROM Nota';
 
                             let requestNumero = new dbConnection.Request(transaction);
-                            let requestNota = await requestNumero.query().catch((error) => reject(error));
-
+                            let requestNota = await requestNumero.query(query).catch((error) => { console.log(error); reject(error) });
+                            console.log(requestNota)
                             if (requestNota) {
                                 numeroNota = requestNota.recordset[0].CodiceNota;
                             }
@@ -95,17 +95,17 @@ let inserisciNota = async function (nota) {
                                 await transaction.commit().catch((error) => reject(error));
                                 resolve({ success: true })
                             }
-                        }else
-                        {
+                        } else {
                             preparedStatementNota.input('CodiceClasse', dbConnection.VarChar(7));
-                            query = 'INSERT INTO Comunicazione (Tipologia, Testo, TipoPenalita, CFProfessore, CodiceClasse, DataNota) VALUES (@Tipologia, @Testo, @TipoPenalita, @CFProfessore, @CodiceClasse, @DataNota)';
+                            query = 'INSERT INTO nota (Tipologia, Testo, TipoPenalita, CFProfessore, CodiceClasse, DataNota) VALUES (@Tipologia, @Testo, @TipoPenalita, @CFProfessore, @CodiceClasse, @DataNota)';
                             await preparedStatementNota.prepare(query).catch((error) => reject(error));
                             let resultNota = await preparedStatementNota.execute({
-                                'Tipologia': comunicazione.Tipologia,
-                                'Testo': comunicazione.Testo,
-                                'TipoPenalita': comunicazione.TipoPenalita,
-                                'CFProfessore': comunicazione.CFProfessore,
-                                'DataNota': comunicazione.DataNota
+                                'Tipologia': nota.Tipologia,
+                                'Testo': nota.Testo,
+                                'TipoPenalita': nota.TipoPenalita,
+                                'CFProfessore': nota.CFProfessore,
+                                'CodiceClasse': nota.CodiceClasse,
+                                'DataNota': nota.DataNota
                             }).catch((error) => reject(error));
 
                             if (resultNota) {
@@ -116,22 +116,20 @@ let inserisciNota = async function (nota) {
                             }
 
                             await preparedStatementNota.unprepare().catch((error) => reject(error));
-                            if(continua)
-                            {
+                            if (continua) {
                                 await transaction.commit().catch((error) => reject(error));
-                                resolve({success : true});
+                                resolve({ success: true });
                             }
-                            else
-                            {
+                            else {
                                 await transaction.rollback().catch((error) => reject(error));
                                 let errRollback = new Error('Errore durante l\'inserimento destinatari');
                                 reject(errRollback);
                             }
-                                
+
                         }
 
                     });
-                }catch (err) {
+                } catch (err) {
                     reject(err);
                 }
             });
@@ -144,38 +142,58 @@ let inserisciNota = async function (nota) {
         return { success: false, message: "No row affected" }
 }
 
-noteRouter.post('/inserisciNota', checkAuthorization, async function (res, req) {
+noteRouter.post('/inserisciNota', checkAuthorization, async function (req, res) {
     let nota = req.body;
+    console.log(nota);
     let allParameterReceived = (nota.Tipologia != undefined && nota.Testo && nota.TipoPenalita != undefined && nota.CFProfessore);
 
-    let tipologiaOK, testoOK, tipoPenalitaOK, cfProfessoreOK, codiceClasseOK, coerenzaOK, allParameterOK;
+    let tipologiaOK, testoOK, tipoPenalitaOK, cfProfessoreOK, codiceClasseOK, coerenzaOK, allParameterOK, destOK = true;
 
     if (allParameterReceived) {
         tipologiaOK = (nota.Tipologia == 0 || nota.Tipologia == 1);
         testoOK = (nota.Testo != "" && nota.Testo.length < 400);
         tipoPenalitaOK = (nota.TipoPenalita >= 0 && nota.TipoPenalita <= 2);
-        cfProfessoreOK = (nota.cfProfessore.length == 16);
-        coerenzaOK = ((((nota.CodiceClasse == undefined || nota.CodiceClasse == "") && (nota.Destinatari.length > 0)) && nota.Tipologia == 0) || (((nota.CodiceClasse != undefined || nota.CodiceClasse != "")  && (nota.Destinatari.length == undefined)) && nota.Tipologia == 1));
-        allParameterOK = (testoOK && tipoPenalitaOK && cfProfessoreOK && coerenzaOK);
+        cfProfessoreOK = (nota.CFProfessore.length == 16);
+
+        coerenzaOK = ((((nota.CodiceClasse == undefined || nota.CodiceClasse == "") && (nota.Destinatari.length > 0)) && nota.Tipologia == 0) || (((nota.CodiceClasse != undefined || nota.CodiceClasse != "") && (nota.Destinatari == undefined)) && nota.Tipologia == 1));
+
+        if (nota.Tipologia == 0) {
+            for (let i = 0; i < nota.Destinatari.length; i++)
+                if (nota.Destinatari[i].length != 5)
+                    destOK = false;
+        }
+        else {
+            destOK = (nota.CodiceClasse.length <= 7);
+        }
+
+
+        allParameterOK = (testoOK && tipoPenalitaOK && cfProfessoreOK && coerenzaOK && destOK);
     }
 
     let result;
-    if (allParameterOK)
-    {
-        result = inserisciNota(nota);
+    if (allParameterOK) {
+        if (nota.Tipologia == 0) {
+            let cfStudenti = await RECommonFunctions.getCFStudenteByUsernameArray(nota.Destinatari);
+            nota.Destinatari = cfStudenti;
+        }
+        result = await inserisciNota(nota);
+        console.log(result);
     }
-    if(!allParameterReceived)
-        res.status(400).send({success : false, message : "Missing parameter(s)"});
-    else if(!tipologiaOK)
-        res.status(400).send({success : false, message : "Tipologia non valida"});
-    else if(!testoOK)
-        res.status(400).send({success : false, message : "Testo non valido"});
-    else if(!coerenzaOK)
-        res.status(400).send({success : false, message : "Errore nella lettura dei destinatari"});
-    else if(!cfProfessoreOK)
-        res.status(400).send({success : false, message : "Codice fiscale professore non valido"});
-    else if(!result.success)
+    if (!allParameterReceived)
+        res.status(400).send({ success: false, message: "Missing parameter(s)" });
+    else if (!tipologiaOK)
+        res.status(400).send({ success: false, message: "Tipologia non valida" });
+    else if (!testoOK)
+        res.status(400).send({ success: false, message: "Testo non valido" });
+    else if (!coerenzaOK)
+        res.status(400).send({ success: false, message: "Tipologia nota e destinatari inseriti non coerenti" });
+    else if (!destOK)
+        res.status(400).send({ success: false, message: "Errore durante la lettura dei destinatari" });
+    else if (!cfProfessoreOK)
+        res.status(400).send({ success: false, message: "Codice fiscale professore non valido" });
+    else if (!result.success)
         res.status(500).send(result);
     else
         res.status(201).send(result);
-})
+});
+module.exports = noteRouter;

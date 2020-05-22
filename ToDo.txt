@@ -4,3 +4,46 @@ Obbligatori:
 Facoltativi - Per migliorare:
     Prenotazione dei colloqui con i professori.
     Allegato comunicazioni
+
+Manca in angular:
+    -Sistemare api Firma (per materia)
+    -Fare api getNota
+    -Fare api getComunicazioni
+    -Fare logout
+    -Inserimento vocale effettivo
+
+
+Comandi da inserire:
+    -Per voto: 
+    voto: inserisci voto "numero", 
+    tipologia: inserisci tipologia "con valore/senza valore/con recupero",
+    peso: inserisci peso "numero",
+    descrizione: inserisci la descrizione "descrizione"
+    data: inserisci la data: "data"
+
+    -Per note: 
+    tipologia: inserisci tipologia "per studente/per classe" - se è per gli studenti nominare lo studente: inserisci nota allo studente "nome studente"
+    data: inserisci la data: "data"
+    descrizione: inserisci la descrizione: "descrizione"
+    tipo penalità: nessuna/sospensione/espulsione
+
+    -Per assenze:
+    tipologia: inserisci tipologia "Assenza/entrata/uscita"
+    data: inserisci la data: "data"
+    orario: inserisci l'orario: "orario"
+    concorrenza al calcolo: concorrenza al calcolo "si/no"
+    -Per giustifiche
+    motivazione: inserisci motivazione "motivazione"
+
+    -Per firma
+    data: inserisci la data: "data"
+    orario: inserisci l'orario: "orario"
+    argomento: inserisci argomento: "argomento"
+
+    -Per circolare/dirigente
+    titolo: inserisci titolo: "titolo"
+    testo: inserisci testo: "testo"
+    per classi: per le classi: "classi"
+
+
+    

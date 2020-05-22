@@ -20,9 +20,9 @@
     <a routerLink="/inserimentoVocale" routerLinkActive="active"><mat-icon class="with-icon">mic</mat-icon>Inserimento Vocale</a>
     <div class="rechicca"><h2>RE</h2></div>
 
-    <h4 class="profwelcome">Benvenuto {{profData.Nome}} {{profData.Cognome}}</h4>
+    <h3 class="profwelcome">Benvenuto {{profData.Nome}} {{profData.Cognome}}</h3>
     <select (ngModelChange)="onClassSelection($event)" [(ngModel)]="selectedClass" class="selectionclass">
-      <option *ngFor="let corrispondenza of profData.Corrispondenze" [ngValue]="corrispondenza">{{corrispondenza.CodiceClasse}} - {{corrispondenza.Materia}}</option>
+      <option class="selection" *ngFor="let corrispondenza of profData.Corrispondenze" [ngValue]="corrispondenza">{{corrispondenza.CodiceClasse}} - {{corrispondenza.Materia}}</option>
     </select>
 
 
