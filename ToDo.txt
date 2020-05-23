@@ -6,7 +6,6 @@ Facoltativi - Per migliorare:
     Allegato comunicazioni
 
 Manca in angular:
-    -Sistemare api Firma (per materia)
     -Fare api getNota
     -Fare api getComunicazioni
     -Fare logout

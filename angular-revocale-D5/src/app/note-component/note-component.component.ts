@@ -10,6 +10,8 @@ import { Voti } from '../voti.model';
 import { environment } from 'src/environments/environment';
 import { Corrispondenza } from '../corrispondenze.model';
 import { Nota } from "../nota.model";
+import { isUndefined } from 'util';
+import { NotaResponse } from './notaResponse.model';
 @Component({
   selector: 'app-note-component',
   templateUrl: './note-component.component.html',
@@ -30,9 +32,11 @@ export class NoteComponentComponent implements OnInit {
   selectedClass: Corrispondenza;
   observableChangeSelectedClass: Observable<Corrispondenza>;
   visuaForm: boolean;
-  selectedStudente: Studente;
+  selectedStudente: Studente = null;
   formBuilder: FormBuilder;
   obsInserNota: Observable<Object>;
+  noteStudente: Nota[];
+  noteClasse: Nota[];
   constructor(fb: FormBuilder, private http: HttpClient, sharedProfData: SharedProfDataService) {
     this.httpClient = http;
     this.sharedProfData = sharedProfData;
@@ -58,39 +62,48 @@ export class NoteComponentComponent implements OnInit {
       this.penalitaSelect = false;
     }
   }
+
   onSubmitNota(): void {
     let notaOgg: Nota = new Nota();
-    console.log('Descrizione: ', this.formNota.controls['tipologia'].value);
-    console.log("Tipo: " + this.formNota.controls['tipoPenalita'].value);
-    console.log("Penalità: ", this.formNota.controls['dataNota'].value);
-    console.log("Data: ", this.formNota.controls['testo'].value);
-
     notaOgg.Tipologia = this.formNota.controls['tipologia'].value;
     notaOgg.TipoPenalita = this.formNota.controls['tipoPenalita'].value;
     notaOgg.DataNota = this.formNota.controls['dataNota'].value;
     notaOgg.Testo = this.formNota.controls['testo'].value;
     notaOgg.CFProfessore = this.profData.CFPersona;
-    if(notaOgg.Tipologia == 0)
-    {
+    if (notaOgg.Tipologia == 0) {
       notaOgg.Destinatari = new Array<String>();
-      for(let i = 0; i < this.formNota.controls['studentiDestinatari']['controls'].length; i++)
-      {
-        if(this.formNota.controls['studentiDestinatari']['controls'][i].value)
+      for (let i = 0; i < this.formNota.controls['studentiDestinatari']['controls'].length; i++) {
+        if (this.formNota.controls['studentiDestinatari']['controls'][i].value)
           notaOgg.Destinatari.push(this.studenti[i].Username);
       }
     }
-    else
-    {
+    else {
       notaOgg.CodiceClasse = this.selectedClass.CodiceClasse;
     }
-    let httpHeaders : HttpHeaders = new HttpHeaders({Authorization : String(this.profData.securedKey)});
-    this.obsInserNota = this.httpClient.post(environment.node_server + '/api/note/inserisciNota', notaOgg, {headers : httpHeaders});
-    this.obsInserNota.subscribe(
-    (response) =>
-    {
-      console.log(response);
-    });
+    if ((notaOgg.Tipologia == 0 && notaOgg.Destinatari.length > 0) || notaOgg.Tipologia == 1) {
+      let httpHeaders: HttpHeaders = new HttpHeaders({ Authorization: String(this.profData.securedKey) });
+      this.obsInserNota = this.httpClient.post(environment.node_server + '/api/note/inserisciNota', notaOgg, { headers: httpHeaders });
+      this.obsInserNota.subscribe(
+        (response) => {
+          console.log(response);
+          if (response['success'] == true) {
+            this.buildForm();
+            if (this.noteStudente) {
+              if (notaOgg.Tipologia == 0)
+                this.noteStudente.push(notaOgg);
+              else
+                this.noteClasse.push(notaOgg);
+            }
+          }
+          else
+            alert(response);
+        });
+    }
+    else
+      alert("Seleziona almeno uno studente");
+
   }
+
   getStudenti() {
     let httpHead = new HttpHeaders({ Authorization: String(this.profData.securedKey) });
     this.httpClient.get<Studente[]>(environment.node_server + `/api/prof/getStudentiByClasse?codiceClasse=${this.selectedClass.CodiceClasse}`, { headers: httpHead })
@@ -116,24 +129,50 @@ export class NoteComponentComponent implements OnInit {
         'studentiDestinatari': this.formBuilder.array(formArray)
       }
     )
-    console.log(this.formNota);
   }
 
-  getNote() {
-
+  getNoteStudente() {
+    let httpHead = new HttpHeaders({ Authorization: String(this.profData.securedKey) });
+    this.httpClient.get<NotaResponse>(environment.node_server + `/api/note/getNoteByStudente?usernameStudente=${this.selectedStudente.Username}`, { headers: httpHead })
+      .subscribe((response) => {
+        if (response.success) {
+          this.noteStudente = response.recordset;
+          for (let nota of this.noteStudente)
+            nota.DataNota = nota.DataNota.substring(0, 10);
+        }
+      });
   }
+
+  getNoteClasse() {
+    let httpHead = new HttpHeaders({ Authorization: String(this.profData.securedKey) });
+    this.httpClient.get<NotaResponse>(environment.node_server + `/api/note/getNoteByClasse?codiceClasse=${this.selectedClass.CodiceClasse}`, { headers: httpHead })
+      .subscribe((response) => {
+        if (response.success) {
+          this.noteClasse = response.recordset;
+          for (let nota of this.noteClasse)
+            nota.DataNota = nota.DataNota.substring(0, 10);
+
+        }
+      });
+  }
+
   onClassChange(selectedClass: Corrispondenza) {
-    console.log(selectedClass);
     this.selectedClass = selectedClass;
     this.studenti = null;
+    this.formNota = null;
+    this.noteStudente = null;
     this.getStudenti();
+    this.getNoteClasse();
   }
 
   onStudentSelection(selectedStudent: Studente) {
     this.selectedStudente = selectedStudent;
-    this.visuaForm = (typeof (this.selectedStudente) == 'object');
-    this.getNote();
-
+    this.visuaForm = (selectedStudent != null);
+    this.noteStudente = Array<Nota>();
+    if (this.visuaForm)
+      this.getNoteStudente();
+    else
+      this.noteStudente = null;
   }
 
 

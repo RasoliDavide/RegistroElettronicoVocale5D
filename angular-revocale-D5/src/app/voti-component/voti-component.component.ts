@@ -24,7 +24,6 @@ import { DomSanitizer } from '@angular/platform-browser';
   templateUrl: './voti-component.component.html',
   styleUrls: ['./voti-component.component.css']
 })
-//@Injectable()
 
 export class VotiComponentComponent implements OnInit {
 
@@ -55,6 +54,7 @@ export class VotiComponentComponent implements OnInit {
   visuaForm: boolean;
   voti: Voti[];
   observableChangeSelectedClass: Observable<Corrispondenza>;
+  formBuilder: FormBuilder;
   /*private stream;
   private recorder;
   private interval;
@@ -66,16 +66,19 @@ export class VotiComponentComponent implements OnInit {
   constructor(fb: FormBuilder, private http: HttpClient, sharedProfData: SharedProfDataService, private domSanitizer: DomSanitizer /*private audioRecordingService: AudioRecordingService, private sanitizer: DomSanitizer*/) {
     this.httpClient = http;
     this.sharedProfData = sharedProfData;
-    this.formVoto = fb.group(
+    this.formBuilder = fb;
+    this.buildForm();
+  }
+
+  buildForm() {
+    this.formVoto = this.formBuilder.group(
       {
         'peso': [100, Validators.required],
         'tipologia': [1, Validators.required],
         'descrizione': ['', Validators.required],
         'voto': ['', Validators.required],
-        'data': ['', Validators.required],
-      }
-    )
-
+        'dataVoto': ['', Validators.required],
+      })
     /*this.audioRecordingService.recordingFailed().subscribe(() => {
       this.isRecording = false;
     });
@@ -178,58 +181,31 @@ export class VotiComponentComponent implements OnInit {
     this.onClassChange(this.sharedProfData.selectedClass);
     this.observableChangeSelectedClass.subscribe(selectedClass => this.onClassChange(selectedClass));
     this.getStudenti();
-
-
-  }
-  selectChangeHandler(event: any) {
-    this.selectedVoto = event.target.value;
-    this.selectedPeso = event.target.value;
-  }
-  toggleEditable(event) {
-    if (event.target.checked) {
-      this.concorreSelect = true;
-      this.pesoSelect = true;
-    } else {
-      this.concorreSelect = false;
-      this.pesoSelect = false;
-    }
   }
   onSubmitVoto(value: string): void {
     let v: Voti = new Voti();
-    console.log('Voto: ', this.formVoto.controls['voto'].value);
-    console.log('Descrizione: ', this.formVoto.controls['descrizione'].value);
-    console.log('Data: ', this.formVoto.controls['data'].value);
     v.Peso = parseInt(this.selectedPeso);
     v.Voto = this.formVoto.controls['voto'].value;
     v.Descrizione = this.formVoto.controls['descrizione'].value;
     v.Peso = this.formVoto.controls['peso'].value;
     v.Tipologia = this.formVoto.controls['tipologia'].value;
-    v.DataVoto = this.formVoto.controls['data'].value;
+    v.DataVoto = this.formVoto.controls['dataVoto'].value;
     v.UsernameStudente = this.selectedStudente.Username;
     v.CFProfessore = this.profData.CFPersona;
     v.CodiceMateria = this.selectedClass.CodiceMateria;
-    console.log("Peso: " + v.Peso);
-    console.log('Tipo: ', v.Tipologia);
 
 
-    let httpHeaders = new HttpHeaders({ "Authorization": String(this.profData.securedKey) })
+    let httpHeaders = new HttpHeaders({"Authorization": String(this.profData.securedKey)})
     this.observVoto = this.http.post(environment.node_server + '/api/voti/inserisciVoto', v, { headers: httpHeaders });
     this.observVoto.subscribe(
-      (data) => {
-        console.log(data);
-        if(data = true){
+      (response) => {
+        if (response['success'])
+        {
           this.voti.push(v);
+          this.buildForm();
         }
       }
     )
-    this.formVoto.reset();
-
-
-    /*v.Data = this.formAssenza.controls['data'].value;
-    v.Ora = this.formAssenza.controls['orario'].value;
-    v.Concorre =this.concorreSelect;*/
-    //a.CFStudente
-    //a.CFProfessore*/
 
   }
 
@@ -239,13 +215,15 @@ export class VotiComponentComponent implements OnInit {
     this.httpClient.get<Studente[]>(environment.node_server + `/api/prof/getStudentiByClasse?codiceClasse=${this.selectedClass.CodiceClasse}`, { headers: httpHead })
       .subscribe((response) => {
         this.studenti = response;
-        console.log(this.studenti);
       })
   }
   onClassChange(selectedClass: Corrispondenza) {
-    console.log(selectedClass);
     this.selectedClass = selectedClass;
     this.studenti = null;
+    this.selectedStudente = null;
+    this.visuaForm = false;
+    this.voti = null;
+    this.buildForm();
     this.getStudenti();
   }
   getVoti() {
@@ -272,9 +250,12 @@ export class VotiComponentComponent implements OnInit {
         }
       })
   }
+
   onStudentSelection(selectedStudent: Studente) {
     this.selectedStudente = selectedStudent;
-    this.visuaForm = (typeof (this.selectedStudente) == 'object');
+    console.log(selectedStudent)
+    this.visuaForm = (this.selectedStudente != null);
+    this.buildForm();
     if (this.visuaForm)
       this.getVoti();
 

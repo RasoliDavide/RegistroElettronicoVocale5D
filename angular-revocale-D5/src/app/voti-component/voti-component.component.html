@@ -4,80 +4,69 @@
 <h3>Seleziona lo studente</h3>
 <div style="width:200px;">
 	<select (ngModelChange)="onStudentSelection($event)" [(ngModel)]="selectedStudente" class="select">
-    <option>Seleziona uno studente</option>
+    <option [ngValue]=null>Seleziona uno studente</option>
     <option *ngFor="let studente of studenti" [ngValue]="studente">{{studente['Cognome']}} {{studente['Nome']}} </option>
   </select>
 </div>
 <br>
 <div *ngIf="visuaForm">
-<div class="impform">
-	<form [formGroup]="formVoto" (ngSubmit)="onSubmitVoto(formVoto.value)" class="jumbotron ng-valid">
-		<h4>Inserisci voto</h4>
-		<table class="voti">
-			<tr>
-				<th>Inserisci Tipologia</th>
-				<th>Inserisci Peso</th>
-				<th>Inserisci Descrizione</th>
-				<th>Inserisci Voto</th>
-				<th>Inserisci Data</th>
-				<th>Invia</th>
-				<th>Registra</th>
-			</tr>
-			<tr>
-				<td>
-					<select [formControl]="formVoto.controls['tipologia']">
-            <option value="1">Con valore</option>
-            <option value="0">Senza valore</option>
-            <option value="2">Recupero (Senza valore)</option>
-					</select>
-				</td>
-				<td>
-					<input type="number" name="peso" id="peso" [formControl]="formVoto.controls['peso']" >
-        </td>
-				<td>
-					<input type="text" name="descrizione" id="descrizione" [formControl]="formVoto.controls['descrizione']" >
-        </td>
-				<td>
-					<input type="number" name="voto" id="voto" [formControl]="formVoto.controls['voto']" >
-        </td>
-				<td>
-					<input type="date" name="data" id="data" [formControl]="formVoto.controls['data']" >
-        </td>
-				<td>
-					<button class="btn btn-secondary btn-block" type="submit" [disabled]="!formVoto.valid">Inserisci voto</button>
-				</td>
-				<td>
-					<div>
-						<a (click)="initiateRecording()" class="btn btn-primary" *ngIf="!recording"> Start Recording
-						</a>
-						<a (click)="stopRecording()" class="btn btn-danger" *ngIf="recording"> Stop Recording </a>
-						<div class="clearfix"></div>
-						<audio controls="" *ngIf="url">
-							<source [src]="sanitize(url)" type="audio/wav">
-						</audio>
-					</div>
-				</td>
-		</table>
-	</form>
-</div>
-<div class="imptab">
-	<h4>Riepilogo Voti</h4>
-	<table class="voti">
-		<tr>
-			<th>Data</th>
-			<th>Tipologia</th>
-			<th>Descrizione </th>
-			<th>Voto</th>
-
-		</tr>
-		<tr *ngFor="let voto of voti" class="voti">
-			<td>{{voto.DataVoto}}</td>
-			<td>{{voto.Tipologia}}</td>
-			<td>{{voto.Descrizione}}</td>
-			<td>{{voto.Voto}}</td>
-		</tr>
-	</table>
-</div>
+  <div class="impform">
+    <form [formGroup]="formVoto" (ngSubmit)="onSubmitVoto(formVoto.value)" class="jumbotron ng-valid">
+      <h4>Inserisci voto</h4>
+      <table class="voti">
+        <tr>
+          <th>Inserisci Tipologia</th>
+          <th>Inserisci Peso</th>
+          <th>Inserisci Descrizione</th>
+          <th>Inserisci Voto</th>
+          <th>Inserisci Data</th>
+          <th>Invia</th>
+        </tr>
+        <tr>
+          <td>
+            <select [formControl]="formVoto.controls['tipologia']">
+              <option value="1">Con valore</option>
+              <option value="0">Senza valore</option>
+              <option value="2">Recupero (Senza valore)</option>
+            </select>
+          </td>
+          <td>
+            <input type="number" name="peso" id="peso" [formControl]="formVoto.controls['peso']" min="0" max="100">
+          </td>
+          <td>
+            <input type="text" name="descrizione" id="descrizione" [formControl]="formVoto.controls['descrizione']" >
+          </td>
+          <td>
+            <input type="number" name="voto" id="voto" [formControl]="formVoto.controls['voto']" min="1" max="10">
+          </td>
+          <td>
+            <input type="date" name="data" id="data" [formControl]="formVoto.controls['dataVoto']" >
+          </td>
+          <td>
+            <button class="btn btn-secondary btn-block" type="submit" [disabled]="!formVoto.valid">Inserisci voto</button>
+          </td>
+      </table>
+    </form>
+  </div>
+  <div class="imptab">
+    <h4>Riepilogo Voti</h4>
+    <table class="voti">
+      <tr>
+        <th>Data</th>
+        <th>Tipologia</th>
+        <th>Descrizione </th>
+        <th>Voto</th>
+        <th>Peso</th>
+      </tr>
+      <tr *ngFor="let voto of voti" class="voti">
+        <td>{{voto.DataVoto}}</td>
+        <td>{{voto.Tipologia}}</td>
+        <td>{{voto.Descrizione}}</td>
+        <td>{{voto.Voto}}</td>
+        <td>{{voto.Peso}}%</td>
+      </tr>
+    </table>
+  </div>
 </div>
 	<!--<div>
       <button class="start-button" *ngIf="!isRecording && !blobUrl" (click)="startRecording()">Start Recording</button>

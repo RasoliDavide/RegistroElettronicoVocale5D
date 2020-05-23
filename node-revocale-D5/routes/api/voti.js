@@ -45,7 +45,7 @@ let inserisciVoto = async function(voto)
                         reject(errExec);
 
                     preparedStatement.unprepare(
-                        errUnprep => console.log(errUnprep)
+                        errUnprep => {if(errUnprep) reject(errUnprep)}
                     )
                     if(result)
                         resolve(result.rowsAffected[0]);
@@ -57,7 +57,7 @@ let inserisciVoto = async function(voto)
                 })
             })
         });
-    }).catch((err) => {return {success : "false", message : err}});
+    }).catch((err) => {console.log(err); return {success : "false", message : err}});
     let queryResult = await dbQuery;
     if(queryResult == 1)
         return {success : true};

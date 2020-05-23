@@ -238,7 +238,7 @@ let getFirme = async function(cfProfessore)
             if(errConn)
                 reject(errConn);
 
-            let query = 'SELECT * FROM firma WHERE CFProfessore = @CFProfessore';
+            let query = 'SELECT * FROM getFirme WHERE CFProfessore = @CFProfessore';
             let preparedStatement = new dbConnection.PreparedStatement();
             preparedStatement.input('CFProfessore', dbConnection.Char(16));
             preparedStatement.prepare(query,

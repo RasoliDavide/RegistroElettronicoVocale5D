@@ -46,7 +46,7 @@
     <!--cf prof, codiceclasse, data, ora, argomento, compiti, codicemateria-->
       <tr>
         <th>Firma di:</th>
-        <th>Classe<th>
+        <th>Classe</th>
         <th>Materia</th>
         <th>Data</th>
         <th>Ora</th>
@@ -56,7 +56,7 @@
       <tr *ngFor="let firma of firme">
         <td>{{firma.CFProfessore}}</td>
         <td>{{firma.CodiceClasse}}</td>
-        <td>{{firma.CodiceMateria}}</td>
+        <td>{{firma.Materia}}</td>
         <td>{{firma.DataFirma}}</td>
         <td>{{firma.Ora}}</td>
         <td>{{firma.Argomento}}</td>

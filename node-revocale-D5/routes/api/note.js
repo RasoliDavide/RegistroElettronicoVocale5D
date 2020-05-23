@@ -177,7 +177,6 @@ noteRouter.post('/inserisciNota', checkAuthorization, async function (req, res) 
             nota.Destinatari = cfStudenti;
         }
         result = await inserisciNota(nota);
-        console.log(result);
     }
     if (!allParameterReceived)
         res.status(400).send({ success: false, message: "Missing parameter(s)" });
@@ -190,10 +189,143 @@ noteRouter.post('/inserisciNota', checkAuthorization, async function (req, res) 
     else if (!destOK)
         res.status(400).send({ success: false, message: "Errore durante la lettura dei destinatari" });
     else if (!cfProfessoreOK)
-        res.status(400).send({ success: false, message: "Codice fiscale professore non valido" });
+        res.status(400).send({ success: false, message: "Codice fiscale professore non valido"});
     else if (!result.success)
         res.status(500).send(result);
     else
         res.status(201).send(result);
 });
+
+let getNoteByStudente = async function(cfProfessore, cfStudente)
+{
+    let dbQuery = new Promise(
+    (resolve, reject) =>
+    {
+        dbConnection.connect(config, function(err) {
+            let preparedStatement = new dbConnection.PreparedStatement();
+            preparedStatement.input('CFStudente', dbConnection.Char(16));
+            preparedStatement.input('CFProfessore', dbConnection.Char(16));
+            let query = 'SELECT * FROM getNoteByStudente WHERE CFStudente = @CFStudente AND CFProfessore = @CFProfessore';
+            preparedStatement.prepare(query,
+            errPrep => 
+            {
+                if(errPrep)
+                    reject(errPrep);
+
+                preparedStatement.execute({'CFStudente' : cfStudente,
+                                           'CFProfessore' : cfProfessore},
+                (errExec, result) =>
+                {                
+                    if(errExec)
+                        reject(errExec);
+
+                    preparedStatement.unprepare(
+                        errUnprep => reject(errUnprep)
+                    )
+                    resolve(result);
+                })
+            })
+        });
+    }).catch((err) => {console.log(err); return {success : false, message : "Database error: " + err}});
+
+    let reutrnedObject = await dbQuery;
+    if(reutrnedObject.recordset)
+    {
+        for(let i = 0; i < reutrnedObject.recordset; i++)
+            delete reutrnedObject.recordset[i].CFStudente
+        return {success: true, recordset : reutrnedObject.recordset};
+    }
+    else
+        return reutrnedObject;
+}
+
+noteRouter.get('/getNoteByStudente', checkAuthorization, async function(req, res)
+{
+    var loggedIn = authorizedKey.find((key) => {
+        return key.securedKey == req.get('authorization');
+    });
+    let cfProfessore = loggedIn.cfProf;
+    let usernameStudente = req.query.usernameStudente;
+    let cfStudente;
+    if(usernameStudente != undefined)
+        cfStudente = await RECommonFunctions.getCFStudenteByUsername(usernameStudente);
+    
+    let result;
+    if(cfStudente != undefined && cfProfessore != undefined)
+        result = await getNoteByStudente(cfProfessore, cfStudente)
+    if (!usernameStudente)
+        res.status(400).send({ success: false, message: "Missing parameter(s)"});
+    else if (!cfProfessore)
+        res.status(404).send({ success: false, message: "CF del professore non valido"});
+    else if (!cfStudente)
+        res.status(404).send({ success: false, message: "Username dello studente non valido"});
+    else if (!result.success)
+        res.status(500).send(result);
+    else
+        res.status(200).send(result);
+ })
+
+ let getNoteByClasse = async function(codiceClasse, cfProfessore)
+{
+    let dbQuery = new Promise(
+    (resolve, reject) =>
+    {
+        dbConnection.connect(config, function(err) {
+            let preparedStatement = new dbConnection.PreparedStatement();
+            preparedStatement.input('CodiceClasse', dbConnection.VarChar(7));
+            preparedStatement.input('CFProfessore', dbConnection.Char(16));
+            console.log(codiceClasse, cfProfessore)
+            let query = 'SELECT * FROM Nota WHERE CodiceClasse = @CodiceClasse AND CFProfessore = @CFProfessore';
+            preparedStatement.prepare(query,
+            errPrep => 
+            {
+                if(errPrep)
+                    reject(errPrep);
+
+                preparedStatement.execute({'CFProfessore' : cfProfessore,
+                                           'CodiceClasse' : codiceClasse},
+                (errExec, result) =>
+                {                
+                    if(errExec)
+                        reject(errExec);
+
+                    preparedStatement.unprepare(
+                        errUnprep => reject(errUnprep)
+                    )
+                    resolve(result);
+                })
+            })
+        });
+    }).catch((err) => {console.log(err); return {success : false, message : "Database error: " + err}});
+
+    let reutrnedObject = await dbQuery;
+    if(reutrnedObject.recordset)
+    {
+        for(let i = 0; i < reutrnedObject.recordset; i++)
+            delete reutrnedObject.recordset[i].CFStudente
+        return {success: true, recordset : reutrnedObject.recordset};
+    }
+    else
+        return reutrnedObject;
+}
+
+noteRouter.get('/getNoteByClasse', checkAuthorization, async function(req, res)
+{
+    var loggedIn = authorizedKey.find((key) => {
+        return key.securedKey == req.get('authorization');
+    });
+    let cfProfessore = loggedIn.cfProf;
+    let codiceClasse = req.query.codiceClasse;
+    let result;
+    if(codiceClasse != undefined && cfProfessore != undefined)
+        result = await getNoteByClasse(codiceClasse, cfProfessore);
+    if (!codiceClasse)
+        res.status(400).send({ success: false, message: "Missing parameter(s)"});
+    else if (!cfProfessore)
+        res.status(404).send({ success: false, message: "CF del professore non valido"});
+    else if (!result.success)
+        res.status(500).send(result);
+    else
+        res.status(200).send(result);
+ })
 module.exports = noteRouter;

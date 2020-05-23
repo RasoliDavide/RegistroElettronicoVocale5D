@@ -1,15 +1,30 @@
 <!--Codice, Tipologia, Testo, TipoPenalità, CFProfessore, CodiceClasse-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <br>
+ <h4 class="text-center">Riepilogo delle note di classe</h4>
 
+	<table style="width:75%" class="note" *ngIf="noteClasse">
+		<tr>
+			<th>Data</th>
+			<th>Tipo penalità</th>
+			<th>Descrizione</th>
+		</tr>
+		<tr *ngFor="let nota of noteClasse">
+			<td>{{nota.DataNota}}</td>
+			<td *ngIf="nota.TipoPenalita == 0">Nota</td>
+      <td *ngIf="nota.TipoPenalita == 1">Sospensione</td>
+      <td *ngIf="nota.TipoPenalita == 2">Espulsione</td>
+			<td>{{nota.Testo}}</td>
+		</tr>
+	</table>
+  <hr>
 <div class="impform" *ngIf="formNota">
 	<form [formGroup]="formNota" (ngSubmit)="onSubmitNota()" class="jumbotron ng-valid">
 		<h3>Inserisci nota</h3>
 		<table style="width:100%" class="note">
-
 			<tr>
 				<th>Tipologia nota</th>
-				<th>Studenti</th>
+				<th *ngIf="formNota.controls['tipologia'].value=='0'">Studenti</th>
 				<th>Data</th>
 				<th>Tipo penalità</th>
 				<th>Descrizione</th>
@@ -22,8 +37,8 @@
             <option value=1>Per classe</option>
           </select>
 				</td>
-				<td>
-					<div class="scrollable"  *ngIf="formNota.controls['tipologia'].value=='0'">
+				<td *ngIf="formNota.controls['tipologia'].value=='0'">
+					<div class="scrollable">
 						<div
 							*ngFor="let studenteDestinatario of formNota.controls['studentiDestinatari']['controls']; let i = index">
 							<input name="studenteDestinatario{{i}}" type="checkbox" [formControl]="studenteDestinatario">
@@ -36,7 +51,7 @@
         </td>
 				<td>
 					<select name="tipoPenalita" (change)="selectChangeHandler($event)" [formControl]="formNota.controls['tipoPenalita']">
-                <option value=0>Nessuna</option>
+                <option value=0>Nota</option>
                 <option value=1>Sospensione </option>
                 <option value=2>Espulsione</option>
           </select>
@@ -49,21 +64,30 @@
 				</td>
 			</tr>
 		</table>
-
 	</form>
 </div>
+<hr>
 <div class="impform">
-	<h4>Riepilogo note</h4>
-	<table style="width:75%" class="note">
+	<h4>Riepilogo note di
+    <select (ngModelChange)="onStudentSelection($event)" [(ngModel)]="selectedStudente">
+      <option [ngValue]=null>Seleziona uno studente</option>
+      <option *ngFor="let studente of studenti" [ngValue]="studente">{{studente['Cognome']}} {{studente['Nome']}} </option>
+    </select>
+	</h4>
+	<table style="width:75%" class="note" *ngIf="noteStudente">
 		<tr>
-			<th>Tipologia nota</th>
 			<th>Data</th>
 			<th>Tipo penalità</th>
 			<th>Descrizione</th>
 		</tr>
-		<tr *ngFor="">
-
+		<tr *ngFor="let nota of noteStudente">
+			<td>{{nota.DataNota}}</td>
+			<td *ngIf="nota.TipoPenalita == 0">Nota</td>
+      <td *ngIf="nota.TipoPenalita == 1">Sospensione</td>
+      <td *ngIf="nota.TipoPenalita == 2">Espulsione</td>
+			<td>{{nota.Testo}}</td>
 		</tr>
 	</table>
 	<br>
+
 </div>
