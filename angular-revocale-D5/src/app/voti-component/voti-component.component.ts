@@ -55,13 +55,7 @@ export class VotiComponentComponent implements OnInit {
   voti: Voti[];
   observableChangeSelectedClass: Observable<Corrispondenza>;
   formBuilder: FormBuilder;
-  /*private stream;
-  private recorder;
-  private interval;
-  private startTime;
-  private _recorded = new Subject<any>();
-  private _recordingTime = new Subject<string>();
-  private _recordingFailed = new Subject<string>();*/
+
 
   constructor(fb: FormBuilder, private http: HttpClient, sharedProfData: SharedProfDataService, private domSanitizer: DomSanitizer /*private audioRecordingService: AudioRecordingService, private sanitizer: DomSanitizer*/) {
     this.httpClient = http;
@@ -79,47 +73,7 @@ export class VotiComponentComponent implements OnInit {
         'voto': ['', Validators.required],
         'dataVoto': ['', Validators.required],
       })
-    /*this.audioRecordingService.recordingFailed().subscribe(() => {
-      this.isRecording = false;
-    });
 
-    this.audioRecordingService.getRecordedTime().subscribe((time) => {
-      this.recordedTime = time;
-    });
-
-    this.audioRecordingService.getRecordedBlob().subscribe((data) => {
-      this.blobUrl = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(data.blob));
-    });
-  }
-
-  startRecording() {
-    if (!this.isRecording) {
-      this.isRecording = true;
-      this.audioRecordingService.startRecording();
-    }
-  }
-
-  abortRecording() {
-    if (this.isRecording) {
-      this.isRecording = false;
-      this.audioRecordingService.abortRecording();
-    }
-  }
-
-  stopRecording() {
-    if (this.isRecording) {
-      this.audioRecordingService.stopRecording();
-      this.isRecording = false;
-    }
-  }
-
-  clearRecordedData() {
-    this.blobUrl = null;
-  }
-
-  ngOnDestroy(): void {
-    this.abortRecording();
-  }*/
 
   }
   sanitize(url: string) {

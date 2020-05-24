@@ -81,10 +81,6 @@ export class AssenzeComponentComponent implements OnInit {
   }
 
   onSubmitAssenza(value: string): void {
-    console.log('Tipo Assenza: ', this.formAssenza.controls['tipoAssenza']);
-    console.log('Data: ', this.formAssenza.controls['data'].value);
-    console.log('Orario: ', this.formAssenza.controls['orario'].value);
-    console.log('Concorre: ',this.formAssenza.controls['concorre'].value);
     let assenzaOgg: Assenza = new Assenza();
     assenzaOgg.Tipo = this.formAssenza.controls['tipoAssenza'].value;
     assenzaOgg.DataAssenza = this.formAssenza.controls['data'].value;
@@ -102,7 +98,6 @@ export class AssenzeComponentComponent implements OnInit {
     this.observAssenza.subscribe(
       (response) =>
       {
-        console.log(response);
         if(response){
           this.assenze.push(assenzaOgg);
         }

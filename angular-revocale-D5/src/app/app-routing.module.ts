@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Routes, RouterModule } from '@angular/router';
 import { ProfComponentComponent } from './prof-component/prof-component.component';
 import { LoginComponentComponent } from './login-component/login-component.component';
@@ -20,7 +19,6 @@ const routes: Routes = [
   { path: 'assenze', component: AssenzeComponentComponent },
   { path: 'inserimentoVocale', component: InserimentoVocaleConRiepilogoComponentComponent },
   { path: 'firma', component: FirmaComponentComponent }
-
 ];
 
 @NgModule({

@@ -232,5 +232,77 @@ dirigenteRouter.get('/getAllClasses', checkAuthorization, async function (req, r
         res.status(500).send(result);
     else
         res.send(result);
+});
+
+let getAllComunicazioni = async function()
+{
+    let dbQuery = new Promise(
+        (resolve, reject) => {
+            dbConnection.connect(config, async function (errConn) {
+                if (errConn)
+                    reject(errConn);
+                let transaction = new dbConnection.Transaction();
+                await transaction.begin().catch(err => {if(err) reject(err)});
+                
+                let request = new dbConnection.Request(transaction);
+                let query = 'SELECT * FROM [dbo].[comunicazione]';
+                let comunicazioni = await request.query(query).catch(err => {if(err) reject(err)});
+                comunicazioni = comunicazioni.recordset;
+                query = 'SELECT CodiceClasse FROM DestinatarioComunicazione WHERE CodiceCircolare = @CodiceCircolare';
+                let preparedStatement = new dbConnection.PreparedStatement(transaction);
+                preparedStatement.input('CodiceCircolare', dbConnection.Int());
+                await preparedStatement.prepare(query).catch(err => {if(err) reject(err)});
+                
+                for(let i = 0; i < comunicazioni.length; i++)
+                {
+                    let dest = await preparedStatement.execute({'CodiceCircolare' : comunicazioni[i].CodiceCircolare}).catch(err => {if(err) reject(err)});
+                    dest = dest.recordset;
+                    if(dest.length > 0)
+                    {
+                        comunicazioni[i]['Destinatari'] = [];
+                        for(let j = 0; j < dest.length; j++)
+                            comunicazioni[i]['Destinatari'].push(dest[j].CodiceClasse);
+                        
+                    }
+                    else
+                    {
+                        preparedStatement.unprepare().catch(err => {if(err) reject(err)});
+                        transaction.rollback().catch(err => {if(err) reject(err)});
+                        let error = new Error("Nessun destinatario trovato per questa circolare");
+                        reject(error);
+                    }
+                }
+                await preparedStatement.unprepare().catch(err => {if(err) reject(err)});
+                transaction.commit().catch(err => {if(err) reject(err)});
+                resolve(comunicazioni);
+            });
+        }).catch((err) => {console.log(err); return {success : false, message : "Database error: " + err}});
+    let queryResult = await dbQuery;
+    if (queryResult.length > 0)
+        return { success: true, recordSet: queryResult };
+    else
+        return { success: false };
+}
+
+dirigenteRouter.get('/getAllComunicazioni', checkAuthorization, async function(req, res)
+{
+    var loggedIn = authorizedKey.find((key) => {
+        return key.securedKey == req.get('authorization');
+    });
+    
+    let isDirigente = await checkDirigente(loggedIn.cfProf);
+    
+    let result;
+    if(isDirigente)
+        result = await getAllComunicazioni();
+    
+    if (loggedIn == undefined)
+        res.status(404).send({ success: false, message: "Login not found" });
+    else if (!isDirigente)
+        res.status(403).send({ success: false, message: "Non sei un dirigente" });
+    else if (!result.success)
+        res.status(500).send(result);
+    else
+        res.send(result);
 })
 module.exports = dirigenteRouter;

@@ -150,7 +150,11 @@ let getVotiByStudente = async function(cfStudente)
     if(reutrnedObject.recordset)
     {
         for(let i = 0; i < reutrnedObject.recordset; i++)
-            delete reutrnedObject.recordset[i].CFStudente
+        {
+            delete reutrnedObject.recordset[i].CFStudente;
+            delete reutrnedObject.recordset[i].CFProfessore;
+        }
+            
         return {success: true, recordset : reutrnedObject.recordset};
     }
     else

@@ -33,7 +33,7 @@ export class DirigenteComponentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    this.getComunicazioni();
   }
 
   getClassi() {
@@ -92,4 +92,15 @@ export class DirigenteComponentComponent implements OnInit {
     else
       alert("Seleziona almeno una classe");
   }
+
+   getComunicazioni(){
+    let httpHead = new HttpHeaders({Authorization : String(this.profData.securedKey)});
+    this.httpClient.get<Comunicazione[]>(environment.node_server + `/api/dirigente/getAllComunicazioni`, {headers : httpHead})
+    .subscribe((response) =>
+    {
+      this.comunicazioni = response['recordSet'];
+      console.log(this.comunicazioni);
+    }
+  )}
 }
+
