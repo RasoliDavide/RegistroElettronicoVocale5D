@@ -1,0 +1,21 @@
+extends layoutlogin
+block content
+
+    link(rel='stylesheet', href='/css/style.css')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    link(rel='stylesheet', href='/css/bootstrap.min.css')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.0.2/sha.js')
+    script(src='/javascripts/login.js')
+    body
+        if wrongCredential
+            .alert.alert-danger(role='alert')
+                h3.text-center Credenziali errate
+        .impform
+            h1 LOGIN STUDENTE
+            form(method='POST' action='/login').form-group
+                label(for='username') Inserisci Username
+                input.inputusername(type='text', placeholder='username', id='username', name='username')
+                br
+                label(for='password') Inserisci Password
+                input.inputpassword(type='password', placeholder='password', id='password', name='password')
+                button.buttonlogin(onclick='hashPWD(this)', type='submit') Login

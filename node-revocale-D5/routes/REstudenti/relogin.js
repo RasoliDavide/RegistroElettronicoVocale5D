@@ -1,15 +1,10 @@
 var express = require('express');
-var router = express.Router();
+var resLogin = express.Router();
 const dbConnection = require('mssql');
 var createError = require('http-errors');
+const sha512 = require('js-sha512');
+const randomint = require('random-int');
 
-const checkPostPayloadMiddleware = (req, res, next) =>
-{
-    if(req.body)
-        next();
-    else
-        res.status(403).send({message : 'Missing Payload'});
-}
 
 let checkStudPasswd = async function(inputUsername, inputPassword)
 {
@@ -19,20 +14,18 @@ let checkStudPasswd = async function(inputUsername, inputPassword)
         dbConnection.connect(config, function(err) {
             if (err) 
                 reject(err);
-            
+            //
             var preparedStatement = new dbConnection.PreparedStatement();
-            preparedStatement.input('username', dbConnection.Char(5));
-            preparedStatement.input('password', dbConnection.Char(128));
-            let query = 'select * from Persona as P join Studente as S on P.CFPersona = S.CFStudente';
+            preparedStatement.input('Username', dbConnection.Char(5));
+            preparedStatement.input('Password', dbConnection.Char(128));
+            let query = 'SELECT * FROM persona WHERE Username = @Username AND PassWd = @Password';
             preparedStatement.prepare(query,
             err => 
             {
                 if(err)
                     reject(err);
                 
-                    
-                                
-                preparedStatement.execute({'username' : inputUsername, 'password': inputPassword},
+                preparedStatement.execute({'Username' : inputUsername, 'Password': inputPassword},
                 (err, result) =>
                 {
                     preparedStatement.unprepare(
@@ -44,7 +37,7 @@ let checkStudPasswd = async function(inputUsername, inputPassword)
             }
         )})
     });
-    returnedCF = passwordQueryCheck;
+    returnedCF = await passwordQueryCheck;
     return returnedCF;
 }
 
@@ -57,17 +50,19 @@ let checkLogin = async function(inputUsername, inputPassword)
         let dbQuery = new Promise((resolve, reject) => 
         {
             dbConnection.connect(config, function(err) {
-                let query = 'SELECT * FROM DatiStudente WHERE CFPersona = @cfPersona';
+                let query = 'SELECT * FROM DatiStudente WHERE CFPersona = @CFPersona';
                 let preparedStatement = new dbConnection.PreparedStatement();
-                preparedStatement.input('cfPersona', dbConnection.Char(16));
+                preparedStatement.input('CFPersona', dbConnection.Char(16));
                 preparedStatement.prepare(query,
                     err => 
                     {
                         if(err)
                             reject(err);
-                        preparedStatement.execute({'cfPersona' : queryResult.CFStudente},
+                        preparedStatement.execute({'CFPersona' : queryResult.CFPersona},
                             (err, result) =>
                             {
+                                if(err)
+                                    reject(err);
                                 preparedStatement.unprepare(
                                     err => reject(err)
                                 )
@@ -77,7 +72,7 @@ let checkLogin = async function(inputUsername, inputPassword)
                     }
                 )
             });
-        });
+        }).catch((err) => {console.log(err); return {success : false, message : "Database error: " + err}});
         reutrnedObject = await dbQuery;
     }
     if(reutrnedObject == undefined)
@@ -94,17 +89,30 @@ let checkLogin = async function(inputUsername, inputPassword)
             'cfStudente' : reutrnedObject.CFPersona,
             'securedKey' : securedKey
         }
-        authorizedKey.push(corrispondenza);
+        authorizedCookies.push(corrispondenza);
+        console.log(authorizedCookies)
     }
     return reutrnedObject;
 }
 
-apiRouter.post('/login', checkPostPayloadMiddleware, async function(req, res)
+resLogin.post('/', async function(req, res)
 {
+    let username = req.body.username, password = req.body.password;
+    let allParameterReceived = (username && password);
+    let allParameterOK = (username.length < 5 && password.length == 128);
     let result = await checkLogin(req.body.username, req.body.password);
-    res.send(result);
-})
+    if(result.success)
+    {
+        res.cookie('cookie_monster', result.securedKey);
+        res.redirect('/');
+    }
+    else
+    {
+        res.cookie('wrongCredential', 1);
+        res.redirect('/');
+    }
+});
 
 
 
-module.exports = router;
+module.exports = resLogin;

@@ -52,7 +52,7 @@
 		</form>
 	</div>
 	<!--Tipo, Data, Concorre, Ora-->
-	<div class="impform">
+	<div class="impform" id="section1">
 		<h4>Riepilogo assenze</h4>
 		<table style="width:75%" class="assenze">
 			<tr>
@@ -79,7 +79,7 @@
 		<br>
       </div>
 
-		<div *ngIf="giustificaV" class="impform">
+		<div *ngIf="giustificaV" class="impform" >
 			<h1>Giustifica</h1>
 			<form [formGroup]="formGiustifica" (ngSubmit)="onSubmitGiustifica(formGiustifica.value)"
 				class="jumbotron ng-valid">

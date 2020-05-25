@@ -14,7 +14,7 @@ config = {
 }
 
 
-var indexRouter = require('./routes/index');
+var resRouter = require('./routes/REStudenti');
 var angularRouter = require('./routes/api');
 
 
@@ -32,42 +32,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
-app.use('/', indexRouter);
+app.use('/', resRouter);
 app.use('/api', angularRouter);
 
-app.get('/assenze', (req, res) => {  
-  res.render('assenze', {
-    title: `assenze`
-  });
-});
-
-app.get('/comunicazioni', (req, res) => {  
-  res.render('comunicazioni', {
-    title: `comunicazioni`
-  });
-});
-
-app.get('/lezioni', (req, res) => {  
-  res.render('lezioni', {
-    title: `lezioni`
-  });
-});
-
-app.get('/note', (req, res) => {  
-  res.render('note', {
-    title: `note`
-  });
-});
-
-app.get('/profilo', (req, res) => {  
-  res.render('profilo', {
-    title: `profilo`
-  });
-});
-
-app.get('/voti', (req, res) => {  
-  res.render('voti', {
-    title: `voti`
-  });
-});
 module.exports = app;

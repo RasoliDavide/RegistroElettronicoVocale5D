@@ -58,9 +58,7 @@ let checkProfPasswd = async function(inputUsername, inputPassword)
             {
                 if(err)
                     reject(err);
-                
-                    
-                                
+                 
                 preparedStatement.execute({'username' : inputUsername, 'password': inputPassword},
                 (err, result) =>
                 {
