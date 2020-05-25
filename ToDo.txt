@@ -6,12 +6,9 @@ Facoltativi - Per migliorare:
     Allegato comunicazioni
 
 Manca in angular:
-    -Fare api getNota
-    -Fare api getComunicazioni
     -Fare logout
     -Inserimento vocale effettivo
-
-
+    
 Comandi da inserire:
     -Per voto: 
     voto: inserisci voto "numero", 

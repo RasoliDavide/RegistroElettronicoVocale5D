@@ -27,14 +27,15 @@
 		<h4>Riepilogo comunicazioni</h4>
 		<table style="width:75%" class="comunicazioni" >
 			<tr>
-				<th>Codice</th>
 				<th>Titolo</th>
 				<th>Testo</th>
 				<th>Destinatari</th>
 
 			</tr>
-			<tr *ngFor="">
-
+			<tr *ngFor="let comunicazione of comunicazioni">
+                <td>{{comunicazione.Titolo}}</td>
+                <td>{{comunicazione.Testo}}</td>
+                <td>{{comunicazione.Destinatari}}</td>
 			</tr>
 		</table>
 		<br>
