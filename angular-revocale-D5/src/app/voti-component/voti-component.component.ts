@@ -76,59 +76,6 @@ export class VotiComponentComponent implements OnInit {
 
 
   }
-  sanitize(url: string) {
-    return this.domSanitizer.bypassSecurityTrustUrl(url);
-  }
-  initiateRecording() {
-
-    this.recording = true;
-    let mediaConstraints = {
-      video: false,
-      audio: true
-    };
-    navigator.mediaDevices
-      .getUserMedia(mediaConstraints)
-      .then(this.successCallback.bind(this), this.errorCallback.bind(this));
-  }
-  /**
-   * Will be called automatically.
-   */
-  successCallback(stream) {
-    var options = {
-      mimeType: "audio/wav",
-      numberOfAudioChannels: 1
-    };
-    //Start Actuall Recording
-    var StereoAudioRecorder = RecordRTC.StereoAudioRecorder;
-    this.record = new StereoAudioRecorder(stream, options);
-    this.record.record();
-  }
-  /**
-   * Stop recording.
-   */
-  stopRecording() {
-    this.recording = false;
-    this.record.stop(this.processRecording.bind(this));
-  }
-  /**
-   * processRecording Do what ever you want with blob
-   * @param  {any} blob Blog
-   */
-  processRecording(blob) {
-    this.url = URL.createObjectURL(blob);
-    console.log(this.url);
-  }
-  /**
-   * Process Error.
-   */
-  errorCallback(error) {
-    this.error = 'Can not play audio in your browser';
-  }
-
-
-
-
-
   ngOnInit(): void {
     this.profData = this.sharedProfData.profData;
     this.observableChangeSelectedClass = this.sharedProfData.getObservable();
@@ -182,7 +129,7 @@ export class VotiComponentComponent implements OnInit {
   }
   getVoti() {
     let httpHead = new HttpHeaders({ Authorization: String(this.profData.securedKey) });
-    this.httpClient.get<Voti[]>(environment.node_server + `/api/voti/getVotiByStudente?UsernameStudente=${this.selectedStudente.Username}`, { headers: httpHead })
+    this.httpClient.get<Voti[]>(environment.node_server + `/api/voti/getVotiByStudente?UsernameStudente=${this.selectedStudente.Username}&CodiceMateria=${this.selectedClass.CodiceMateria}`, { headers: httpHead })
       .subscribe((response) => {
         this.voti = response;
         for (let voto of this.voti) {

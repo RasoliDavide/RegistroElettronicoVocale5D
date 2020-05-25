@@ -302,7 +302,7 @@ noteRouter.get('/getNoteByStudente', checkAuthorization, async function(req, res
     if(reutrnedObject.recordset)
     {
         for(let i = 0; i < reutrnedObject.recordset; i++)
-            delete reutrnedObject.recordset[i].CFStudente
+            delete reutrnedObject.recordset[i].CodiceClasse;
         return {success: true, recordset : reutrnedObject.recordset};
     }
     else

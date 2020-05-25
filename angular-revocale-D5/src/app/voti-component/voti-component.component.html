@@ -60,7 +60,9 @@
       </tr>
       <tr *ngFor="let voto of voti" class="voti">
         <td>{{voto.DataVoto}}</td>
-        <td>{{voto.Tipologia}}</td>
+        <td *ngIf="voto.Tipologia == 0">Senza valore</td>
+        <td *ngIf="voto.Tipologia == 1">Con valore</td>
+        <td *ngIf="voto.Tipologia == 2">Di recupero</td>
         <td>{{voto.Descrizione}}</td>
         <td>{{voto.Voto}}</td>
         <td>{{voto.Peso}}%</td>

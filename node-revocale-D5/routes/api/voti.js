@@ -116,7 +116,7 @@ votiRouter.post('/inserisciVoto', checkAuthorization, async function(req, res)
         res.status(201).send(result);
 })
 
-let getVotiByStudente = async function(cfStudente)
+let getVotiByStudente = async function(cfStudente, codiceMateria)
 {
     let dbQuery = new Promise(
     (resolve, reject) =>
@@ -124,14 +124,16 @@ let getVotiByStudente = async function(cfStudente)
         dbConnection.connect(config, function(err) {
             let preparedStatement = new dbConnection.PreparedStatement();
             preparedStatement.input('CFStudente', dbConnection.Char(16));
-            let query = 'SELECT * FROM getVotiByStudente WHERE CFStudente = @CFStudente';
+            preparedStatement.input('CodiceMateria', dbConnection.Int())
+            let query = 'SELECT * FROM getVotiByStudente WHERE CFStudente = @CFStudente AND CodiceMateria = @CodiceMateria';
             preparedStatement.prepare(query,
             errPrep => 
             {
                 if(errPrep)
                     reject(errPrep);
 
-                preparedStatement.execute({'CFStudente' : cfStudente},
+                preparedStatement.execute({'CFStudente' : cfStudente,
+                                           'CodiceMateria' : codiceMateria},
                 (errExec, result) =>
                 {                
                     if(errExec)
@@ -164,19 +166,21 @@ let getVotiByStudente = async function(cfStudente)
 votiRouter.get('/getVotiByStudente', checkAuthorization, async function(req, res)
 {
     //UsernameStudente
-    let allParameterReceived = req.query.UsernameStudente != undefined;
-    let usernameStudenteOK;
+    let allParameterReceived = req.query.UsernameStudente != undefined && req.query.CodiceMateria != undefined;
+    let usernameStudenteOK, codiceMateriaOK;
     if(allParameterReceived)
+    {
         usernameStudenteOK = (req.query.UsernameStudente.length == 5);
-
+        codiceMateriaOK = (req.query.CodiceMateria > 0);
+    }
     
     let cfStudente;
-    if(usernameStudenteOK)
+    if(usernameStudenteOK && codiceMateriaOK)
         cfStudente = await RECommonFunctions.getCFStudenteByUsername(req.query.UsernameStudente);
 
     let result;
-    if(usernameStudenteOK && cfStudente != undefined)
-        result = await getVotiByStudente(cfStudente);
+    if(usernameStudenteOK && codiceMateriaOK && cfStudente != undefined)
+        result = await getVotiByStudente(cfStudente, req.query.CodiceMateria);
 
     if(!allParameterReceived)
         res.status(400).send({success : false, message : "Missing parameter(s)"});
