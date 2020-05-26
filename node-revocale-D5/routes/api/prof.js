@@ -1,7 +1,7 @@
 const express = require('express');
 const profRouter = express.Router();
 
-const RECommonFunctions = require('../common-functions');
+const RECommonFunctions = require('./common-functions');
 checkAuthorization = (req, res, next) => {return RECommonFunctions.checkAuthorizationM(req, res, next);}
 
 let getTeachingClasses = async function(cfProfessore)

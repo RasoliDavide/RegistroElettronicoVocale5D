@@ -9,7 +9,7 @@ const apiVoti = require('./api/voti');
 const apiDirigente = require('./api/dirigente');
 const apiNote = require('./api/note');
 
-const RECommonFunctions = require('./common-functions');
+const RECommonFunctions = require('./api/common-functions');
 checkAuthorization = (req, res, next) => {return RECommonFunctions.checkAuthorizationM(req, res, next);}
 
 apiRouter.use('/prof', apiProf);

@@ -2,15 +2,52 @@ extends layout
 block content
     br
     h1.impform Assenze dello studente
-
-    .impform
-        h2 Riepilogo assenze
-        table.tabella(style='width:75%')
-            tbody
-            tr
-                th Data
-                th Tipologia
-                th Concorrenza al calcolo 
-                th Ora
-                th Motivazione
     br
+    br
+    .impform
+        h3 Riepilogo assenze giustificate
+        table.tabella(style='width:75%')
+            thead
+                tr
+                    th Data
+                    th Tipologia
+                    th Concorrenza al calcolo 
+                    th Ora
+                    th Motivazione
+            tbody
+                each assenza in assenze
+                    if assenza.Motivazione != null
+                        tr
+                            td #{assenza.DataAssenza}
+                            td #{assenza.Tipo}
+                            td #{assenza.Concorre}
+                            if assenza.Ora
+                                td #{assenza.Ora}
+                            else
+                                td -
+                            td #{assenza.Motivazione}
+        br
+        br
+        h3 Riepilogo assenze non giustificate
+        table.tabella(style='width:75%')
+            thead
+                tr
+                    th Data
+                    th Tipologia
+                    th Concorrenza al calcolo 
+                    th Ora
+                    th Motivazione
+            tbody
+                each assenza in assenze
+                    if assenza.Motivazione === null
+                        tr
+                            td #{assenza.DataAssenza}
+                            td #{assenza.Tipo}
+                            td #{assenza.Concorre}
+                            if assenza.Ora
+                                td #{assenza.Ora}
+                            else
+                                td -
+                            td Assenza non giustificata.
+                        
+                        

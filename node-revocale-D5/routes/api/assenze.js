@@ -1,7 +1,7 @@
 const express = require('express');
 const assenzeRouter = express.Router();
 
-const RECommonFunctions = require('../common-functions');
+const RECommonFunctions = require('./common-functions');
 checkAuthorization = (req, res, next) => {return RECommonFunctions.checkAuthorizationM(req, res, next);}
 
 
@@ -229,9 +229,12 @@ let getAssenzaByStudente = async function(CFStudente)
                 })
             })
         });
-    });
+    }).catch((err) => {console.log(err); return {success: false, message: "Database error: " + err }});
     let queryResult = await dbQuery;
-    return queryResult;
+    if(queryResult)
+        return {success : true, recordset : queryResult}
+    else
+        return {success : false};
 }
 
 assenzeRouter.get('/getAssenzeByStudente', checkAuthorization, async function(req, res)

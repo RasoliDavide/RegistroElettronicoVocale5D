@@ -84,13 +84,7 @@ let checkLogin = async function(inputUsername, inputPassword)
         reutrnedObject['success'] = true;
         let securedKey = sha512(inputUsername.concat(randomint(5000)));
         reutrnedObject['securedKey'] = securedKey;
-        let corrispondenza = 
-        {
-            'cfStudente' : reutrnedObject.CFPersona,
-            'securedKey' : securedKey
-        }
-        authorizedCookies.push(corrispondenza);
-        console.log(authorizedCookies)
+        authorizedCookies.push(reutrnedObject);
     }
     return reutrnedObject;
 }

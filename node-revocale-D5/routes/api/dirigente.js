@@ -1,7 +1,7 @@
 const express = require('express');
 const dirigenteRouter = express.Router();
 const dbConnection = require('mssql');
-const RECommonFunctions = require('../common-functions');
+const RECommonFunctions = require('./common-functions');
 checkAuthorization = (req, res, next) => { return RECommonFunctions.checkAuthorizationM(req, res, next); }
 
 let checkDirigente = async function (cfProfessore) {

@@ -36,6 +36,9 @@ body {
 a {
   color: #00B7FF;
 }
+.logout{
+    background: rgb(233, 0, 0);
+}
 .formsfondo {
   border-radius: 5px;
   background-color: #f2f2f2;

@@ -1,14 +1,24 @@
 var express = require('express');
 var resRouter = express.Router();
-
-/* GET home page. */
 const resLogin = require('./REstudenti/relogin');
+
 const LoginFunctions = require('./REstudenti/resprofilo');
-resRouter.use('/login', resLogin);
+const assenzeRouter = require('./REstudenti/resassenze');
+
+getDatiStudenteByCookie = function(cookie)
+{
+    var loggedIn = authorizedCookies.find((key) => 
+    {
+        return key.securedKey == cookie;
+    });
+    if(loggedIn)
+        return loggedIn;
+    else 
+        return null;
+}
 
 
 authorizedCookies = [];
-
 
 
 resRouter.get('/', async function(req, res){ 
@@ -18,50 +28,40 @@ resRouter.get('/', async function(req, res){
         res.clearCookie('wrongCredential');
         res.render('login', { title: 'login', wrongCredential: req.cookies.wrongCredential});
     }
-    else {
-        var loggedIn = authorizedCookies.find((key) => {
-            return key.securedKey == cookieLogin;
-        });
-        let datiStudente = await LoginFunctions.getDatiStudente(loggedIn.cfStudente);
-        res.render('profilo', {title:'Profilo', datiStudente : datiStudente.datiStudente});
+    else 
+    {
+        let datiStudente = getDatiStudenteByCookie(cookieLogin);
+        if(datiStudente)
+            res.render('profilo', {title:'Profilo', datiStudente : datiStudente});
+        else
+        {
+            res.clearCookie('cookie_monster');
+            res.render('login', {title : "Login"});
+        }
     }
 });
 
-resRouter.get('/assenze', (req, res) => {
-    res.render('assenze', {
-        title: `assenze`
-    });
-});
+resRouter.use('/login', resLogin);
+resRouter.use('/assenze', assenzeRouter);
 
-resRouter.get('/comunicazioni', (req, res) => {
-    res.render('comunicazioni', {
-        title: `comunicazioni`
-    });
-});
+resRouter.get('/logout', function(req, res)
+{
+    let session_cookie = req.cookies.cookie_monster;
+    let datiStudente;
 
-resRouter.get('/lezioni', (req, res) => {
-    res.render('lezioni', {
-        title: `lezioni`
-    });
-});
+    if(session_cookie)
+        datiStudente = getDatiStudenteByCookie(session_cookie);
 
-resRouter.get('/note', (req, res) => {
-    res.render('note', {
-        title: `note`
-    });
-});
+    if(datiStudente && session_cookie)
+    {
+        let index = authorizedCookies.findIndex((el) => {return el == datiStudente});
+        authorizedCookies.splice(index, 1);
+        res.clearCookie('cookie_monster');
+    }
+    else if(session_cookie)
+        res.clearCookie('cookie_monster');
 
-resRouter.get('/profilo', (req, res) => {
-    res.render('profilo', {
-        title: `profilo`
-    });
-});
-
-resRouter.get('/voti', (req, res) => {
-    res.render('voti', {
-        title: `voti`
-    });
-});
-
+    res.redirect('/');
+})
 
 module.exports = resRouter;
