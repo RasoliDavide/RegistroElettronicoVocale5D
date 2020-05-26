@@ -240,3 +240,17 @@ div#hormenu li li a { padding:2px 2px 2px 10px; }
   color: white;
   transform: rotateY(180deg);
 }
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr 1.5fr 1.1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-areas: "Number Title Title Title" "Text Text Text Text" "Text Text Text Text";
+  border-collapse: collapse;
+}
+
+.Title { grid-area: Title; border-style: solid; border-bottom: solid 2px;}
+
+.Number { grid-area: Number; border-style: solid; border-bottom: solid 2px;}
+
+.Text { grid-area: Text; border-style: solid; text-align: justify; padding: 10px; border-top: solid 1px;}

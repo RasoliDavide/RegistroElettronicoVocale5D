@@ -1,5 +1,6 @@
 var express = require('express');
 var assenzeRouter = express.Router();
+const RESCommonFunctions = require('./res-common-functions');
 
 let getAssenzaByStudente = async function(cfStudente)
 {
@@ -52,16 +53,9 @@ let getAssenzaByStudente = async function(cfStudente)
                     queryResult[i].Tipo = 'Uscita anticipata';
                     break;
             }
-            queryResult[i].DataAssenza = (queryResult[i].DataAssenza.getDate() + "/" + (queryResult[i].DataAssenza.getMonth() + 1) + "/" + queryResult[i].DataAssenza.getFullYear());
+            queryResult[i].DataAssenza = RESCommonFunctions.dateToString(queryResult[i].DataAssenza);
             if(queryResult[i].Ora)
-            {
-                let minuti = queryResult[i].Ora.getMinutes();
-                queryResult[i].Ora = (queryResult[i].Ora.getHours() + ":");
-                if(minuti <= 9)
-                    queryResult[i].Ora += "0" + minuti;
-                else
-                    queryResult[i].Ora += minuti;
-            }
+                queryResult[i].Ora = RESCommonFunctions.timeToString(queryResult[i].Ora);
             if(queryResult[i].Concorre)
                 queryResult[i].Concorre = "Sì";
             else

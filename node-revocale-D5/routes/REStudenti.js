@@ -4,6 +4,10 @@ const resLogin = require('./REstudenti/relogin');
 
 const LoginFunctions = require('./REstudenti/resprofilo');
 const assenzeRouter = require('./REstudenti/resassenze');
+const noteRouter = require('./REstudenti/resnote');
+const lezioniRouter = require('./REstudenti/reslezioni');
+const votiRouter = require('./REstudenti/resvoti');
+const comunicazioniRouter = require('./REstudenti/rescomunicazioni');
 
 getDatiStudenteByCookie = function(cookie)
 {
@@ -43,7 +47,10 @@ resRouter.get('/', async function(req, res){
 
 resRouter.use('/login', resLogin);
 resRouter.use('/assenze', assenzeRouter);
-
+resRouter.use('/voti', votiRouter);
+resRouter.use('/note', noteRouter);
+resRouter.use('/lezioni', lezioniRouter);
+resRouter.use('/comunicazioni', comunicazioniRouter);
 resRouter.get('/logout', function(req, res)
 {
     let session_cookie = req.cookies.cookie_monster;
