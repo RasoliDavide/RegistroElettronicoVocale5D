@@ -4,11 +4,16 @@ block content
     h1.impform Comunicazioni per lo studente
     .impform
         h2 Riepilogo comunicazioni
-        table.tabella(style='width:75%')
-            tbody
-            tr
-                th Codice
-                th Titolo
-                th Testo
-                th Destinatari
+            br
+            each comunicazione in comunicazioni
+                br
+                .grid-container
+                    .Title
+                        h4 #{comunicazione.Titolo}
+                    .Number
+                        h4 #{comunicazione.CodiceCircolare}
+                    .Text
+                        h4 #{comunicazione.Testo}
+                    br
+                    br
     br

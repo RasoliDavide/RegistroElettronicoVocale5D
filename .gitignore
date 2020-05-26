@@ -105,3 +105,6 @@ dist
 
 #GitPod
 .theia/
+
+#AuthAudio
+node-revocale/routes/api/real-time-eval.json

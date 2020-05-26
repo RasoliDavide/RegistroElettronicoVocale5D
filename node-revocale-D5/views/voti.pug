@@ -5,10 +5,22 @@ block content
     .impform
         h2 Riepilogo Voti
         table.tabella
+            thead
+                tr
+                    th Data
+                    th Materia
+                    th Tipologia
+                    th Voto
+                    th Peso
+                    th Descrizione 
+                    th Professore
             tbody
-            tr
-                th Data
-                th Tipologia
-                th Descrizione 
-                th Voto
-
+                each voto in voti  
+                    tr
+                        td #{voto.DataVoto}
+                        td #{voto.Materia}
+                        td #{voto.Tipologia}
+                        td #{voto.Voto}
+                        td #{voto.Peso}
+                        td #{voto.Descrizione}
+                        td #{voto.Cognome} #{voto.Nome}

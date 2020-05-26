@@ -2,13 +2,38 @@ extends layout
 block content
     br
     h1.impform Note dello studente
-    .impform
-        h2 Riepilogo note
-        table.tabella(style='width:75%')
-            tbody
-            tr
-                th Tipologia nota
-                th Data
-                th Tipo penalità
-                th Descrizione
     br
+    br
+    .impform
+        h3 Riepilogo note personali
+        table.tabella(style='width:75%')
+            thead
+                tr
+                    th Data
+                    th Tipo penalità
+                    th Descrizione
+                    th Professore
+            tbody
+                each nota in note
+                        tr
+                            td #{nota.DataNota}
+                            td #{nota.TipoPenalita}
+                            td #{nota.Testo}
+                            td #{nota.Cognome} #{nota.Nome}
+        br
+        br
+        h3 Riepilogo note di classe
+        table.tabella(style='width:75%')
+            thead
+                tr
+                    th Data
+                    th Tipo penalità
+                    th Descrizione
+                    th Professore
+            tbody
+                each notaclasse in noteClasse
+                        tr
+                            td #{notaclasse.DataNota}
+                            td #{notaclasse.TipoPenalita}
+                            td #{notaclasse.Testo}
+                            td #{notaclasse.Cognome} #{notaclasse.Nome}

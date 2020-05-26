@@ -93,8 +93,10 @@ resLogin.post('/', async function(req, res)
 {
     let username = req.body.username, password = req.body.password;
     let allParameterReceived = (username && password);
-    let allParameterOK = (username.length < 5 && password.length == 128);
-    let result = await checkLogin(req.body.username, req.body.password);
+    let allParameterOK = (username.length == 5 && password.length == 128);
+    let result;
+    if(allParameterOK)
+        result = await checkLogin(req.body.username, req.body.password);
     if(result.success)
     {
         res.cookie('cookie_monster', result.securedKey);

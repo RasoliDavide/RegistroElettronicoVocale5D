@@ -5,11 +5,25 @@ block content
     .impform
         h2 Riepilogo lezioni
         table.tabella
-            tbody
-            tr
-                th Materia
-                th Data
-                th Ora
-                th Argomento
-                th Compiti Assegnati
+            thead
+                tr
+                    th Materia 
+                    th Data <!--Firma-->
+                    th Ora <!--Firma-->
+                    th Argomento <!--Firma-->
+                    th Compiti Assegnati <!--Firma-->
+                    th Professore
+            tbody    
+                each lezione in lezioni
+                    tr       
+                        td #{lezione.Materia}
+                        td #{lezione.DataFirma}
+                        td #{lezione.Ora}
+                        td #{lezione.Argomento}
+                        if lezione.CompitiAssegnati
+                            td #{lezione.CompitiAssegnati}
+                        else
+                            td Nessun compito assegnato
+                        td #{lezione.Cognome} #{lezione.Nome}
+
     br
