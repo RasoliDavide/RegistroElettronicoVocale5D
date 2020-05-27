@@ -4,7 +4,8 @@ import * as RecordRTC from 'recordrtc';
 import * as moment from 'moment';
 import { Observable, Subject } from 'rxjs';
 import { isNullOrUndefined } from 'util';
-
+import {HttpClient } from '@angular/common/http'
+import { environment } from 'src/environments/environment';
 interface RecordedAudioOutput {
   blob: Blob;
   title: string;
@@ -21,8 +22,11 @@ export class AudioRecordingService {
   private _recorded = new Subject<RecordedAudioOutput>();
   private _recordingTime = new Subject<string>();
   private _recordingFailed = new Subject<string>();
-
-
+  private httpClient : HttpClient;
+  constructor(http : HttpClient)
+  {
+    this.httpClient = http;
+  }
   getRecordedBlob(): Observable<RecordedAudioOutput> {
     return this._recorded.asObservable();
   }
@@ -61,7 +65,9 @@ export class AudioRecordingService {
 
     this.recorder = new RecordRTC.StereoAudioRecorder(this.stream, {
       type: 'audio',
-      mimeType: 'audio/webm'
+      mimeType: 'audio/wav; codecs=pcm',
+      desiredSampRate: 16000,
+      numberOfAudioChannels: 1
     });
 
     this.recorder.record();
@@ -96,9 +102,20 @@ export class AudioRecordingService {
           const mp3Name = encodeURIComponent('audio_' + new Date().getTime() + '.mp3');
           this.stopMedia();
           this._recorded.next({ blob: blob, title: mp3Name });
-
+          console.log(blob)
+          var reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = () =>
+          {
+            var b64 = reader.result;
+            console.log(b64);
+            let send = {"audio" : b64}
+            this.httpClient.post(environment.node_server + '/api/stt', send).subscribe((resp) =>
+            {
+              console.log(resp);
+            })
+          }
         }
-
       }, () => {
         this.stopMedia();
         this._recordingFailed.next();

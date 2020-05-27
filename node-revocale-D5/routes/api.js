@@ -8,7 +8,7 @@ const apiAssenze = require('./api/assenze');
 const apiVoti = require('./api/voti');
 const apiDirigente = require('./api/dirigente');
 const apiNote = require('./api/note');
-
+const apiStt = require('./api/STT');
 const RECommonFunctions = require('./api/common-functions');
 checkAuthorization = (req, res, next) => {return RECommonFunctions.checkAuthorizationM(req, res, next);}
 
@@ -17,6 +17,7 @@ apiRouter.use('/assenze', apiAssenze);
 apiRouter.use('/voti', apiVoti);
 apiRouter.use('/dirigente', apiDirigente);
 apiRouter.use('/note', apiNote);
+apiRouter.use('/stt', apiStt)
 
 authorizedKey = 
 [

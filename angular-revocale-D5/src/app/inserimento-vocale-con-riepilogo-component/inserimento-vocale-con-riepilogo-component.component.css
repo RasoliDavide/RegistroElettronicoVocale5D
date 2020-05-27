@@ -1,4 +1,9 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
+.impform{
+  width: 75%;
+  margin: auto;
+  text-align: center;
+}
 
 .start-button {
       background-color: #7ffe9f; /* Green */
