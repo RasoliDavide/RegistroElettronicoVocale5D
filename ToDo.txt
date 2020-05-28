@@ -42,4 +42,5 @@ Comandi da inserire:
     per classi: per le classi: "classi"
 
 
-    
+    Inserisci <CosaInserire (Nota, Voto, Assenza, Firma)> 
+    A <NomeCognomeStudente> Voto 

@@ -17,7 +17,7 @@ apiRouter.use('/assenze', apiAssenze);
 apiRouter.use('/voti', apiVoti);
 apiRouter.use('/dirigente', apiDirigente);
 apiRouter.use('/note', apiNote);
-apiRouter.use('/stt', apiStt)
+apiRouter.use('/stt', apiStt);
 
 authorizedKey = 
 [

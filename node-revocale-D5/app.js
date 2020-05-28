@@ -3,7 +3,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
+const bodyParser = require('body-parser');
 dbConnection = require('mssql');
+
 
 
 config = {
@@ -26,11 +28,12 @@ app.set('view engine', 'pug');
 
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
+
+app.use(bodyParser.json({limit: '25mb', extended: true}))
+app.use(bodyParser.urlencoded({limit: '25mb', extended: true}))
 
 app.use('/', resRouter);
 app.use('/api', angularRouter);

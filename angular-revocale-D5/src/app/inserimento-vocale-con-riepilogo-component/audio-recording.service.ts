@@ -65,8 +65,9 @@ export class AudioRecordingService {
 
     this.recorder = new RecordRTC.StereoAudioRecorder(this.stream, {
       type: 'audio',
-      mimeType: 'audio/wav; codecs=pcm',
+      mimeType: 'audio/wav;codecs=PCM',
       desiredSampRate: 16000,
+      audioBitsPerSecond: 16000,
       numberOfAudioChannels: 1
     });
 
@@ -97,19 +98,18 @@ export class AudioRecordingService {
   stopRecording() {
 
     if (this.recorder) {
-      this.recorder.stop((blob) => {
+      this.recorder.stop(async (blob) => {
         if (this.startTime) {
-          const mp3Name = encodeURIComponent('audio_' + new Date().getTime() + '.mp3');
           this.stopMedia();
-          this._recorded.next({ blob: blob, title: mp3Name });
-          console.log(blob)
           var reader = new FileReader();
           reader.readAsDataURL(blob);
           reader.onloadend = () =>
           {
             var b64 = reader.result;
             console.log(b64);
+            b64 = b64.toString().substring(22);
             let send = {"audio" : b64}
+            console.log(b64);
             this.httpClient.post(environment.node_server + '/api/stt', send).subscribe((resp) =>
             {
               console.log(resp);
