@@ -9,9 +9,9 @@ sttRouter.post('/', async function(req, res)
     let audioBytes = audioRCVD.audio;
     let audio = {content : audioBytes};
     const config = {
-        //encoding: 'LINEAR16',
         sampleRateHertz: 16000,
-        languageCode: 'it-IT'
+        languageCode: 'it-IT',
+        model: 'command_and_search'
     };
     const request = {
         audio: audio,
@@ -19,11 +19,10 @@ sttRouter.post('/', async function(req, res)
     };
     const [response] = await client.recognize(request).catch((err) => {console.log(err)});
     const transcription = response.results
-    .map(result => result.alternatives[0].transcript)
-    .join('\n');
-    console.log(JSON.stringify(response));
-    console.log(`Transcription: ${transcription}`);
-    res.send('Vivianina')
+            .map(result => result.alternatives[0].transcript)
+            .join('\n');
+    let transcriptToSend = {"transcription" : transcription};
+    res.send(transcriptToSend);
 })
 
 

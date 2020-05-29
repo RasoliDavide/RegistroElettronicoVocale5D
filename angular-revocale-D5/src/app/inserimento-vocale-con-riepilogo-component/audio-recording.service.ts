@@ -13,8 +13,6 @@ interface RecordedAudioOutput {
 
 @Injectable()
 export class AudioRecordingService {
-
-
   private stream;
   private recorder;
   private interval;
@@ -23,9 +21,12 @@ export class AudioRecordingService {
   private _recordingTime = new Subject<string>();
   private _recordingFailed = new Subject<string>();
   private httpClient : HttpClient;
+  private transcriptionSbj : Subject<String>;
   constructor(http : HttpClient)
   {
     this.httpClient = http;
+    this.transcriptionSbj = new Subject<String>();
+
   }
   getRecordedBlob(): Observable<RecordedAudioOutput> {
     return this._recorded.asObservable();
@@ -43,7 +44,6 @@ export class AudioRecordingService {
   startRecording() {
 
     if (this.recorder) {
-      // It means recording is already started or it is already recording something
       return;
     }
 
@@ -54,7 +54,6 @@ export class AudioRecordingService {
     }).catch(error => {
       this._recordingFailed.next();
     });
-
   }
 
   abortRecording() {
@@ -106,13 +105,13 @@ export class AudioRecordingService {
           reader.onloadend = () =>
           {
             var b64 = reader.result;
-            console.log(b64);
             b64 = b64.toString().substring(22);
             let send = {"audio" : b64}
-            console.log(b64);
-            this.httpClient.post(environment.node_server + '/api/stt', send).subscribe((resp) =>
+            this.httpClient.post<String>(environment.node_server + '/api/stt', send).subscribe((resp) =>
             {
               console.log(resp);
+              let stringToSend : String = String(JSON.stringify(resp['transcription']));
+              this.transcriptionSbj.next(stringToSend);
             })
           }
         }
@@ -134,5 +133,8 @@ export class AudioRecordingService {
       }
     }
   }
-
+  getTranscriptionObservable() : Observable<String>
+  {
+    return this.transcriptionSbj.asObservable();
+  }
 }
