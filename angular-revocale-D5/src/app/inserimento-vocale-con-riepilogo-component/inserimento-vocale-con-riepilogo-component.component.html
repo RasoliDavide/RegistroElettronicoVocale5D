@@ -10,5 +10,34 @@
 			<source [src]="blobUrl" type="audio/webm">
 		</audio>
 	</div>
-    <h2>{{lasttranscription}}</h2>
+  <br>
+    <button class="btn btn-primary btn-block" (click) = "istruzioni(istrVedi)">Istruzioni</button>
+      <br>
+    <div *ngIf="istrVedi">
+      <table class="istruzioni">
+        <tr>
+          <th>Voto</th>
+          <td>Inserisci voto "voto" a studente "nome cognome" descrizione "descrizione" data "giorno" "mese: gennaio, febbraio, ..." "anno" peso "da 0 a 100" valore "sì,no,recupero"</td>
+        </tr>
+        <tr>
+          <th>Assenza</th>
+          <td>Inserisci assenza a studente "nome cognome" con tipo "assenza/entrata/uscita" data "giorno" "mese: gennaio, febbraio, ..." "anno" oario "orario:12:30" concorre "si/no/recupero"</td>
+        </tr>
+        <tr>
+          <th>Nota</th>
+          <td>Inserisci nota "nota" a studente "nome cognome" con tipo "classe/studente" data "giorno" "mese: gennaio, febbraio, ..." "anno" penalità "nota/sospensione/espulsione" descrizione "descrizione"</td>
+        </tr>
+        <tr>
+          <th>Firma</th>
+          <td>Inserisci firma a classe "classe" a studente "nome cognome" data "giorno" "mese: gennaio, febbraio, ..." "anno" ora "orario: da 1 a 7" argomento "argomento" compiti "compiti"</td>
+        </tr>
+        <tr>
+          <th>Comunicazione</th>
+          <td>Inserisci comunicazione a classe "classe" con titolo "titolo" testo "testo"</td>
+        </tr>
+     <br>
+     <br>
+     <br>
+		</table>
+    </div>
 </div>

@@ -93,7 +93,7 @@ export class AssenzeComponentComponent implements OnInit {
     else
       assenzaOgg.Ora = this.formAssenza.controls['orario'].value;
 
-    let httpHeaders = new HttpHeaders({"Authorization" : String(this.profData.securedKey)})
+    let httpHeaders = new HttpHeaders({"Authorization" : String(this.profData.securedKey)});
     this.observAssenza = this.http.post(environment.node_server + '/api/assenze/inserisciAssenza', assenzaOgg, {headers : httpHeaders});
     this.observAssenza.subscribe(
       (response) =>
