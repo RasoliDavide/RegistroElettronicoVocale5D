@@ -71,7 +71,8 @@ votiRouter.post('/inserisciVoto', checkAuthorization, async function(req, res)
 {
     //UsernameStudente, Voto, Tipologia, Peso, Descrizione, CFProfessore, CodiceMateria, DataVoto
     let voto = req.body;
-    let allParameterReceived = (voto.UsernameStudente && voto.Voto && voto.Tipologia != undefined && voto.Peso &&  voto.CFProfessore && voto.CodiceMateria && voto.DataVoto);
+    console.log(voto);
+    let allParameterReceived = (voto.UsernameStudente && voto.Voto && voto.Tipologia != undefined && voto.Peso != undefined &&  voto.CFProfessore && voto.CodiceMateria && voto.DataVoto);
     let usernameStudenteOK, votoOK, tipologiaOK, pesoOK, cfProfessoreOK, coerenzaOK, allParameterOK;
     if(allParameterReceived)
     {

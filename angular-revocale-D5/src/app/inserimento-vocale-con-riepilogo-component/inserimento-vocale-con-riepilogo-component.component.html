@@ -4,6 +4,8 @@
 	<button class="start-button" *ngIf="!isRecording && !blobUrl" (click)="startRecording()">Start Recording</button>
 	<button class="stop-button" *ngIf="isRecording && !blobUrl" (click)="stopRecording()">Stop Recording</button>
 	<button class="cancel-button" *ngIf="!isRecording && blobUrl" (click)="clearRecordedData()">Clear Recording</button>
+  <input type="text" #comando>
+  <button (click)="receiveTranscription(comando.value)">Invia</button>
 	<div *ngIf="isRecording && !blobUrl"> {{recordedTime}} </div>
 	<div>
 		<audio *ngIf="!isRecording && blobUrl" controls>
@@ -21,11 +23,11 @@
         </tr>
         <tr>
           <th>Assenza</th>
-          <td>Inserisci assenza a studente "nome cognome" con tipo "assenza/entrata/uscita" data "giorno" "mese: gennaio, febbraio, ..." "anno" oario "orario:12:30" concorre "si/no/recupero"</td>
+          <td>Inserisci assenza di tipo "assenza/entrata/uscita" a studente "nome cognome" data "giorno" "mese: gennaio, febbraio, ..." "anno" oario "orario:12:30" concorre "si/no/recupero"</td>
         </tr>
         <tr>
           <th>Nota</th>
-          <td>Inserisci nota "nota" a studente "nome cognome" con tipo "classe/studente" data "giorno" "mese: gennaio, febbraio, ..." "anno" penalità "nota/sospensione/espulsione" descrizione "descrizione"</td>
+          <td>Inserisci nota di tipo "classe/studente" a studente "nome cognome" data "giorno" "mese: gennaio, febbraio, ..." "anno" penalità "nota/sospensione/espulsione" descrizione "descrizione"</td>
         </tr>
         <tr>
           <th>Firma</th>
@@ -33,7 +35,7 @@
         </tr>
         <tr>
           <th>Comunicazione</th>
-          <td>Inserisci comunicazione a classe "classe" con titolo "titolo" testo "testo"</td>
+          <td>Inserisci circolare con titolo "titolo" testo "testo" a classi "classe"</td>
         </tr>
      <br>
      <br>
