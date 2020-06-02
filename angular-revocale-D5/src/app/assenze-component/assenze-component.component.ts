@@ -140,7 +140,7 @@ export class AssenzeComponentComponent implements OnInit {
     this.httpClient.get<Assenza[]>(environment.node_server + `/api/assenze/getAssenzeByStudente?UsernameStudente=${this.selectedStudente.Username}`, {headers : httpHead})
     .subscribe((response) =>
     {
-      this.assenze = response;
+      this.assenze = response['recordset'];
       for(let assenza of this.assenze)
       {
         assenza.DataAssenza = assenza.DataAssenza.substring(0,10);
@@ -153,7 +153,6 @@ export class AssenzeComponentComponent implements OnInit {
 
   onClassChange(selectedClass : Corrispondenza)
   {
-    console.log(selectedClass);
     this.selectedClass = selectedClass;
     this.studenti = null;
     this.visuaForm = false;

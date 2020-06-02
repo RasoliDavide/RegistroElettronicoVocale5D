@@ -28,10 +28,10 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
   blobUrl;
   transcriptionObs: Observable<String>;
   lasttranscription: String;
-  istrVedi=false;
-  httpClient : HttpClient;
-  sharedProfData : SharedProfDataService;
-  constructor(private audioRecordingService: AudioRecordingService, private sanitizer: DomSanitizer, http : HttpClient, sharedProfData : SharedProfDataService) {
+  istrVedi = false;
+  httpClient: HttpClient;
+  sharedProfData: SharedProfDataService;
+  constructor(private audioRecordingService: AudioRecordingService, private sanitizer: DomSanitizer, http: HttpClient, sharedProfData: SharedProfDataService) {
 
     this.audioRecordingService.recordingFailed().subscribe(() => {
       this.isRecording = false;
@@ -107,7 +107,7 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
   async readVoto(transcription: string) {
     let keywordsVoto = ["voto", "studente", "descrizione", "data", "peso", "valore"];
     let transcriptionArray = transcription.split(" ");
-    for(let i = 0; i < transcriptionArray.length; i++)
+    for (let i = 0; i < transcriptionArray.length; i++)
       transcriptionArray[i] = transcriptionArray[i].trim();
     console.log(transcriptionArray);
     let corrispondenze = this.findKeywordsIndexes(transcriptionArray, keywordsVoto);
@@ -182,16 +182,15 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
       let mese = mesianno.indexOf(transcriptionArray[corrispondenzaData['index'] + 2]) + 1;
       let anno = Number(transcriptionArray[corrispondenzaData['index'] + 3]);
       //if (this.isNumber(data.getDate()) && this.isNumber(data.getMonth()) && this.isNumber(data.getFullYear()))
-        votoOgg.DataVoto = `${anno}-${mese}-${giorno}`;
+      votoOgg.DataVoto = `${anno}-${mese}-${giorno}`;
       /*else {
         alert("Data non valida");
         return;
       }*/
     }
-    else
-    {
-      data = new Date();
-      votoOgg.DataVoto = data;
+    else {
+      let dataTemp = new Date();
+      votoOgg.DataVoto = `${dataTemp.getFullYear()}-${dataTemp.getMonth() + 1}-${dataTemp.getDate()}`;
     }
 
     let corrispondenzaPeso = corrispondenze.find((corrispondenza) => {
@@ -200,17 +199,14 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
 
     if (corrispondenzaPeso != null) {
       let peso = transcriptionArray[corrispondenzaPeso['index'] + 1];
-      if (this.isNumber(peso))
-      {
+      if (this.isNumber(peso)) {
         votoOgg.Peso = this.toNumber(peso);
-        if(votoOgg.Peso > 100 || votoOgg.Peso < 0)
-        {
+        if (votoOgg.Peso > 100 || votoOgg.Peso < 0) {
           alert("Il peso non è nel range consentito (0 -> 100)");
           return;
         }
       }
-      else
-      {
+      else {
         alert("Il peso specificato non è un numero");
         return;
       }
@@ -229,25 +225,21 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
           break;
         case ('no'):
           votoOgg.Tipologia = String(0);
-          if(votoOgg.Peso > 0 && corrispondenzaPeso)
-          {
+          if (votoOgg.Peso > 0 && corrispondenzaPeso) {
             alert("Se il voto non ha valore il peso deve essere 0");
             return;
           }
-          else if(votoOgg.Peso > 0)
-          {
+          else if (votoOgg.Peso > 0) {
             votoOgg.Peso = 0;
           }
           break;
         case ('recupero'):
           votoOgg.Tipologia = String(2);
-          if(votoOgg.Peso > 0 && corrispondenzaPeso)
-          {
+          if (votoOgg.Peso > 0 && corrispondenzaPeso) {
             alert("Se il voto è di recupero il peso deve essere 0");
             return;
           }
-          else if(votoOgg.Peso > 0)
-          {
+          else if (votoOgg.Peso > 0) {
             votoOgg.Peso = 0;
           }
           break;
@@ -261,16 +253,14 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
       votoOgg.Tipologia = String(1);
 
     console.log("263", votoOgg);
-    let obs : Observable<Object> = this.httpClient.get(environment.node_server + `/api/stt/getUsernameByStudente?Nome=${studente.split(" ")[0]}&Cognome=${studente.split(" ")[1]}`);
+    let obs: Observable<Object> = this.httpClient.get(environment.node_server + `/api/stt/getUsernameByStudente?Nome=${studente.split(" ")[0]}&Cognome=${studente.split(" ")[1]}`);
     let response = await this.synchronizedHTTPRequest(obs);
-    if(!response['success'])
-    {
+    if (!response['success']) {
       alert("Errore: " + JSON.stringify(response));
       return;
     }
     let username = response['recordset'][0]['Username'];
-    if(!username)
-    {
+    if (!username) {
       alert("Username non trovato");
       return;
     }
@@ -278,8 +268,8 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
     votoOgg.CodiceMateria = this.sharedProfData.selectedClass.CodiceMateria;
     votoOgg.CFProfessore = this.sharedProfData.profData.CFPersona;
     console.log(votoOgg);
-    let httpHeaders = new HttpHeaders({"Authorization": String(this.sharedProfData.profData.securedKey)})
-    let observVoto= this.httpClient.post(environment.node_server + '/api/voti/inserisciVoto', votoOgg, { headers: httpHeaders });
+    let httpHeaders = new HttpHeaders({ "Authorization": String(this.sharedProfData.profData.securedKey) })
+    let observVoto = this.httpClient.post(environment.node_server + '/api/voti/inserisciVoto', votoOgg, { headers: httpHeaders });
     observVoto.subscribe(
       (response) => {
         if (response['success'])
@@ -289,48 +279,79 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
       }
     )
   }
-  async synchronizedHTTPRequest(obs : Observable<Object>)
-  {
+  async synchronizedHTTPRequest(obs: Observable<Object>) {
     let httpResponse = new Promise<Object>(
-    (resolve, reject) =>
-    {
-      obs.subscribe((response) =>
-      {
-        resolve(response);
+      (resolve, reject) => {
+        obs.subscribe((response) => {
+          resolve(response);
+        });
       });
-    });
     let httpResult = await httpResponse;
     return httpResult;
   }
 
+  derivateClass(trascrizioneClasse: string | String) {
+    console.log("deriva classe")
+    let classeArray = trascrizioneClasse.split(" ");
+    console.log(trascrizioneClasse);
+    console.log(classeArray)
+    let tempClasse = "";
+    console.log(classeArray);
+    switch (classeArray[0]) {
+      case ('prima'):
+        tempClasse += "1";
+        break;
+      case ('seconda'):
+        tempClasse += "2";
+        break;
+      case ('terza'):
+        tempClasse += "3";
+        break;
+      case ('quarta'):
+        tempClasse += "4";
+        break;
+      case ('quinta'):
+        tempClasse += "5";
+        break;
+      default:
+        return null;
+        break;
+    }
+    tempClasse += classeArray[1];
+    console.log(tempClasse)
+    for (let corrispondenza of this.sharedProfData.profData.Corrispondenze) {
+      if (corrispondenza.CodiceClasse.toLowerCase().includes(classeArray[1][0])) {
+        return corrispondenza.CodiceClasse;
+      }
+    }
+    return null;
+  }
 
   async readNota(transcription: string) {
     //mandare tutto al db, fare conversione all'username, se è di classe o studente
-    let keywordsNota = ["tipo", "studente", "descrizione", "penalità", "data"];
+    let keywordsNota = ["tipo", "studente", "classe", "descrizione", "penalità", "data"];
     let transcriptionArray = transcription.split(" ");
-    console.log(transcriptionArray);
     let corrispondenze = this.findKeywordsIndexes(transcriptionArray, keywordsNota);
-    console.log(corrispondenze);
-    let tipologia, studente = "", descrizione = "", data, penalita;
+    let tipologia, destinatario = "", descrizione = "", data, penalita;
     let notaOgg = new Nota();
-    let corrispondenzaNota = corrispondenze.find((corrispondenza) => {
+    let corrispondenzaTipo = corrispondenze.find((corrispondenza) => {
       return corrispondenza["keyword"] == "tipo";
     });
 
-    if (corrispondenzaNota == null) {
+    if (corrispondenzaTipo == null) {
       alert("Tipologia non trovato nel comando vocale");
       return;
     }
     else
-      tipologia = transcriptionArray[corrispondenzaNota['index'] + 1];
+      tipologia = transcriptionArray[corrispondenzaTipo['index'] + 1];
 
     if (tipologia == null) {
       alert("Tipologia non corretta");
       return;
     }
-    else{
-      switch (transcriptionArray[corrispondenzaNota['index'] + 1]) {
-        case ('di classe'):
+    else {
+      switch (transcriptionArray[corrispondenzaTipo['index'] + 1]) {
+        case ('classe'):
           notaOgg.Tipologia = Number(1);
           break;
         case ('singola'):
@@ -338,26 +359,56 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
           break;
       }
     }
-    notaOgg.Tipologia = tipologia;
-   let corrispondenzaStudente = corrispondenze.find((corrispondenza) => {
-      return corrispondenza["keyword"] == "studente";
-    });
-
+    let corrispondenzaDestinatario;
+    if (notaOgg.Tipologia == 0) {
+      corrispondenzaDestinatario = corrispondenze.find((corrispondenza) => {
+        return corrispondenza["keyword"] == "studente";
+      });
+    }
+    else {
+      corrispondenzaDestinatario = corrispondenze.find((corrispondenza) => {
+        return corrispondenza["keyword"] == "classe";
+      });
+    }
     let corrispondenzaDescrizione = corrispondenze.find((corrispondenza) => {
       return corrispondenza["keyword"] == "descrizione";
     });
 
-    if (corrispondenzaStudente != null && corrispondenzaDescrizione != null) {
-      for (let i = (corrispondenzaStudente['index'] + 1); i < corrispondenzaDescrizione['index']; i++)
-        studente += transcriptionArray[i] + " ";
-
-      studente = studente.trim();
+    if (corrispondenzaDestinatario != null && corrispondenzaDescrizione != null) {
+      for (let i = (corrispondenzaDestinatario['index'] + 1); i < corrispondenzaDescrizione['index']; i++)
+        destinatario += transcriptionArray[i] + " ";
+      destinatario = destinatario.trim();
+      console.log(destinatario)
+      if (notaOgg.Tipologia == 0) {
+        let obs: Observable<Object> = this.httpClient.get(environment.node_server + `/api/stt/getUsernameByStudente?Nome=${destinatario.split(" ")[0]}&Cognome=${destinatario.split(" ")[1]}`);
+        let response = await this.synchronizedHTTPRequest(obs);
+        if (!response['success']) {
+          alert("Errore: " + JSON.stringify(response));
+          return;
+        }
+        let username = response['recordset'][0]['Username'];
+        notaOgg.Destinatari = new Array<String>();
+        console.log(username);
+        notaOgg.Destinatari.push(username);
+        if (!username) {
+          alert("Username non trovato");
+          return;
+        }
+      }
+      else {
+        let classeDestinataria = this.derivateClass(destinatario);
+        if (classeDestinataria != null)
+          notaOgg.CodiceClasse = classeDestinataria;
+        else {
+          alert("Classe non trovata");
+          return;
+        }
+      }
     }
     else {
       alert("Dati mancanti");
       return;
     }
-
     let nextCorrispondenza = corrispondenze[3];
     if (nextCorrispondenza == undefined) {
       descrizione = transcriptionArray.slice(corrispondenzaDescrizione['index'] + 1).toString().replace(/,/g, " ").replace("\"", " ");
@@ -376,14 +427,14 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
     if (corrispondenzaData != null) {
       let mesianno = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
       let giorno = Number(transcriptionArray[corrispondenzaData['index'] + 1]);
-      let mese = mesianno.indexOf(transcriptionArray[corrispondenzaData['index'] + 2]);
+      let mese = mesianno.indexOf(transcriptionArray[corrispondenzaData['index'] + 2]) + 1;
       let anno = Number(transcriptionArray[corrispondenzaData['index'] + 3]);
-      console.log(giorno, mese, anno)
-      data = new Date(anno, mese, giorno);
+      data = `${anno}-${mese}-${giorno}`;
     }
-    else
-      data = new Date();
-
+    else {
+      let dataTemp = new Date();
+      data = `${dataTemp.getFullYear()}-${dataTemp.getMonth()}-${dataTemp.getDate}`;
+    }
     notaOgg.DataNota = data;
     let corrispondenzaPenalita = corrispondenze.find((corrispondenza) => {
       return corrispondenza["keyword"] == "penalità";
@@ -402,25 +453,14 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
       }
     }
     else
-      notaOgg.TipoPenalita = Number(1);
-    let obs : Observable<Object> = this.httpClient.get(environment.node_server + `/api/stt/getUsernameByStudente?Nome=${studente.split(" ")[0]}&Cognome=${studente.split(" ")[1]}`);
-    let response = await this.synchronizedHTTPRequest(obs);
-    if(!response['success'])
-    {
-      alert("Errore: " + JSON.stringify(response));
-      return;
-    }
-    let username = response['recordset'][0]['Username'];
-    if(!username)
-    {
-      alert("Username non trovato");
-      return;
-    }
-    notaOgg.Destinatari.push(username);
+      notaOgg.TipoPenalita = Number(0);
+
+
+
     notaOgg.CFProfessore = this.sharedProfData.profData.CFPersona;
-    console.log(notaOgg);
-    let httpHeaders = new HttpHeaders({"Authorization": String(this.sharedProfData.profData.securedKey)})
-    let observNota= this.httpClient.post(environment.node_server + '/api/note/inserisciNota', notaOgg, { headers: httpHeaders });
+    console.log("421", notaOgg);
+    let httpHeaders = new HttpHeaders({ "Authorization": String(this.sharedProfData.profData.securedKey) })
+    let observNota = this.httpClient.post(environment.node_server + '/api/note/inserisciNota', notaOgg, { headers: httpHeaders });
     observNota.subscribe(
       (response) => {
         if (response['success'])
@@ -432,20 +472,20 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
   }
 
 
-    /*let transcriptionArray = transcription.split(" ");
-    let indexTipologia = transcriptionArray.indexOf('tipologia');
-    let indexStudente = transcriptionArray.indexOf('studente');
-    let indexDescrizione = transcriptionArray.indexOf('descrizione');
-    let indexPenalita = transcriptionArray.indexOf('penalità');
+  /*let transcriptionArray = transcription.split(" ");
+  let indexTipologia = transcriptionArray.indexOf('tipologia');
+  let indexStudente = transcriptionArray.indexOf('studente');
+  let indexDescrizione = transcriptionArray.indexOf('descrizione');
+  let indexPenalita = transcriptionArray.indexOf('penalità');
 
-    let tipologia = transcriptionArray[indexTipologia + 1];
-    let studente = transcriptionArray[indexStudente + 1] + " " + transcriptionArray[indexStudente + 2];
-    let descrizione = transcriptionArray.slice(indexDescrizione + 1);
-    let penalita = transcriptionArray.slice(indexPenalita + 1);
-    console.log("Tipologia: " + tipologia, indexTipologia);
-    console.log("Studente: " + studente, indexStudente);
-    console.log("Descrizione: " + descrizione, indexDescrizione);
-    console.log("Penalità: " + penalita, indexPenalita);*/
+  let tipologia = transcriptionArray[indexTipologia + 1];
+  let studente = transcriptionArray[indexStudente + 1] + " " + transcriptionArray[indexStudente + 2];
+  let descrizione = transcriptionArray.slice(indexDescrizione + 1);
+  let penalita = transcriptionArray.slice(indexPenalita + 1);
+  console.log("Tipologia: " + tipologia, indexTipologia);
+  console.log("Studente: " + studente, indexStudente);
+  console.log("Descrizione: " + descrizione, indexDescrizione);
+  console.log("Penalità: " + penalita, indexPenalita);*/
 
   async readAssenza(transcription: string) {
     let keywordsAssenza = ["tipo", "studente", "data", "orario", "concorre"];
@@ -463,16 +503,15 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
       return;
     }
 
-    switch(transcriptionArray[corrispondenzaTipo['index'] + 1])
-    {
-      case("assenza"):
+    switch (transcriptionArray[corrispondenzaTipo['index'] + 1]) {
+      case ("assenza"):
         assenzaOgg.Tipo = "A";
         assenzaOgg.Ora = undefined;
         break;
-      case("uscita"):
+      case ("uscita"):
         assenzaOgg.Tipo = "U";
         break;
-      case("entrata"):
+      case ("entrata"):
         assenzaOgg.Tipo = "E";
         break;
       default:
@@ -490,13 +529,11 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
     });
     console.log(corrispondenzaStudente);
 
-    if (corrispondenzaStudente == null)
-    {
+    if (corrispondenzaStudente == null) {
       alert("Dato studente mancante");
       return;
     }
-    else
-    {
+    else {
       for (let i = (corrispondenzaStudente['index'] + 1); i < corrispondenzaData['index']; i++)
         studente += transcriptionArray[i] + " ";
 
@@ -509,53 +546,45 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
       let mese = mesianno.indexOf(transcriptionArray[corrispondenzaData['index'] + 2]) + 1;
       let anno = Number(transcriptionArray[corrispondenzaData['index'] + 3]);
       //if (this.isNumber(data.getDate()) && this.isNumber(data.getMonth()) && this.isNumber(data.getFullYear()))
-        assenzaOgg.DataAssenza = `${anno}-${mese}-${giorno}`;
+      assenzaOgg.DataAssenza = `${anno}-${mese}-${giorno}`;
       /*else {
         alert("Data non valida");
         return;
       }*/
     }
-    else
-    {
-      data = new Date();
-      assenzaOgg.DataAssenza = data;
+    else {
+      let dataTemp = new Date();
+      data = `${dataTemp.getFullYear()}-${dataTemp.getMonth()}-${dataTemp.getDate()}`;
     }
     let corrispondenzaOrario = corrispondenze.find((corrispondenza) => {
       return corrispondenza["keyword"] == "orario";
     });
-    if (corrispondenzaOrario != null && assenzaOgg.Tipo != "A")
-    {
+    if (corrispondenzaOrario != null && assenzaOgg.Tipo != "A") {
       let ora = transcriptionArray[corrispondenzaOrario['index'] + 1];
       let ore = ora.split(":")[0];
       let minuti = ora.split(":")[1];
-      if(ore && minuti)
-      {
-        if(this.isNumber(ore) && this.isNumber(minuti))
-        {
+      if (ore && minuti) {
+        if (this.isNumber(ore) && this.isNumber(minuti)) {
           let oreN = this.toNumber(ore);
           let minN = this.toNumber(minuti);
-          if(0 <= oreN && oreN < 24 && 0 <= minN && minN < 60)
+          if (0 <= oreN && oreN < 24 && 0 <= minN && minN < 60)
             assenzaOgg.Ora = ora;
-          else
-          {
+          else {
             alert("Orario fuori range");
             return;
           }
         }
-        else
-        {
-            alert("L'orario non è un numero");
-            return;
+        else {
+          alert("L'orario non è un numero");
+          return;
         }
       }
-      else
-      {
+      else {
         alert("L'orario non esiste");
         return;
       }
     }
-    else if(corrispondenzaOrario != null && assenzaOgg.Tipo == "A")
-    {
+    else if (corrispondenzaOrario != null && assenzaOgg.Tipo == "A") {
       alert("Non è possibile specificare un'ora per le assenze");
       return;
     }
@@ -576,19 +605,18 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
     else
       assenzaOgg.Concorre = true;
 
-    let obs : Observable<Object> = this.httpClient.get(environment.node_server + `/api/stt/getUsernameByStudente?Nome=${studente.split(" ")[0]}&Cognome=${studente.split(" ")[1]}`);
+    let obs: Observable<Object> = this.httpClient.get(environment.node_server + `/api/stt/getUsernameByStudente?Nome=${studente.split(" ")[0]}&Cognome=${studente.split(" ")[1]}`);
     let response = await this.synchronizedHTTPRequest(obs);
     let username = response['recordset'][0]['Username'];
-    if(!username)
-    {
+    if (!username) {
       alert("Username non trovato");
       return;
     }
     assenzaOgg.UsernameStudente = username;
     assenzaOgg.CFProfessore = this.sharedProfData.profData.CFPersona;
     console.log(assenzaOgg, studente);
-    let httpHeaders = new HttpHeaders({"Authorization": String(this.sharedProfData.profData.securedKey)})
-    let observVoto= this.httpClient.post(environment.node_server + '/api/assenze/inserisciAssenza', assenzaOgg, { headers: httpHeaders });
+    let httpHeaders = new HttpHeaders({ "Authorization": String(this.sharedProfData.profData.securedKey) })
+    let observVoto = this.httpClient.post(environment.node_server + '/api/assenze/inserisciAssenza', assenzaOgg, { headers: httpHeaders });
     observVoto.subscribe(
       (response) => {
         if (response['success'])
@@ -598,36 +626,46 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
       }
     );
   }
+
+
   readCircolare(transcription: string) {
     let keywordsCircolare = ["titolo", "testo", "classi"];
     let transcriptionArray = transcription.split(" ");
     console.log(transcriptionArray);
     let corrispondenze = this.findKeywordsIndexes(transcriptionArray, keywordsCircolare);
     console.log(corrispondenze);
-    let titolo = "", testo = "", classi =[];
+    let titolo = "", testo = "", destinatario = "";
     let circolareOgg = new Comunicazione();
     let corrispondenzaCircolare = corrispondenze.find((corrispondenza) => {
       return corrispondenza["keyword"] == "titolo";
     });
 
-    if (corrispondenzaCircolare == null) {
-      alert("Circolare non trovata nel comando vocale");
-      return;
-    } else
-      titolo = transcriptionArray[corrispondenzaCircolare['index'] + 1];
-    circolareOgg.Titolo = titolo;
     let corrispondenzaTesto = corrispondenze.find((corrispondenza) => {
       return corrispondenza["keyword"] == "testo";
     });
 
-    let corrispondenzaClassi = corrispondenze.find((corrispondenza) => {
+    let corrispondenzaDestinatario = corrispondenze.find((corrispondenza) => {
       return corrispondenza["keyword"] == "classi";
     });
+    if (corrispondenzaCircolare == null && corrispondenzaTesto) {
+      alert("Circolare non trovata nel comando vocale");
+      return;
+    }
+    else {
+      for (let i = (corrispondenzaCircolare['index'] + 1); i < corrispondenzaTesto['index']; i++)
+        titolo += transcriptionArray[i] + " ";
 
-    if (corrispondenzaTesto != null && corrispondenzaClassi != null) {
-      for (let i = (corrispondenzaTesto['index'] + 1); i < corrispondenzaClassi['index']; i++)
+      titolo = titolo.trim();
+    }
+
+    circolareOgg.Titolo = titolo;
+
+
+    if (corrispondenzaTesto != null && corrispondenzaDestinatario != null) {
+      for (let i = (corrispondenzaTesto['index'] + 1); i < corrispondenzaDestinatario['index']; i++) {
         testo += transcriptionArray[i] + " ";
-          console.log(corrispondenzaClassi['index']);
+      }
+      console.log(corrispondenzaDestinatario['index']);
       testo = testo.trim();
     }
     else {
@@ -635,34 +673,61 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
       return;
     }
     circolareOgg.Testo = testo;
-    let nextCorrispondenza = corrispondenze[3];
-    if (nextCorrispondenza == undefined) {
-      testo = transcriptionArray.slice(corrispondenzaTesto['index'] + 1).toString().replace(/,/g, " ").replace("\"", " ");
+    circolareOgg.Destinatari = Array<String>();
+    let destinatariTemp = transcriptionArray.slice(corrispondenzaDestinatario['index'] + 1);
+    console.log(destinatariTemp)
+    if (destinatariTemp.length % 2 == 0) {
+      for (let i = 0; i < destinatariTemp.length; i += 2) {
+        let daDerivare = (destinatariTemp[i] + " " + destinatariTemp[i + 1]);
+        console.log(daDerivare)
+        let classe = this.derivateClass(daDerivare);
+        console.log(classe);
+        if (classe != null)
+          circolareOgg.Destinatari.push(classe);
+        else
+        {
+          alert("Classe " + daDerivare + " non trovata. La comunicazione non verrà aggiunta");
+          return;
+        }
+      }
     }
-    else {
-      for (let i = corrispondenzaTesto['index'] + 1; i < nextCorrispondenza['index']; i++)
-        testo += transcriptionArray[i] + " ";
-
-      testo = testo.trim();
-    }
-    if (testo.length > 0) {
-      circolareOgg.Testo = testo;
-    }
-      console.log(circolareOgg);
-
-    //console.log(circolareOgg, studente);
+    console.log(circolareOgg);
+    let httpHeaders = new HttpHeaders({ "Authorization": String(this.sharedProfData.profData.securedKey) })
+    let observCirc = this.httpClient.post(environment.node_server + '/api/dirigente/inserisciComunicazione', circolareOgg, { headers: httpHeaders });
+    observCirc.subscribe(
+      (response) => {
+        if (response['success'])
+          alert("Assenza aggiunta correttamente");
+        else
+          alert("Errore: " + JSON.stringify(response));
+      }
+    );
   }
-  readFirma(transcription : string)
-  {
-    let keywordsFirma = ["data", "orario", "argomento"];
+  readFirma(transcription: string) {
+    let keywordsFirma = ["classe", "data", "orario", "argomento", "compiti"];
     let transcriptionArray = transcription.split(" ");
     console.log(transcriptionArray);
     let corrispondenze = this.findKeywordsIndexes(transcriptionArray, keywordsFirma);
     console.log(corrispondenze);
-    let data, orario, argomento = "";
+    let classe, data, orario, argomento = "", compiti = "";
     let firmaOgg = new Firma();
-    let corrispondenzaFirma = corrispondenze.find((corrispondenza) =>
-    {
+    let corrispondenzaClasse = corrispondenze.find((corrispondenza) => {
+      return corrispondenza["keyword"] == "classe";
+    });
+    if (corrispondenzaClasse != null) {
+      let classeDerivare = String(transcriptionArray[corrispondenzaClasse['index']+ 1] + " " + transcriptionArray[corrispondenzaClasse['index']+ 2]);
+      classe = this.derivateClass(classeDerivare);
+      if(classe != null){
+         firmaOgg.CodiceClasse = classe;
+      }else{
+          alert("Classe non trovato");
+      }
+
+    }
+    else
+      alert("Classe non trovato");
+
+    let corrispondenzaFirma = corrispondenze.find((corrispondenza) => {
       return corrispondenza["keyword"] == "data";
     });
     if (corrispondenzaFirma != null) {
@@ -674,48 +739,53 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
       data = new Date(anno, mese, giorno);
     }
     else {
-      data = new Date();
+      let dataTemp = new Date();
+      data = `${dataTemp.getFullYear()}-${dataTemp.getMonth()}-${dataTemp.getDate()}`;
     }
     firmaOgg.DataFirma = data;
     let corrispondenzaOrario = corrispondenze.find((corrispondenza) => {
       return corrispondenza["keyword"] == "orario";
     });
     if (corrispondenzaOrario != null) {
-      let orario = String(transcriptionArray[corrispondenzaOrario['index']]);
-      firmaOgg.Ora = Number(orario);
+      let orario = Number(transcriptionArray[corrispondenzaOrario['index']+ 1] );
+      console.log(orario);
+      firmaOgg.Ora = orario;
     }
     else
-      firmaOgg.Ora = null;
+      alert("Orario non trovato");
 
-    /*if(corrispondenzaTesto != null && corrispondenzaClassi != null)
-    {
-      for(let i = (corrispondenzaTesto['index'] + 1); i < corrispondenzaClassi['index']; i++)
-        classi += transcriptionArray[i] + " ";
-
-      classi = classi.trim();
+    let corrispondenzaArgomento = corrispondenze.find((corrispondenza) => {
+      return corrispondenza["keyword"] == "argomento";
+    })
+    if (corrispondenzaArgomento != null) {
+      let argomento = String(transcriptionArray[corrispondenzaArgomento['index']+ 1]);
+      firmaOgg.Argomento = String(argomento);
     }
     else
-    {
-      alert("Dati mancanti");
-      return;
-    }
-	circolareOgg.Destinatari = classi;
-    let nextCorrispondenza = corrispondenze[3];
-    if(nextCorrispondenza == undefined)
-    {
-      testo = transcriptionArray.slice(corrispondenzaTesto['index'] + 1).toString().replace(/,/g, " ").replace("\"", " ");
+      alert("Argomento non trovato");
+
+    let corrispondenzaCompiti = corrispondenze.find((corrispondenza) => {
+      return corrispondenza["keyword"] == "compiti";
+    })
+    if (corrispondenzaCompiti != null) {
+      let compiti = String(transcriptionArray[corrispondenzaCompiti['index']+ 1] );
+      firmaOgg.CompitiAssegnati = String(compiti);
     }
     else
-    {
-      for(let i = corrispondenzaTesto['index'] + 1; i < nextCorrispondenza['index']; i++)
-        testo += transcriptionArray[i] + " ";
-
-      testo = testo.trim();
-    }
-	if(testo.lenght > 0)
-		circolareOgg.Testo = testo;
-
-    console.log(circolareOgg, studente);*/
+      firmaOgg.CompitiAssegnati = null;
+    firmaOgg.CFProfessore = this.sharedProfData.profData.CFPersona;
+    firmaOgg.CodiceMateria = this.sharedProfData.selectedClass.CodiceMateria;
+    console.log(firmaOgg);
+    let httpHeaders = new HttpHeaders({ "Authorization": String(this.sharedProfData.profData.securedKey) })
+    let observFirma = this.httpClient.post(environment.node_server + '/api/prof/firma', firmaOgg, { headers: httpHeaders });
+    observFirma.subscribe(
+      (response) => {
+        if (response['success'])
+          alert("Firma aggiunto correttamente");
+        else
+          alert("Errore: " + JSON.stringify(response));
+      }
+    )
   }
   receiveTranscription = (transcription: string) => {
     transcription = String(transcription.replace(/\n/g, " ").replace(/\"/g, " ")).trim();
@@ -736,8 +806,7 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
       this.readFirma(transcription);
   }
 
-  istruzioni(istrVedi)
-  {
+  istruzioni(istrVedi) {
     this.istrVedi = true;
     console.log("Istruzioni = true");
   }
