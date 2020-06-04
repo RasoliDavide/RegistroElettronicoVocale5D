@@ -4,7 +4,6 @@ class RECommonFunctions {
         let inputKey = req.get('authorization');//recupero il codice di autorizzazione dall'header
         let verifiedKey = 1;
         //0 = no key, 1 = wrong key, 2 = correct key
-
         if (inputKey != undefined && inputKey != "") {
             for (let i = 0; ((i < authorizedKey.length)); i++) {
                 if (authorizedKey[i].securedKey == inputKey) {

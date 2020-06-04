@@ -1,8 +1,10 @@
 const express = require('express');
 const sttRouter = express.Router();
 const gClient = require('@google-cloud/speech');
+const RECommonFunctions = require('./common-functions');
+checkAuthorization = (req, res, next) => {return RECommonFunctions.checkAuthorizationM(req, res, next);}
 
-sttRouter.post('/', async function(req, res)
+sttRouter.post('/', checkAuthorization, async function(req, res)
 {
     let client = new gClient.SpeechClient();
     let audioRCVD = req.body;
@@ -64,7 +66,7 @@ let getUsernameByStudente = async function(nome, cognome)
         return reutrnedObject;
 }
 
-sttRouter.get('/getUsernameByStudente', async function(req, res)
+sttRouter.get('/getUsernameByStudente', checkAuthorization, async function(req, res)
 {
     let nome = req.query.Nome, cognome = req.query.Cognome;
     let allParameterReceived = (nome && cognome);

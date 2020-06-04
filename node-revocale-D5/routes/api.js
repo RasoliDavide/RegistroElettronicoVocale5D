@@ -145,7 +145,7 @@ apiRouter.post('/logout', checkAuthorization, function(req, res)
             break;
         }
     }
-    res.send('logged out');
+    res.send({success : true});
 })
 
 module.exports = apiRouter;

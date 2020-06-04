@@ -31,7 +31,7 @@ export class DirigenteComponentComponent implements OnInit {
     this.profData = this.sharedProfData.profData;
     this.getClassi();
   }
-
+  
   ngOnInit(): void {
     this.getComunicazioni();
   }
@@ -63,7 +63,6 @@ export class DirigenteComponentComponent implements OnInit {
         'testo': ['', Validators.required],
         'destinatari': this.formBuilder.array(formArray)
       })
-    console.log(this.formDirigente);
   }
   onSubmitComunicazione() {
     console.log('titolo: ', this.formDirigente.controls['titolo'].value);

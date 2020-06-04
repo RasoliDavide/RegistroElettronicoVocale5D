@@ -4,8 +4,9 @@ import * as RecordRTC from 'recordrtc';
 import * as moment from 'moment';
 import { Observable, Subject } from 'rxjs';
 import { isNullOrUndefined } from 'util';
-import {HttpClient } from '@angular/common/http'
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { SharedProfDataService } from '../shared-prof-data.service';
 interface RecordedAudioOutput {
   blob: Blob;
   title: string;
@@ -22,11 +23,12 @@ export class AudioRecordingService {
   private _recordingFailed = new Subject<string>();
   private httpClient : HttpClient;
   private transcriptionSbj : Subject<String>;
-  constructor(http : HttpClient)
+  sharedProfData : SharedProfDataService;
+  constructor(http : HttpClient, sharedProfData : SharedProfDataService)
   {
     this.httpClient = http;
     this.transcriptionSbj = new Subject<String>();
-
+    this.sharedProfData = sharedProfData;
   }
   getRecordedBlob(): Observable<RecordedAudioOutput> {
     return this._recorded.asObservable();
@@ -106,8 +108,9 @@ export class AudioRecordingService {
           {
             var b64 = reader.result;
             b64 = b64.toString().substring(22);
-            let send = {"audio" : b64}
-            this.httpClient.post<String>(environment.node_server + '/api/stt', send).subscribe((resp) =>
+            let send = {"audio" : b64};
+            let httpHead = new HttpHeaders({Authorization : String(this.sharedProfData.profData.securedKey)});
+            this.httpClient.post<String>(environment.node_server + '/api/stt', send, { headers: httpHead }).subscribe((resp) =>
             {
               console.log(resp);
               let stringToSend : String = String(JSON.stringify(resp['transcription']));

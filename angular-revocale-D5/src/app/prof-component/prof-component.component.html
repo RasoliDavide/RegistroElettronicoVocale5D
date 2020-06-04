@@ -1,47 +1,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <br>
 
-	<div class="flip-card">
-  <div class="flip-card-inner">
-    <div class="flip-card-front">
-    <br>
-    <br>
-    <h1>Benvenuto</h1>
-		<h2>{{datiProf.Nome}}</h2>
-    <h2>{{datiProf.Cognome}}</h2>
-		<!--<p>Username: {{datiProf.Username}}</p>-->
-    <br>
-    <br>
-    <h5>Tocca per informazioni aggiuntive</h5>
-    </div>
-    <div class="flip-card-back">
-    <br>
-      <h4> Nome: {{datiProf.Nome}}</h4>
-      <h4> Cognome: {{datiProf.Cognome}}</h4>
-      <h4> CF: {{datiProf.CFPersona}}</h4>
-      <h4 *ngIf="datiProf.Dirigente">Dirigente: Si</h4>
-      <h4 *ngIf="!datiProf.Dirigente">Dirigente: No</h4>
-      <h4 *ngIf="datiProf.CoordinaClasse">Coordinatore di classe: Si</h4>
-      <h4 *ngIf="!datiProf.CoordinaClasse">Coordinatore di classe: No</h4>
-      <h4 *ngIf="datiProf.Laboratorio">Prof di Laboratorio: Si</h4>
-      <h4 *ngIf="!datiProf.Laboratorio">Prof di Laboratorio: No</h4>
-
-		<div>
-			<h4>Classe/i:</h4>
-					<div *ngFor="let corrispondenza of sharedProfData.profData.Corrispondenze">
-						<ul>
-						<h5>	<li> {{corrispondenza.CodiceClasse}} - {{corrispondenza.Materia}}</li></h5>
-						</ul>
-					</div>
+<div class="flip-card">
+	<div class="flip-card-inner">
+		<div class="flip-card-front">
+			<br>
+			<br>
+			<h1>Benvenuto</h1>
+			<h2>{{datiProf.Nome}}</h2>
+			<h2>{{datiProf.Cognome}}</h2>
+			<!--<p>Username: {{datiProf.Username}}</p>-->
+			<br>
+			<br>
+			<h5>Tocca per informazioni aggiuntive</h5>
 		</div>
-		<!--<p>Data di Nascita: {{datiProf.DataNascita}}</p>
-      <p>Sesso: {{datiProf.Sesso}}</p>
-      <p *ngFor = "datiProf.Classi">Classi: {{datiProf.Classi}}</p>-->
+		<div class="flip-card-back">
+			<br>
+			<h4> Nome: {{datiProf.Nome}}</h4>
+			<h4> Cognome: {{datiProf.Cognome}}</h4>
+			<h4> CF: {{datiProf.CFPersona}}</h4>
+			<h4 *ngIf="datiProf.Dirigente">Dirigente: Si</h4>
+			<h4 *ngIf="!datiProf.Dirigente">Dirigente: No</h4>
+			<h4 *ngIf="datiProf.CoordinaClasse">Coordinatore di classe: Si</h4>
+			<h4 *ngIf="!datiProf.CoordinaClasse">Coordinatore di classe: No</h4>
+			<h4 *ngIf="datiProf.Laboratorio">Prof di Laboratorio: Si</h4>
+			<h4 *ngIf="!datiProf.Laboratorio">Prof di Laboratorio: No</h4>
 
-</div>
-</div>
+			<div>
+				<h4>Classe/i:</h4>
+				<div *ngFor="let corrispondenza of sharedProfData.profData.Corrispondenze">
+					<ul>
+						<h5>
+							<li> {{corrispondenza.CodiceClasse}} - {{corrispondenza.Materia}}</li>
+						</h5>
+					</ul>
+				</div>
+			</div>
+
+		</div>
+	</div>
 </div>
 <br>
-<div class="impform">
-  <button class="btn btn-danger btn-lg">Logout</button>
-</div>

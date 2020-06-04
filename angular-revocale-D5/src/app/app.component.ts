@@ -7,6 +7,8 @@ import {MatSelectModule} from '@angular/material/select';
 import { environment } from 'src/environments/environment';
 import { Colore } from './colore.model';
 
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -21,13 +23,15 @@ export class AppComponent {
   sharedProfData : SharedProfDataService;
   selectedClass : Corrispondenza;
   selectedColor : Colore;
-  vettColori: any[] =["rosso","giallo","verde"]
-  constructor(http : HttpClient, sharedProfData : SharedProfDataService)
+  vettColori: any[] =["rosso","giallo","verde"];
+  router : Router;
+  constructor(http : HttpClient, sharedProfData : SharedProfDataService, router : Router)
   {
     this.httpClient = http;
     this.profData = new ProfData;
     this.scompare = false;
     this.sharedProfData = sharedProfData;
+    this.router = router;
   }
 
   getDatiProf(profProv : Object)
@@ -47,13 +51,13 @@ export class AppComponent {
       this.sharedProfData.setProfData(this.profData);
       this.selectedClass = this.profData.Corrispondenze[0];
       this.sharedProfData.setSelectedClass(this.sharedProfData.profData.Corrispondenze[0]);
+      this.router.navigate(['/prof']);
     });
 
   }
 
   onClassSelection(selectedClass : Corrispondenza)
   {
-    //console.log(selectedClass);
     this.sharedProfData.setSelectedClass(selectedClass);
   }
 

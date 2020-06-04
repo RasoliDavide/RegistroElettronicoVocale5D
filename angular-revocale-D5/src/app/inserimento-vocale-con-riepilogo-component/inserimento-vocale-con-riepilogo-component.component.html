@@ -1,45 +1,61 @@
 <div class="impform">
-  <br>
-  <h3> Registra il comando </h3><br>
-	<button class="start-button" *ngIf="!isRecording && !blobUrl" (click)="startRecording()">Start Recording</button>
-	<button class="stop-button" *ngIf="isRecording && !blobUrl" (click)="stopRecording()">Stop Recording</button>
-	<button class="cancel-button" *ngIf="!isRecording && blobUrl" (click)="clearRecordedData()">Clear Recording</button>
-  <input type="text" #comando>
-  <button (click)="receiveTranscription(comando.value)">Invia</button>
+	<br>
+	<h3> Registra il comando </h3><br>
+	<button class="start-button" *ngIf="!isRecording && !blobUrl" (click)="startRecording()">Avvia registrazione comando</button>
+	<button class="stop-button" *ngIf="isRecording && !blobUrl" (click)="stopRecording()">Arresta registrazione comando</button>
 	<div *ngIf="isRecording && !blobUrl"> {{recordedTime}} </div>
-	<div>
-		<audio *ngIf="!isRecording && blobUrl" controls>
-			<source [src]="blobUrl" type="audio/webm">
-		</audio>
+	<div *ngIf="caricamentoV">
+		<div class="loader"></div>
+		<h4> Caricamento in corso...</h4>
 	</div>
-  <br>
-    <button class="btn btn-primary btn-block" (click) = "istruzioni(istrVedi)">Istruzioni</button>
-      <br>
-    <div *ngIf="istrVedi">
-      <table class="istruzioni">
-        <tr>
-          <th>Voto</th>
-          <td>Inserisci voto "voto" a studente "nome cognome" descrizione "descrizione" data "giorno" "mese: gennaio, febbraio, ..." "anno" peso "da 0 a 100" valore "sì,no,recupero"</td>
-        </tr>
-        <tr>
-          <th>Assenza</th>
-          <td>Inserisci assenza di tipo "assenza/entrata/uscita" a studente "nome cognome" data "giorno" "mese: gennaio, febbraio, ..." "anno" orario "orario:12:30" concorre "si/no"</td>
-        </tr>
-        <tr>
-          <th>Nota</th>
-          <td>Inserisci nota di tipo "classe/studente" a studente "nome cognome" data "giorno" "mese: gennaio, febbraio, ..." "anno" penalità "nota/sospensione/espulsione" descrizione "descrizione"</td>
-        </tr>
-        <tr>
-          <th>Firma</th>
-          <td>Inserisci firma a classe "classe" data "giorno" "mese: gennaio, febbraio, ..." "anno" orario "da 1 a 7" argomento "argomento" compiti "compiti"</td>
-        </tr>
-        <tr>
-          <th>Comunicazione</th>
-          <td>Inserisci circolare con titolo "titolo" testo "testo" a classi "classe"</td>
-        </tr>
-     <br>
-     <br>
-     <br>
-		</table>
+	<hr>
+    <div>
+        <h3>Scrivi il comando</h3>
+        <input class="comando-manuale" type="text" #comando>
+        <br>
+        <button class="btn btn-info" (click)="receiveTranscription(comando.value)">Invia</button>
     </div>
+    <hr>
+	<button class="btn btn-primary btn-block" (click) = "istruzioni(istrVedi)">Istruzioni</button>
+	<br>
+	<div *ngIf="istrVedi">
+		<table class="istruzioni">
+			<tr>
+				<th>Voto</th>
+				<td>Inserisci voto "voto (es.: 7.5)" a studente "nome cognome" descrizione "descrizione" data "giorno"
+					"mese: gennaio, febbraio, ..." "anno" peso "da 0 a 100" valore "sì/no/recupero"</td>
+			</tr>
+			<tr>
+				<th>Assenza</th>
+				<td>Inserisci assenza di tipo assenza a studente "nome cognome" data "giorno" "mese:
+					gennaio, febbraio, ..." "anno" concorre "si/no"</td>
+			</tr>
+            <tr>
+				<th>Entrata/Uscita</th>
+				<td>Inserisci assenza di tipo "entrata/uscita" a studente "nome cognome" data "giorno" "mese:
+					gennaio, febbraio, ..." "anno" orario "orario 12:30" concorre "si/no"</td>
+			</tr>
+			<tr>
+				<th>Nota</th>
+				<td>Inserisci nota di tipo "classe {{ '{' }} Es: Quinta D {{ '}' }}/singola" {{ '{' }}a studente "nome cognome"{{ '}' }} descrizione "descrizione" penalità "nota/sospensione/espulsione" data "giorno"
+					"mese: gennaio, febbraio, ..." "anno"</td>
+			</tr>
+			<tr>
+				<th>Firma</th>
+				<td>Inserisci firma a classe "classe" data "giorno" "mese: gennaio, febbraio, ..." "anno" orario "da 1 a
+					7" argomento "argomento" compiti "compiti"</td>
+			</tr>
+			<tr>
+				<th>Comunicazione</th>
+				<td>Inserisci circolare con titolo "titolo" testo "testo" classi "classe"</td>
+			</tr>
+            <tr>
+				<th>N.B.</th>
+				<td>Per inserire un classe dire "Quinta D/Quarta F" ecc</td>
+			</tr>
+			<br>
+			<br>
+			<br>
+		</table>
+	</div>
 </div>

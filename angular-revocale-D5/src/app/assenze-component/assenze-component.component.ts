@@ -32,6 +32,7 @@ export class AssenzeComponentComponent implements OnInit {
   observableChangeSelectedClass : Observable<Corrispondenza>;
   studenti : Studente[];
   assenze: Assenza[];
+  giustifiche: Giustifica;
   @Output() assenzaOK : EventEmitter<Object>;
   selectedClass : Corrispondenza;
   visuaForm: boolean;
@@ -118,7 +119,10 @@ export class AssenzeComponentComponent implements OnInit {
     this.observAssenza.subscribe(
       (response) =>
       {
-        console.log(response);
+        console.log(giustificaOgg);
+        if(response){
+            this.selectedAssenza.Motivazione = giustificaOgg.Motivazione;
+        }
       }
     )
     this.formGiustifica.reset();
@@ -141,6 +145,7 @@ export class AssenzeComponentComponent implements OnInit {
     .subscribe((response) =>
     {
       this.assenze = response['recordset'];
+      
       for(let assenza of this.assenze)
       {
         assenza.DataAssenza = assenza.DataAssenza.substring(0,10);
@@ -149,6 +154,7 @@ export class AssenzeComponentComponent implements OnInit {
 
       }
     })
+    
   }
 
   onClassChange(selectedClass : Corrispondenza)

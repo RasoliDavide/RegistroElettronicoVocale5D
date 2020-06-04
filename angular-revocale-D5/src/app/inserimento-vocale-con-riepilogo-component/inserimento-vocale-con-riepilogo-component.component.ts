@@ -24,6 +24,7 @@ import { transcode } from 'buffer';
 @Injectable()
 export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, OnDestroy {
   isRecording = false;
+  caricamentoV = false;
   recordedTime;
   blobUrl;
   transcriptionObs: Observable<String>;
@@ -57,6 +58,7 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
     if (!this.isRecording) {
       this.isRecording = true;
       this.audioRecordingService.startRecording();
+       this.caricamentoV = false;
     }
   }
 
@@ -64,6 +66,7 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
     if (this.isRecording) {
       this.isRecording = false;
       this.audioRecordingService.abortRecording();
+      this.caricamentoV = false;
     }
   }
 
@@ -71,6 +74,7 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
     if (this.isRecording) {
       this.audioRecordingService.stopRecording();
       this.isRecording = false;
+      this.caricamentoV = true;
     }
   }
 
@@ -178,15 +182,15 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
 
     if (corrispondenzaData != null) {
       let mesianno = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
-      let giorno = Number(transcriptionArray[corrispondenzaData['index'] + 1]);
+      let giorno = transcriptionArray[corrispondenzaData['index'] + 1];
       let mese = mesianno.indexOf(transcriptionArray[corrispondenzaData['index'] + 2]) + 1;
-      let anno = Number(transcriptionArray[corrispondenzaData['index'] + 3]);
-      //if (this.isNumber(data.getDate()) && this.isNumber(data.getMonth()) && this.isNumber(data.getFullYear()))
-      votoOgg.DataVoto = `${anno}-${mese}-${giorno}`;
-      /*else {
-        alert("Data non valida");
+      let anno = transcriptionArray[corrispondenzaData['index'] + 3];
+      if (this.isNumber(giorno) && mese && this.isNumber(anno))
+        votoOgg.DataVoto = `${anno}-${mese}-${giorno}`;
+      else {
+        alert("Data " + anno + " " + mese + " " + giorno + " non valida");
         return;
-      }*/
+      }
     }
     else {
       let dataTemp = new Date();
@@ -253,7 +257,8 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
       votoOgg.Tipologia = String(1);
 
     console.log("263", votoOgg);
-    let obs: Observable<Object> = this.httpClient.get(environment.node_server + `/api/stt/getUsernameByStudente?Nome=${studente.split(" ")[0]}&Cognome=${studente.split(" ")[1]}`);
+    let httpHeaders = new HttpHeaders({ "Authorization": String(this.sharedProfData.profData.securedKey) })
+    let obs: Observable<Object> = this.httpClient.get(environment.node_server + `/api/stt/getUsernameByStudente?Nome=${studente.split(" ")[0]}&Cognome=${studente.split(" ")[1]}`, { headers: httpHeaders });
     let response = await this.synchronizedHTTPRequest(obs);
     if (!response['success']) {
       alert("Errore: " + JSON.stringify(response));
@@ -268,7 +273,6 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
     votoOgg.CodiceMateria = this.sharedProfData.selectedClass.CodiceMateria;
     votoOgg.CFProfessore = this.sharedProfData.profData.CFPersona;
     console.log(votoOgg);
-    let httpHeaders = new HttpHeaders({ "Authorization": String(this.sharedProfData.profData.securedKey) })
     let observVoto = this.httpClient.post(environment.node_server + '/api/voti/inserisciVoto', votoOgg, { headers: httpHeaders });
     observVoto.subscribe(
       (response) => {
@@ -317,7 +321,7 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
         return null;
         break;
     }
-    tempClasse += classeArray[1];
+    tempClasse += classeArray[1][0];
     console.log(tempClasse)
     for (let corrispondenza of this.sharedProfData.profData.Corrispondenze) {
       if (corrispondenza.CodiceClasse.toLowerCase().includes(classeArray[1][0])) {
@@ -379,8 +383,9 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
         destinatario += transcriptionArray[i] + " ";
       destinatario = destinatario.trim();
       console.log(destinatario)
-      if (notaOgg.Tipologia == 0) {
-        let obs: Observable<Object> = this.httpClient.get(environment.node_server + `/api/stt/getUsernameByStudente?Nome=${destinatario.split(" ")[0]}&Cognome=${destinatario.split(" ")[1]}`);
+      if (notaOgg.Tipologia == 0) {    
+        let httpHeaders = new HttpHeaders({ "Authorization": String(this.sharedProfData.profData.securedKey) })
+        let obs: Observable<Object> = this.httpClient.get(environment.node_server + `/api/stt/getUsernameByStudente?Nome=${destinatario.split(" ")[0]}&Cognome=${destinatario.split(" ")[1]}`, { headers: httpHeaders });
         let response = await this.synchronizedHTTPRequest(obs);
         if (!response['success']) {
           alert("Errore: " + JSON.stringify(response));
@@ -426,14 +431,19 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
 
     if (corrispondenzaData != null) {
       let mesianno = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
-      let giorno = Number(transcriptionArray[corrispondenzaData['index'] + 1]);
+      let giorno = transcriptionArray[corrispondenzaData['index'] + 1];
       let mese = mesianno.indexOf(transcriptionArray[corrispondenzaData['index'] + 2]) + 1;
-      let anno = Number(transcriptionArray[corrispondenzaData['index'] + 3]);
-      data = `${anno}-${mese}-${giorno}`;
+      let anno = transcriptionArray[corrispondenzaData['index'] + 3];
+      if (this.isNumber(giorno) && mese && this.isNumber(anno))
+        data = `${anno}-${mese}-${giorno}`;
+      else {
+        alert("Data " + anno + " " + mese + " " + giorno + " non valida");
+        return;
+      }
     }
     else {
       let dataTemp = new Date();
-      data = `${dataTemp.getFullYear()}-${dataTemp.getMonth()}-${dataTemp.getDate}`;
+      data = `${dataTemp.getFullYear()}-${dataTemp.getMonth()}-${dataTemp.getDate()}`;
     }
     notaOgg.DataNota = data;
     let corrispondenzaPenalita = corrispondenze.find((corrispondenza) => {
@@ -458,7 +468,6 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
 
 
     notaOgg.CFProfessore = this.sharedProfData.profData.CFPersona;
-    console.log("421", notaOgg);
     let httpHeaders = new HttpHeaders({ "Authorization": String(this.sharedProfData.profData.securedKey) })
     let observNota = this.httpClient.post(environment.node_server + '/api/note/inserisciNota', notaOgg, { headers: httpHeaders });
     observNota.subscribe(
@@ -470,22 +479,6 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
       }
     )
   }
-
-
-  /*let transcriptionArray = transcription.split(" ");
-  let indexTipologia = transcriptionArray.indexOf('tipologia');
-  let indexStudente = transcriptionArray.indexOf('studente');
-  let indexDescrizione = transcriptionArray.indexOf('descrizione');
-  let indexPenalita = transcriptionArray.indexOf('penalità');
-
-  let tipologia = transcriptionArray[indexTipologia + 1];
-  let studente = transcriptionArray[indexStudente + 1] + " " + transcriptionArray[indexStudente + 2];
-  let descrizione = transcriptionArray.slice(indexDescrizione + 1);
-  let penalita = transcriptionArray.slice(indexPenalita + 1);
-  console.log("Tipologia: " + tipologia, indexTipologia);
-  console.log("Studente: " + studente, indexStudente);
-  console.log("Descrizione: " + descrizione, indexDescrizione);
-  console.log("Penalità: " + penalita, indexPenalita);*/
 
   async readAssenza(transcription: string) {
     let keywordsAssenza = ["tipo", "studente", "data", "orario", "concorre"];
@@ -542,20 +535,21 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
 
     if (corrispondenzaData != null) {
       let mesianno = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
-      let giorno = Number(transcriptionArray[corrispondenzaData['index'] + 1]);
+      let giorno = transcriptionArray[corrispondenzaData['index'] + 1];
       let mese = mesianno.indexOf(transcriptionArray[corrispondenzaData['index'] + 2]) + 1;
-      let anno = Number(transcriptionArray[corrispondenzaData['index'] + 3]);
-      //if (this.isNumber(data.getDate()) && this.isNumber(data.getMonth()) && this.isNumber(data.getFullYear()))
-      assenzaOgg.DataAssenza = `${anno}-${mese}-${giorno}`;
-      /*else {
-        alert("Data non valida");
+      let anno = transcriptionArray[corrispondenzaData['index'] + 3];
+      if (this.isNumber(giorno) && mese && this.isNumber(anno))
+        data = `${anno}-${mese}-${giorno}`;
+      else {
+        alert("Data " + anno + " " + mese + " " + giorno + " non valida");
         return;
-      }*/
+      }
     }
     else {
       let dataTemp = new Date();
       data = `${dataTemp.getFullYear()}-${dataTemp.getMonth()}-${dataTemp.getDate()}`;
     }
+    assenzaOgg.DataAssenza = data;
     let corrispondenzaOrario = corrispondenze.find((corrispondenza) => {
       return corrispondenza["keyword"] == "orario";
     });
@@ -604,8 +598,8 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
     }
     else
       assenzaOgg.Concorre = true;
-
-    let obs: Observable<Object> = this.httpClient.get(environment.node_server + `/api/stt/getUsernameByStudente?Nome=${studente.split(" ")[0]}&Cognome=${studente.split(" ")[1]}`);
+    let httpHeaders = new HttpHeaders({ "Authorization": String(this.sharedProfData.profData.securedKey) });
+    let obs: Observable<Object> = this.httpClient.get(environment.node_server + `/api/stt/getUsernameByStudente?Nome=${studente.split(" ")[0]}&Cognome=${studente.split(" ")[1]}`, { headers: httpHeaders });
     let response = await this.synchronizedHTTPRequest(obs);
     let username = response['recordset'][0]['Username'];
     if (!username) {
@@ -615,7 +609,6 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
     assenzaOgg.UsernameStudente = username;
     assenzaOgg.CFProfessore = this.sharedProfData.profData.CFPersona;
     console.log(assenzaOgg, studente);
-    let httpHeaders = new HttpHeaders({ "Authorization": String(this.sharedProfData.profData.securedKey) })
     let observVoto = this.httpClient.post(environment.node_server + '/api/assenze/inserisciAssenza', assenzaOgg, { headers: httpHeaders });
     observVoto.subscribe(
       (response) => {
@@ -697,12 +690,13 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
     observCirc.subscribe(
       (response) => {
         if (response['success'])
-          alert("Assenza aggiunta correttamente");
+          alert("Circolare aggiunta correttamente");
         else
           alert("Errore: " + JSON.stringify(response));
       }
     );
   }
+
   readFirma(transcription: string) {
     let keywordsFirma = ["classe", "data", "orario", "argomento", "compiti"];
     let transcriptionArray = transcription.split(" ");
@@ -727,16 +721,21 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
     else
       alert("Classe non trovato");
 
-    let corrispondenzaFirma = corrispondenze.find((corrispondenza) => {
+    let corrispondenzaData = corrispondenze.find((corrispondenza) => {
       return corrispondenza["keyword"] == "data";
     });
-    if (corrispondenzaFirma != null) {
+
+    if (corrispondenzaData != null) {
       let mesianno = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
-      let giorno = Number(transcriptionArray[corrispondenzaFirma['index'] + 1]);
-      let mese = mesianno.indexOf(transcriptionArray[corrispondenzaFirma['index'] + 2]);
-      let anno = Number(transcriptionArray[corrispondenzaFirma['index'] + 3]);
-      console.log(giorno, mese, anno)
-      data = new Date(anno, mese, giorno);
+      let giorno = transcriptionArray[corrispondenzaData['index'] + 1];
+      let mese = mesianno.indexOf(transcriptionArray[corrispondenzaData['index'] + 2]) + 1;
+      let anno = transcriptionArray[corrispondenzaData['index'] + 3];
+      if (this.isNumber(giorno) && mese && this.isNumber(anno))
+        data = `${anno}-${mese}-${giorno}`;
+      else {
+        alert("Data " + anno + " " + mese + " " + giorno + " non valida");
+        return;
+      }
     }
     else {
       let dataTemp = new Date();
@@ -788,6 +787,7 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
     )
   }
   receiveTranscription = (transcription: string) => {
+    this.caricamentoV = false;
     transcription = String(transcription.replace(/\n/g, " ").replace(/\"/g, " ")).trim();
     console.log(typeof transcription);
     transcription = transcription.toLowerCase();
@@ -807,8 +807,7 @@ export class InserimentoVocaleConRiepilogoComponentComponent implements OnInit, 
   }
 
   istruzioni(istrVedi) {
-    this.istrVedi = true;
-    console.log("Istruzioni = true");
+    this.istrVedi = !this.istrVedi;
   }
 }
 

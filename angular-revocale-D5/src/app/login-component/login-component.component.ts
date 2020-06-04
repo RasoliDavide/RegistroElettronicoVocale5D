@@ -32,18 +32,7 @@ export class LoginComponentComponent implements OnInit {
 
   ngOnInit(): void
   {
-    let l: Login = new Login();
-    l.username = "Admin";
-    l.password = "99da612880312b6db4c7ee8048326fcfd7ca4fff90048bd1f897d02c515d2b7f083e3fd1f830841a59f810ce8ab27c34cbfdb9cdf4f7a303940300340990d6eb";
-    //console.log(l);
-    this.pastaAllaCarbonara = this.http.post(environment.node_server + '/api/login', l)
-    this.pastaAllaCarbonara.subscribe(
-      (data) => {
-        this.scompare = true;
-        this.loginS = false;
-        this.loginOk.emit(data);
-      }
-    )
+    
   }
 
   onSubmit() {
@@ -52,11 +41,9 @@ export class LoginComponentComponent implements OnInit {
     let l: Login = new Login();
     l.username = this.myForm.controls['username'].value;
     l.password = sha512(this.myForm.controls['password'].value);
-    //console.log(l);
     this.pastaAllaCarbonara = this.http.post(environment.node_server + '/api/login', l)
     this.pastaAllaCarbonara.subscribe(
       (data) => {
-        //alert('ok');
         if(data['securedKey'])
         {
           console.log(data);
@@ -68,8 +55,5 @@ export class LoginComponentComponent implements OnInit {
 
       }
     )
-    //this.pastaAllaCarbonara.subscribe((data) => this.datiProf = data);
-    //Se fate 2 subscribe vengono inviate 2 richiesta al server node.
  }
-
 }
