@@ -17,7 +17,7 @@
     "http-errors": "~1.6.3",
     "js-sha512": "^0.8.0",
     "minimist": ">=0.2.1",
-    "moment": "2.24.0",
+    "moment": "2.29.2",
     "morgan": "~1.9.1",
     "mssql": "^6.2.0",
     "nodemon": "^2.0.4",
